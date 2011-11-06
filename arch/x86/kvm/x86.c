@@ -8574,6 +8574,14 @@ int kvm_arch_init(void *opaque)
 		goto out;
 	}
 
+#ifdef CONFIG_PREEMPT_RT
+	if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
+		pr_err("RT requires X86_FEATURE_CONSTANT_TSC\n");
+		r = -EOPNOTSUPP;
+		goto out;
+	}
+#endif
+
 	r = -ENOMEM;
 
 	x86_emulator_cache = kvm_alloc_emulator_cache();
