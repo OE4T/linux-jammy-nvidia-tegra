@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (c) 2016-2023, NVIDIA CORPORATION.  All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2016-2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #include <linux/delay.h>
@@ -990,12 +990,20 @@ static int tegra186_utmi_phy_init(struct phy *phy)
 	unsigned int index = lane->index;
 	struct device *dev = padctl->dev;
 	int err;
+	u32 reg;
 
 	port = tegra_xusb_find_usb2_port(padctl, index);
 	if (!port) {
 		dev_err(dev, "no port found for USB2 lane %u\n", index);
 		return -ENODEV;
 	}
+
+	/* reset VBUS&ID OVERRIDE */
+	reg = padctl_readl(padctl, USB2_VBUS_ID);
+	reg &= ~VBUS_OVERRIDE;
+	reg &= ~ID_OVERRIDE(~0);
+	reg |= ID_OVERRIDE_FLOATING;
+	padctl_writel(padctl, reg, USB2_VBUS_ID);
 
 	if (port->supply && port->mode == USB_DR_MODE_HOST) {
 		err = regulator_enable(port->supply);
