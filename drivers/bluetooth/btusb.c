@@ -538,8 +538,8 @@ static const struct usb_device_id blacklist_table[] = {
 						     BTUSB_WIDEBAND_SPEECH },
 	{ USB_DEVICE(0x13d3, 0x3548), .driver_info = BTUSB_REALTEK |
 						     BTUSB_WIDEBAND_SPEECH },
-	{ USB_DEVICE(0x13d3, 0x3549), .driver_info = BTUSB_REALTEK |
-						     BTUSB_WIDEBAND_SPEECH },
+	{ USB_DEVICE(0x0bda, 0xc822), .driver_info = BTUSB_IGNORE },
+	{ USB_DEVICE(0x13d3, 0x3549), .driver_info = BTUSB_IGNORE },
 	{ USB_DEVICE(0x13d3, 0x3553), .driver_info = BTUSB_REALTEK |
 						     BTUSB_WIDEBAND_SPEECH },
 	{ USB_DEVICE(0x13d3, 0x3555), .driver_info = BTUSB_REALTEK |
