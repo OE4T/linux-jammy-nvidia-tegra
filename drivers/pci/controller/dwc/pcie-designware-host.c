@@ -319,10 +319,15 @@ int dw_pcie_host_init(struct pcie_port *pp)
 			return PTR_ERR(pci->dbi_base);
 	}
 
-	bridge = devm_pci_alloc_host_bridge(dev, 0);
+	bridge = pci_alloc_host_bridge(0);
 	if (!bridge)
 		return -ENOMEM;
 
+	ret = devm_of_pci_bridge_init(dev, bridge);
+	if (ret)
+		return -ENOMEM;
+
+	bridge->dev.parent = dev;
 	pp->bridge = bridge;
 
 	/* Get the I/O range from DT */
