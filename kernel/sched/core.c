@@ -2175,6 +2175,8 @@ void migrate_enable(void)
 	if (p->migration_disabled > 1) {
 		p->migration_disabled--;
 		return;
+	} else if (WARN_ON_ONCE(p->migration_disabled == 0)) {
+		return;
 	}
 
 	/*
