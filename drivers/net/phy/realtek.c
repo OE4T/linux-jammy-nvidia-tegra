@@ -520,8 +520,8 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 	}
 
 	/* Advertise Flow Control */
-	linkmode_set_bit(SUPPORTED_Pause, phydev->supported);
-	linkmode_set_bit(SUPPORTED_Asym_Pause, phydev->supported);
+	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
+	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
 	linkmode_copy(phydev->advertising, phydev->supported);
 
 	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
