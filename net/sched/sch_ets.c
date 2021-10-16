@@ -41,7 +41,7 @@ struct ets_class {
 	struct Qdisc *qdisc;
 	u32 quantum;
 	u32 deficit;
-	struct gnet_stats_basic_packed bstats;
+	struct gnet_stats_basic_sync bstats;
 	struct gnet_stats_queue qstats;
 };
 
@@ -699,9 +699,9 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
 	for (i = q->nbands; i < oldbands; i++) {
 		qdisc_put(q->classes[i].qdisc);
 		q->classes[i].qdisc = NULL;
-		WRITE_ONCE(q->classes[i].quantum, 0);
+		q->classes[i].quantum = 0;
 		q->classes[i].deficit = 0;
-		gnet_stats_basic_packed_init(&q->classes[i].bstats);
+		gnet_stats_basic_sync_init(&q->classes[i].bstats);
 		memset(&q->classes[i].qstats, 0, sizeof(q->classes[i].qstats));
 	}
 	return 0;
