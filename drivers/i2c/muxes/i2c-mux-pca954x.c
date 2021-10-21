@@ -441,7 +441,7 @@ static int pca954x_probe(struct i2c_client *client,
 	struct i2c_mux_core *muxc;
 	struct pca954x *data;
 	int num, force, class;
-	int ret;
+	int ret, err;
 	int force_bus = 0;
 
 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
@@ -536,7 +536,7 @@ static int pca954x_probe(struct i2c_client *client,
 	ret = pca954x_init(client, data);
 	if (ret < 0) {
 		dev_warn(dev, "probe failed\n");
-		return -ENODEV;
+		goto fail_cleanup;
 	}
 
 	ret = pca954x_irq_setup(muxc);
@@ -594,6 +594,13 @@ static int pca954x_probe(struct i2c_client *client,
 	return 0;
 
 fail_cleanup:
+	/* Disable vcc regulator for pca954x */
+	if (data->vcc_reg) {
+		err = regulator_disable(data->vcc_reg);
+		if (err < 0)
+			dev_err(&client->dev, "failed to disable vcc\n");
+	}
+
 	pca954x_cleanup(muxc);
 	return ret;
 }
