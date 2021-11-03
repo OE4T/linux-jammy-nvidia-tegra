@@ -791,6 +791,7 @@ cdns3-pci-wrap
 cdns3-ti
 cdnsp-udc-pci
 cec
+cec-gpio
 ceph
 cfb
 cfg80211
@@ -1087,9 +1088,6 @@ das6402
 das800
 davicom
 dax_hmem
-dax_pmem
-dax_pmem_compat
-dax_pmem_core
 db9
 dc395x
 dccp
@@ -1106,7 +1104,6 @@ denali_dt
 denali_pci
 des_generic
 designware_i2s
-device_dax
 dfl
 dfl-afu
 dfl-emif
@@ -2537,6 +2534,7 @@ irdma
 irps5401
 irq-madera
 irq-pruss-intc
+irqbypass
 iscsi_boot_sysfs
 iscsi_ibft
 iscsi_target_mod
@@ -2620,7 +2618,6 @@ kheaders
 kirin-drm
 kl5kusb105
 kmb-drm
-kmem
 kmx61
 kobil_sct
 komeda
