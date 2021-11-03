@@ -836,6 +836,7 @@ comedi_8254
 comedi_8255
 comedi_bond
 comedi_isadma
+comedi_example_test
 comedi_parport
 comedi_pci
 comedi_pcmcia
@@ -1015,9 +1016,6 @@ das6402
 das800
 davicom
 dax_hmem
-dax_pmem
-dax_pmem_compat
-dax_pmem_core
 db9
 dc395x
 dca
@@ -1049,7 +1047,6 @@ denali_pci
 des3_ede-x86_64
 des_generic
 designware_i2s
-device_dax
 dfl
 dfl-afu
 dfl-emif
@@ -2422,7 +2419,6 @@ keywrap
 kfifo_buf
 kheaders
 kl5kusb105
-kmem
 kmx61
 kobil_sct
 ks0108
@@ -3307,6 +3303,7 @@ ni_labpc_pci
 ni_mio_cs
 ni_pcidio
 ni_pcimio
+ni_routes_test
 ni_routing
 ni_tio
 ni_tiocmd
