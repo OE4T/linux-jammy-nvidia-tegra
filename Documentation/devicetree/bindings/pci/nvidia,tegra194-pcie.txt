@@ -121,6 +121,7 @@ Optional properties:
    specified in microseconds
 - nvidia,pex-prsnt-gpios: Must contain a phandle to a GPIO controller followed
   by GPIO that is being used to support hot plug and unplug via PRSNT# pin.
+- nvidia,enable-safety: Set this property to enable safety features like HSI, etc.
 
 RC mode:
 - vpcie3v3-supply: A phandle to the regulator node that supplies 3.3V to the slot
