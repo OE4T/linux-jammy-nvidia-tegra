@@ -1,4 +1,4 @@
-getabis_ppa="${HOME}/.getabis.hirsute-realtime"
+getabis_ppa="${HOME}/.getabis.jammy-realtime"
 getabis_source="$(dpkg-parsechangelog -l$DEBIAN/changelog -SSource)"
 
 if ! [ -e "${getabis_ppa}" ] ; then
