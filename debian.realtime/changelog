@@ -196,6 +196,10 @@ linux-realtime (5.15.0-1001.1) jammy; urgency=medium
     - sysfs: Add /sys/kernel/realtime entry
     - Realtime patchset v5.15-rt17
 
+  [ Ubuntu: 5.15.0-1.1 ]
+
+  * jammy/linux: 5.15.0-1.1 -proposed tracker (LP: #1949876)
+
  -- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>  Fri, 05 Nov 2021 14:51:34 +0100
 
 linux-realtime (5.15.0-1000.0) jammy; urgency=medium
