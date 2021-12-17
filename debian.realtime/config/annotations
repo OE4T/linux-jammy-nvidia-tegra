@@ -20,3 +20,8 @@ CONFIG_RCU_BOOST_DELAY                          policy<{'amd64': '500', 'arm64':
 CONFIG_RCU_BOOST_DELAY                          mark<ENFORCED>
 CONFIG_HZ_1000                                  policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_HZ_1000                                  mark<ENFORCED>
+
+CONFIG_NO_HZ_FULL                               policy<{'amd64': 'y', 'arm64': 'y'}>
+CONFIG_NO_HZ_FULL                               mark<ENFORCED>
+CONFIG_RCU_NOCB_CPU                             policy<{'amd64': 'y', 'arm64': 'y'}>
+CONFIG_RCU_NOCB_CPU                             mark<ENFORCED>
