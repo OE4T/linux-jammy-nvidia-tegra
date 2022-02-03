@@ -3082,6 +3082,7 @@ mtd_dataflash
 mtdblock
 mtdblock_ro
 mtdoops
+mtdpstore
 mtdram
 mtdswap
 mtip32xx
@@ -3383,6 +3384,7 @@ ntfs3
 null_blk
 nuvoton-cir
 nv_tco
+nvidia-wmi-ec-backlight
 nvidiafb
 nvme
 nvme-core
@@ -3714,6 +3716,8 @@ ps2mult
 psample
 psmouse
 psnap
+pstore_blk
+pstore_zone
 psxpad-spi
 pt
 ptdma
