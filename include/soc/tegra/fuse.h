@@ -72,6 +72,7 @@ extern struct tegra_sku_info tegra_sku_info;
 u32 tegra_read_straps(void);
 u32 tegra_read_ram_code(void);
 int tegra_fuse_readl(unsigned long offset, u32 *value);
+int tegra194_miscreg_mask_serror(void);
 #else
 static struct tegra_sku_info tegra_sku_info __maybe_unused;
 
@@ -88,6 +89,11 @@ static inline u32 tegra_read_ram_code(void)
 static inline int tegra_fuse_readl(unsigned long offset, u32 *value)
 {
 	return -ENODEV;
+}
+
+static inline int tegra194_miscreg_mask_serror(void)
+{
+	return false;
 }
 #endif
 
