@@ -106,6 +106,7 @@ available subsections can be seen below.
    xilinx/index
    xillybus
    zorro
+   hte/index
 
 .. only::  subproject and html
 
