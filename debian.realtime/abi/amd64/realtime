@@ -23681,6 +23681,7 @@ EXPORT_SYMBOL_GPL	 vmlinux 0xa2ac1492	tracepoint_srcu
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2af54b3	irq_from_evtchn
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2bb5ae6	__rio_local_write_config_32
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2c30f69	devm_regulator_register_notifier
+EXPORT_SYMBOL_GPL	 vmlinux 0xa2d0b59d	mmio_stale_data_clear
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2e0cdf4	xas_nomem
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2e13094	__SCK__tp_func_block_split
 EXPORT_SYMBOL_GPL	 vmlinux 0xa2e1b3ef	trace_printk_init_buffers
