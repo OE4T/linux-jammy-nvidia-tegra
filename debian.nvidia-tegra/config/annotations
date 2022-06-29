@@ -5,36 +5,21 @@
 include "../../debian.master/config/annotations"
 
 CONFIG_PREEMPT                                  policy<{'arm64': 'n'}>
-CONFIG_PREEMPT                                  mark<ENFORCED>
 CONFIG_PREEMPT_DYNAMIC                          policy<{'arm64': '-'}>
-CONFIG_PREEMPT_DYNAMIC                          mark<ENFORCED>
 CONFIG_PREEMPT_LAZY                             policy<{'arm64': 'y'}>
-CONFIG_PREEMPT_LAZY                             mark<ENFORCED>
 CONFIG_PREEMPT_RT                               policy<{'arm64': 'y'}>
-CONFIG_PREEMPT_RT                               mark<ENFORCED>
 CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n'}>
-CONFIG_PREEMPT_VOLUNTARY                        mark<ENFORCED>
 CONFIG_RCU_BOOST                                policy<{'arm64': 'y'}>
-CONFIG_RCU_BOOST                                mark<ENFORCED>
 CONFIG_RCU_BOOST_DELAY                          policy<{'arm64': '500'}>
-CONFIG_RCU_BOOST_DELAY                          mark<ENFORCED>
 CONFIG_HZ_1000                                  policy<{'arm64': 'y'}>
-CONFIG_HZ_1000                                  mark<ENFORCED>
 
 CONFIG_NO_HZ_FULL                               policy<{'arm64': 'y'}>
-CONFIG_NO_HZ_FULL                               mark<ENFORCED>
 CONFIG_RCU_NOCB_CPU                             policy<{'arm64': 'y'}>
-CONFIG_RCU_NOCB_CPU                             mark<ENFORCED>
 
 CONFIG_BLK_CGROUP_IOLATENCY                     policy<{'arm64': 'y'}>
-CONFIG_BLK_CGROUP_IOLATENCY                     mark<ENFORCED> note<LP: #1961588>
 CONFIG_IRQ_TIME_ACCOUNTING                      policy<{'arm64': 'y'}>
-CONFIG_IRQ_TIME_ACCOUNTING                      mark<ENFORCED> note<LP: #1961588>
 
 CONFIG_OSNOISE_TRACER                           policy<{'arm64': 'y'}>
-CONFIG_OSNOISE_TRACER                           mark<ENFORCED> note<LP: #1961588>
 CONFIG_TIMERLAT_TRACER                          policy<{'arm64': 'y'}>
-CONFIG_TIMERLAT_TRACER                          mark<ENFORCED> note<LP: #1961588>
 
 CONFIG_WQ_POWER_EFFICIENT_DEFAULT               policy<{'arm64': 'n'}>
-CONFIG_WQ_POWER_EFFICIENT_DEFAULT               mark<ENFORCED> note<LP: #1961588>
