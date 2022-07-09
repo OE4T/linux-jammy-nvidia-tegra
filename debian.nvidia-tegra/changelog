@@ -1,6 +1,6 @@
-linux-nvidia-tegra (5.15.0-1002.2) jammy; urgency=medium
+linux-nvidia-tegra (5.15.0-1003.3) jammy; urgency=medium
 
-  * jammy/linux-nvidia-tegra: 5.15.0-1002.2 -proposed tracker (LP: #1980843)
+  * jammy/linux-nvidia-tegra: 5.15.0-1003.3 -proposed tracker (LP: #1980843)
 
   [ Ubuntu: 5.15.0-1016.16 ]
 
@@ -813,7 +813,7 @@ linux-nvidia-tegra (5.15.0-1002.2) jammy; urgency=medium
     - [Config] make Intel IPU6 modules amd64 only
     - SAUCE: IPU6: drop unnecessary cflags manipulation
 
- -- Brad Figg <brad.figg@canonical.com>  Wed, 06 Jul 2022 08:59:51 -0700
+ -- Brad Figg <bfigg@nvidia.com>  Wed, 06 Jul 2022 08:59:51 -0700
 
 linux-nvidia-tegra (5.15.0-1001.1) jammy; urgency=medium
 
