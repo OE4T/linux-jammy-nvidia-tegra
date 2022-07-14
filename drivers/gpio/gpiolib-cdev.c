@@ -949,9 +949,7 @@ static int debounce_setup(struct line *line,
 				return ret;
 			line->irq = irq;
 		} else {
-			ret = hte_edge_setup(line,
-					     GPIO_V2_LINE_FLAG_EDGE_RISING |
-					     GPIO_V2_LINE_FLAG_EDGE_FALLING);
+			ret = hte_edge_setup(line, GPIO_V2_LINE_FLAG_EDGE_BOTH);
 			if (ret)
 				return ret;
 		}
