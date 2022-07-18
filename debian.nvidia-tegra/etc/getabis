@@ -22,4 +22,4 @@ readarray -t repo_list < <(sed "s,\s*$,/pool/main/l/${getabis_source}," \
 
 package_prefixes linux-buildinfo
 
-getall arm64 nvidia-tegra
+getall arm64 nvidia-tegra nvidia-tegra-rt
