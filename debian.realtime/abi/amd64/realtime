@@ -8065,6 +8065,7 @@ EXPORT_SYMBOL	 vmlinux 0x5b641283	arch_phys_wc_add
 EXPORT_SYMBOL	 vmlinux 0x5b6b3da4	param_set_charp
 EXPORT_SYMBOL	 vmlinux 0x5b797508	blk_mq_requeue_request
 EXPORT_SYMBOL	 vmlinux 0x5b7f9a6c	unregister_shrinker
+EXPORT_SYMBOL	 vmlinux 0x5b8239ca	__x86_return_thunk
 EXPORT_SYMBOL	 vmlinux 0x5b884a35	param_set_ushort
 EXPORT_SYMBOL	 vmlinux 0x5b9f1794	acpi_pm_device_sleep_state
 EXPORT_SYMBOL	 vmlinux 0x5bb85713	input_reset_device
@@ -8437,6 +8438,7 @@ EXPORT_SYMBOL	 vmlinux 0x6b517cae	d_alloc_anon
 EXPORT_SYMBOL	 vmlinux 0x6b55acd0	rtnl_lock_killable
 EXPORT_SYMBOL	 vmlinux 0x6b5b50f6	tcf_em_unregister
 EXPORT_SYMBOL	 vmlinux 0x6b657d14	ip_mc_join_group
+EXPORT_SYMBOL	 vmlinux 0x6b695cf1	zen_untrain_ret
 EXPORT_SYMBOL	 vmlinux 0x6b853d06	ns_to_kernel_old_timeval
 EXPORT_SYMBOL	 vmlinux 0x6b8a5669	ether_setup
 EXPORT_SYMBOL	 vmlinux 0x6b8bf149	netif_receive_skb_list
@@ -21584,6 +21586,7 @@ EXPORT_SYMBOL_GPL	 vmlinux 0x50949dae	trace_event_ignore_this_pid
 EXPORT_SYMBOL_GPL	 vmlinux 0x509d5f55	clk_divider_ro_ops
 EXPORT_SYMBOL_GPL	 vmlinux 0x50a3acad	sk_setup_caps
 EXPORT_SYMBOL_GPL	 vmlinux 0x50b03f5d	l1tf_vmx_mitigation
+EXPORT_SYMBOL_GPL	 vmlinux 0x50b42ba1	entry_ibpb
 EXPORT_SYMBOL_GPL	 vmlinux 0x50c61940	__context_tracking_exit
 EXPORT_SYMBOL_GPL	 vmlinux 0x50d1f870	pgprot_writecombine
 EXPORT_SYMBOL_GPL	 vmlinux 0x50d546e2	extcon_sync
@@ -21734,6 +21737,7 @@ EXPORT_SYMBOL_GPL	 vmlinux 0x565a2d39	find_pid_ns
 EXPORT_SYMBOL_GPL	 vmlinux 0x568020ba	serdev_device_write_room
 EXPORT_SYMBOL_GPL	 vmlinux 0x568b8eda	iomap_is_partially_uptodate
 EXPORT_SYMBOL_GPL	 vmlinux 0x568c401a	blkcg_print_blkgs
+EXPORT_SYMBOL_GPL	 vmlinux 0x56948896	spec_ctrl_current
 EXPORT_SYMBOL_GPL	 vmlinux 0x569551a9	regmap_field_free
 EXPORT_SYMBOL_GPL	 vmlinux 0x56b58fb5	device_get_dma_attr
 EXPORT_SYMBOL_GPL	 vmlinux 0x56b97cfe	usb_ep0_reinit
@@ -22021,6 +22025,7 @@ EXPORT_SYMBOL_GPL	 vmlinux 0x6197bb7d	dev_pm_domain_detach
 EXPORT_SYMBOL_GPL	 vmlinux 0x6198dfea	__ring_buffer_alloc
 EXPORT_SYMBOL_GPL	 vmlinux 0x6199ad5d	crypto_has_skcipher
 EXPORT_SYMBOL_GPL	 vmlinux 0x619d2eca	acpi_gpio_get_irq_resource
+EXPORT_SYMBOL_GPL	 vmlinux 0x61b443f8	x86_spec_ctrl_current
 EXPORT_SYMBOL_GPL	 vmlinux 0x61b9a84c	__SCK__tp_func_cpu_idle
 EXPORT_SYMBOL_GPL	 vmlinux 0x61befe00	unregister_virtio_device
 EXPORT_SYMBOL_GPL	 vmlinux 0x61d3b87e	efivar_entry_delete
