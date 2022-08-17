@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
+// SPDX-FileCopyrightText: Copyright (c) 2020-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // tegra210_ahub.c - Tegra210 AHUB driver
-//
-// Copyright (c) 2020-2022, NVIDIA CORPORATION.  All rights reserved.
-
 #include <linux/clk.h>
 #include <linux/device.h>
 #include <linux/module.h>
@@ -1403,11 +1401,13 @@ static int tegra_ahub_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	err = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-	if (err)
-		return err;
-
 	pm_runtime_enable(&pdev->dev);
+
+	err = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
+	if (err) {
+		pm_runtime_disable(&pdev->dev);
+		return err;
+	}
 
 	return 0;
 }
