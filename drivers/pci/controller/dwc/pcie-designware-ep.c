@@ -632,6 +632,7 @@ static int dw_pcie_ep_init_late(struct dw_pcie_ep *ep)
 	struct dw_pcie_ep_func *ep_func;
 	struct device *dev = pci->dev;
 	struct pci_epc *epc = ep->epc;
+	unsigned int ptm_cap_base;
 	unsigned int offset;
 	unsigned int nbars;
 	u8 hdr_type;
@@ -695,6 +696,7 @@ static int dw_pcie_ep_init_late(struct dw_pcie_ep *ep)
 	}
 
 	offset = dw_pcie_ep_find_ext_capability(pci, PCI_EXT_CAP_ID_REBAR);
+	ptm_cap_base = dw_pcie_ep_find_ext_capability(pci, PCI_EXT_CAP_ID_PTM);
 
 	dw_pcie_dbi_ro_wr_en(pci);
 
@@ -705,6 +707,22 @@ static int dw_pcie_ep_init_late(struct dw_pcie_ep *ep)
 
 		for (i = 0; i < nbars; i++, offset += PCI_REBAR_CTRL)
 			dw_pcie_writel_dbi(pci, offset + PCI_REBAR_CAP, 0x0);
+	}
+
+	/*
+	 * PTM responder capability can be disabled only after disabling
+	 * PTM root capability.
+	 */
+	if (ptm_cap_base) {
+		dw_pcie_dbi_ro_wr_en(pci);
+		reg = dw_pcie_readl_dbi(pci, ptm_cap_base + PCI_PTM_CAP);
+		reg &= ~PCI_PTM_CAP_ROOT;
+		dw_pcie_writel_dbi(pci, ptm_cap_base + PCI_PTM_CAP, reg);
+
+		reg = dw_pcie_readl_dbi(pci, ptm_cap_base + PCI_PTM_CAP);
+		reg &= ~(PCI_PTM_CAP_RES | PCI_PTM_GRANULARITY_MASK);
+		dw_pcie_writel_dbi(pci, ptm_cap_base + PCI_PTM_CAP, reg);
+		dw_pcie_dbi_ro_wr_dis(pci);
 	}
 
 	dw_pcie_setup(pci);
