@@ -1735,12 +1735,14 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
 	case 10:
 		ret += tcrypt_test("ecb(aes)");
 		ret += tcrypt_test("cbc(aes)");
-		ret += tcrypt_test("lrw(aes)");
 		ret += tcrypt_test("xts(aes)");
 		ret += tcrypt_test("ctr(aes)");
+#if !defined(CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS)
+		ret += tcrypt_test("lrw(aes)");
 		ret += tcrypt_test("rfc3686(ctr(aes))");
 		ret += tcrypt_test("ofb(aes)");
 		ret += tcrypt_test("cfb(aes)");
+#endif
 		break;
 
 	case 11:
