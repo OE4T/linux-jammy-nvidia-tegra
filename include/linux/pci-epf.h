@@ -70,10 +70,12 @@ struct pci_epf_ops {
 /**
  * struct pci_epf_event_ops - Callbacks for capturing the EPC events
  * @core_init: Callback for the EPC initialization complete event
+ * @core_deinit: Callback for the EPC deinitialization schedule event
  * @link_up: Callback for the EPC link up event
  */
 struct pci_epc_event_ops {
 	int (*core_init)(struct pci_epf *epf);
+	int (*core_deinit)(struct pci_epf *epf);
 	int (*link_up)(struct pci_epf *epf);
 };
 

@@ -733,6 +733,32 @@ void pci_epc_init_notify(struct pci_epc *epc)
 EXPORT_SYMBOL_GPL(pci_epc_init_notify);
 
 /**
+ * pci_epc_deinit_notify() - Notify the EPF device that EPC device's core
+ *			     deinitialization is scheduled.
+ * @epc: the EPC device whose core deinitialization is scheduled
+ *
+ * Invoke to Notify the EPF device that the EPC device's deinitialization
+ * is scheduled.
+ */
+void pci_epc_deinit_notify(struct pci_epc *epc)
+{
+	struct pci_epf *epf;
+
+	if (!epc || IS_ERR(epc))
+		return;
+
+	mutex_lock(&epc->list_lock);
+	list_for_each_entry(epf, &epc->pci_epf, list) {
+		mutex_lock(&epf->lock);
+		if (epf->event_ops->core_deinit)
+			epf->event_ops->core_deinit(epf);
+		mutex_unlock(&epf->lock);
+	}
+	mutex_unlock(&epc->list_lock);
+}
+EXPORT_SYMBOL_GPL(pci_epc_deinit_notify);
+
+/**
  * pci_epc_destroy() - destroy the EPC device
  * @epc: the EPC device that has to be destroyed
  *
