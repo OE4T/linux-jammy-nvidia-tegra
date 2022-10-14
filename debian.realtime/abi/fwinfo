@@ -872,6 +872,7 @@ firmware:       i915/tgl_dmc_ver2_12.bin
 firmware:       i915/tgl_guc_62.0.0.bin
 firmware:       i915/tgl_huc_7.9.3.bin
 firmware:       idt82p33xxx.bin
+firmware:       imx/sdma/sdma-imx7d.bin
 firmware:       intel/ibt-11-5.ddc
 firmware:       intel/ibt-11-5.sfi
 firmware:       intel/ibt-12-16.ddc
