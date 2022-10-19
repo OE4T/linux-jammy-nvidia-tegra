@@ -15,6 +15,7 @@
 #include <linux/gpio.h>
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
+#include <linux/interconnect.h>
 #include <linux/iopoll.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -433,6 +434,7 @@ struct tegra_pcie_dw {
 	bool perst_irq_enabled;
 	int ep_state;
 	long link_status;
+	struct icc_path *icc_path;
 };
 
 static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
@@ -454,6 +456,24 @@ static inline u32 appl_readl(struct tegra_pcie_dw *pcie, const u32 reg)
 struct tegra_pcie_soc {
 	enum dw_pcie_device_mode mode;
 };
+
+static void tegra_pcie_icc_set(struct tegra_pcie_dw *pcie, int *sp)
+{
+	struct dw_pcie *pci = &pcie->pci;
+	u32 val, speed, width;
+
+	val = dw_pcie_readw_dbi(pci, pcie->pcie_cap_base + PCI_EXP_LNKSTA);
+
+	speed = FIELD_GET(PCI_EXP_LNKSTA_CLS, val);
+	width = FIELD_GET(PCI_EXP_LNKSTA_NLW, val);
+
+	val = width * (PCIE_SPEED2MBS_ENC(pcie_link_speed[speed]) / BITS_PER_BYTE);
+
+	if (icc_set_bw(pcie->icc_path, MBps_to_icc(val), 0))
+		dev_err(pcie->dev, "can't set bw[%u]\n", val);
+
+	*sp = speed;
+}
 
 static void apply_bad_link_workaround(struct pcie_port *pp)
 {
@@ -858,8 +878,7 @@ static irqreturn_t tegra_pcie_ep_irq_thread(int irq, void *arg)
 	}
 
 	if (atomic_dec_and_test(&pcie->ep_link_up)) {
-		speed = dw_pcie_readw_dbi(pci, pcie->pcie_cap_base + PCI_EXP_LNKSTA) &
-			PCI_EXP_LNKSTA_CLS;
+		tegra_pcie_icc_set(pcie, &speed);
 		if ((speed > 0) && (speed <= 4) && !pcie->is_safety_platform)
 			clk_set_rate(pcie->core_clk, pcie_gen_freq[speed - 1]);
 	}
@@ -1539,8 +1558,7 @@ retry_link:
 		goto retry_link;
 	}
 
-	speed = dw_pcie_readw_dbi(pci, pcie->pcie_cap_base + PCI_EXP_LNKSTA) &
-		PCI_EXP_LNKSTA_CLS;
+	tegra_pcie_icc_set(pcie, &speed);
 	if (!pcie->core_clk_m)
 		clk_set_rate(pcie->core_clk, pcie_gen_freq[speed - 1]);
 
@@ -2879,6 +2897,14 @@ static int tegra_pcie_dw_probe(struct platform_device *pdev)
 		dev_info(pcie->dev, "Err inj callback registration failed: %d", ret);
 	ret = 0;
 #endif
+
+	pcie->icc_path = devm_of_icc_get(&pdev->dev, "write");
+	ret = PTR_ERR_OR_ZERO(pcie->icc_path);
+	if (ret) {
+		tegra_bpmp_put(pcie->bpmp);
+		dev_err_probe(&pdev->dev, ret, "failed to get write interconnect\n");
+		return ret;
+	}
 
 	switch (pcie->of_data->mode) {
 	case DW_PCIE_RC_TYPE:
