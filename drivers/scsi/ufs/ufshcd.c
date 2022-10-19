@@ -82,6 +82,9 @@
 
 #define wlun_dev_to_hba(dv) shost_priv(to_scsi_device(dv)->host)
 
+/* Stream ID table selection bit mask */
+#define UFS_STREAM_ID_SEL_MASK 0x07ffffffU
+
 #define ufshcd_toggle_vreg(_dev, _vreg, _on)				\
 	({                                                              \
 		int _ret;                                               \
@@ -2393,6 +2396,11 @@ static int ufshcd_map_sg(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
 				cpu_to_le32(lower_32_bits(sg->dma_address));
 			prd_table[i].upper_addr =
 				cpu_to_le32(upper_32_bits(sg->dma_address));
+			if (hba->quirks & UFSHCD_QUIRK_ENABLE_STREAM_ID) {
+				prd_table[i].upper_addr =
+					(prd_table[i].upper_addr
+					 & UFS_STREAM_ID_SEL_MASK);
+			}
 			prd_table[i].reserved = 0;
 		}
 	} else {
@@ -4438,11 +4446,21 @@ int ufshcd_make_hba_operational(struct ufs_hba *hba)
 	/* Configure UTRL and UTMRL base address registers */
 	ufshcd_writel(hba, lower_32_bits(hba->utrdl_dma_addr),
 			REG_UTP_TRANSFER_REQ_LIST_BASE_L);
-	ufshcd_writel(hba, upper_32_bits(hba->utrdl_dma_addr),
+	if (hba->quirks & UFSHCD_QUIRK_ENABLE_STREAM_ID)
+		reg = (upper_32_bits(hba->utrdl_dma_addr) &
+				UFS_STREAM_ID_SEL_MASK);
+	else
+		reg = upper_32_bits(hba->utrdl_dma_addr);
+	ufshcd_writel(hba, reg,
 			REG_UTP_TRANSFER_REQ_LIST_BASE_H);
 	ufshcd_writel(hba, lower_32_bits(hba->utmrdl_dma_addr),
 			REG_UTP_TASK_REQ_LIST_BASE_L);
-	ufshcd_writel(hba, upper_32_bits(hba->utmrdl_dma_addr),
+	if (hba->quirks & UFSHCD_QUIRK_ENABLE_STREAM_ID)
+		reg = (upper_32_bits(hba->utmrdl_dma_addr) &
+				UFS_STREAM_ID_SEL_MASK);
+	else
+		reg = upper_32_bits(hba->utmrdl_dma_addr);
+	ufshcd_writel(hba, reg,
 			REG_UTP_TASK_REQ_LIST_BASE_H);
 
 	/*
