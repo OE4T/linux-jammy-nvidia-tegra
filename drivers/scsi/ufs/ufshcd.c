@@ -4286,8 +4286,6 @@ static int ufshcd_change_power_mode(struct ufs_hba *hba,
 	 * - PA_HSSERIES
 	 */
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_RXGEAR), pwr_mode->gear_rx);
-	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_ACTIVERXDATALANES),
-			pwr_mode->lane_rx);
 	if (pwr_mode->pwr_rx == FASTAUTO_MODE ||
 			pwr_mode->pwr_rx == FAST_MODE)
 		ufshcd_dme_set(hba, UIC_ARG_MIB(PA_RXTERMINATION), TRUE);
@@ -4295,8 +4293,6 @@ static int ufshcd_change_power_mode(struct ufs_hba *hba,
 		ufshcd_dme_set(hba, UIC_ARG_MIB(PA_RXTERMINATION), FALSE);
 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXGEAR), pwr_mode->gear_tx);
-	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_ACTIVETXDATALANES),
-			pwr_mode->lane_tx);
 	if (pwr_mode->pwr_tx == FASTAUTO_MODE ||
 			pwr_mode->pwr_tx == FAST_MODE)
 		ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXTERMINATION), TRUE);
@@ -4338,6 +4334,20 @@ static int ufshcd_change_power_mode(struct ufs_hba *hba,
 	if (ret) {
 		dev_err(hba->dev,
 			"%s: power mode change failed %d\n", __func__, ret);
+		return ret;
+	}
+
+	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_ACTIVERXDATALANES),
+			pwr_mode->lane_rx);
+	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_ACTIVETXDATALANES),
+			pwr_mode->lane_tx);
+
+	ret = ufshcd_uic_change_pwr_mode(hba, pwr_mode->pwr_rx << 4
+			| pwr_mode->pwr_tx);
+
+	if (ret) {
+		dev_err(hba->dev,
+			"%s: Lane change failed %d\n", __func__, ret);
 	} else {
 		ufshcd_vops_pwr_change_notify(hba, POST_CHANGE, NULL,
 								pwr_mode);
