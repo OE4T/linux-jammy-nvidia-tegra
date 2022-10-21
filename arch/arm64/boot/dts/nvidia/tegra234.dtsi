@@ -929,6 +929,7 @@
 			interconnect-names = "dma-mem", "write";
 			iommus = <&smmu_niso0 TEGRA234_SID_MGBE>;
 			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBEA>;
+			nvidia,vm-irq-config = <&mgbe_vm_irq_config>;
 			status = "disabled";
 		};
 
@@ -1032,6 +1033,35 @@
 			iommus = <&smmu_niso0 TEGRA234_SID_MGBE_VF3>;
 			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBED>;
 			status = "disabled";
+		};
+
+		mgbe_vm_irq_config: mgbe-vm-irq-config {
+			nvidia,num-vm-irqs = <5>;
+			vm_irq1 {
+				nvidia,num-vm-channels = <2>;
+				nvidia,vm-channels = <0 1>;
+				nvidia,vm-num = <0>;
+			};
+			vm_irq2 {
+				nvidia,num-vm-channels = <2>;
+				nvidia,vm-channels = <2 3>;
+				nvidia,vm-num = <1>;
+			};
+			vm_irq3 {
+				nvidia,num-vm-channels = <2>;
+				nvidia,vm-channels = <4 5>;
+				nvidia,vm-num = <2>;
+			};
+			vm_irq4 {
+				nvidia,num-vm-channels = <2>;
+				nvidia,vm-channels = <6 7>;
+				nvidia,vm-num = <3>;
+			};
+			vm_irq5 {
+				nvidia,num-vm-channels = <2>;
+				nvidia,vm-channels = <8 9>;
+				nvidia,vm-num = <4>;
+			};
 		};
 
 		smmu_niso1: iommu@8000000 {
