@@ -18445,6 +18445,11 @@ M:	Jon Hunter <jonathanh@nvidia.com>
 S:	Supported
 F:	drivers/dma/tegra*
 
+TEGRA EPL DRIVER
+M:	Rahul Bedarkar <rabedarkar@nvidia.com>
+S:	Supported
+F:	Documentation/devicetree/bindings/platform/tegra/tegra-epl.yaml
+
 TEGRA I2C DRIVER
 M:	Laxman Dewangan <ldewangan@nvidia.com>
 R:	Dmitry Osipenko <digetx@gmail.com>
