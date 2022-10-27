@@ -23,7 +23,6 @@
 #include <linux/mmc/slot-gpio.h>
 #include <linux/gpio/consumer.h>
 #include <linux/ktime.h>
-#include <linux/iommu.h>
 
 #include "sdhci-cqhci.h"
 #include "sdhci-pltfm.h"
@@ -58,7 +57,6 @@
 
 #define SDHCI_TEGRA_VENDOR_DLLCAL_STA			0x1bc
 #define SDHCI_TEGRA_DLLCAL_STA_ACTIVE			BIT(31)
-#define SDHCI_TEGRA_CIF2AXI_CTRL_0			0x1fc
 
 #define SDHCI_VNDR_TUN_CTRL0_0				0x1c0
 #define SDHCI_VNDR_TUN_CTRL0_TUN_HW_TAP			0x20000
@@ -120,7 +118,6 @@
 #define NVQUIRK_HAS_TMCLK				BIT(10)
 
 #define NVQUIRK_HAS_ANDROID_GPT_SECTOR			BIT(11)
-#define NVQUIRK_PROGRAM_MC_STREAMID			BIT(12)
 
 /* SDMMC CQE Base Address for Tegra Host Ver 4.1 and Higher */
 #define SDHCI_TEGRA_CQE_BASE_ADDR			0xF000
@@ -177,7 +174,6 @@ struct sdhci_tegra {
 	bool enable_hwcq;
 	unsigned long curr_clk_rate;
 	u8 tuned_tap_delay;
-	u32 streamid;
 };
 
 static u16 tegra_sdhci_readw(struct sdhci_host *host, int reg)
@@ -1550,22 +1546,7 @@ static const struct sdhci_tegra_soc_data soc_data_tegra194 = {
 	.max_tap_delay = 139,
 };
 
-static const struct sdhci_tegra_soc_data soc_data_tegra234 = {
-	.pdata = &sdhci_tegra186_pdata,
-	.dma_mask = DMA_BIT_MASK(39),
-	.nvquirks = NVQUIRK_NEEDS_PAD_CONTROL |
-		    NVQUIRK_HAS_PADCALIB |
-		    NVQUIRK_DIS_CARD_CLK_CONFIG_TAP |
-		    NVQUIRK_ENABLE_SDR50 |
-		    NVQUIRK_PROGRAM_MC_STREAMID |
-		    NVQUIRK_ENABLE_SDR104 |
-		    NVQUIRK_HAS_TMCLK,
-	.min_tap_delay = 95,
-	.max_tap_delay = 111,
-};
-
 static const struct of_device_id sdhci_tegra_dt_match[] = {
-	{ .compatible = "nvidia,tegra234-sdhci", .data = &soc_data_tegra234 },
 	{ .compatible = "nvidia,tegra194-sdhci", .data = &soc_data_tegra194 },
 	{ .compatible = "nvidia,tegra186-sdhci", .data = &soc_data_tegra186 },
 	{ .compatible = "nvidia,tegra210-sdhci", .data = &soc_data_tegra210 },
@@ -1633,7 +1614,6 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
 	struct sdhci_pltfm_host *pltfm_host;
 	struct sdhci_tegra *tegra_host;
 	struct clk *clk;
-	struct iommu_fwspec *fwspec;
 	int rc;
 
 	match = of_match_device(sdhci_tegra_dt_match, &pdev->dev);
@@ -1762,20 +1742,6 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
 	if (rc)
 		goto err_add_host;
 
-
-	/* Program MC streamID for DMA transfers */
-	if (soc_data->nvquirks & NVQUIRK_PROGRAM_MC_STREAMID) {
-		fwspec = dev_iommu_fwspec_get(&pdev->dev);
-		if (fwspec == NULL) {
-			dev_warn(mmc_dev(host->mmc),
-					"iommu fwspec is NULL, continue without streamid\n");
-		} else {
-			tegra_host->streamid = fwspec->ids[0] & 0xffff;
-			tegra_sdhci_writel(host, tegra_host->streamid | (tegra_host->streamid << 8),
-						SDHCI_TEGRA_CIF2AXI_CTRL_0);
-		}
-	}
-
 	return 0;
 
 err_add_host:
@@ -1835,19 +1801,11 @@ static int __maybe_unused sdhci_tegra_resume(struct device *dev)
 {
 	struct sdhci_host *host = dev_get_drvdata(dev);
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
 	int ret;
 
 	ret = clk_prepare_enable(pltfm_host->clk);
 	if (ret)
 		return ret;
-
-		/* Re-program MC streamID for DMA transfers */
-	if (tegra_host->soc_data->nvquirks & NVQUIRK_PROGRAM_MC_STREAMID) {
-		tegra_sdhci_writel(host, tegra_host->streamid |
-					(tegra_host->streamid << 8),
-					SDHCI_TEGRA_CIF2AXI_CTRL_0);
-	}
 
 	ret = sdhci_resume_host(host);
 	if (ret)
