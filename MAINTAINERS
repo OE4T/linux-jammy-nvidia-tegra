@@ -18449,6 +18449,9 @@ TEGRA EPL DRIVER
 M:	Rahul Bedarkar <rabedarkar@nvidia.com>
 S:	Supported
 F:	Documentation/devicetree/bindings/platform/tegra/tegra-epl.yaml
+F:	drivers/platform/tegra/tegra-epl.c
+F:	include/linux/tegra-epl.h
+F:	include/uapi/linux/tegra-epl.h
 
 TEGRA I2C DRIVER
 M:	Laxman Dewangan <ldewangan@nvidia.com>
