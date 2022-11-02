@@ -8769,7 +8769,6 @@ EXPORT_SYMBOL	 vmlinux 0x7511c0b7	param_ops_ulong
 EXPORT_SYMBOL	 vmlinux 0x752317d3	gnet_stats_copy_queue
 EXPORT_SYMBOL	 vmlinux 0x75558b8b	inet6_del_protocol
 EXPORT_SYMBOL	 vmlinux 0x755b78c6	meson_sm_call_write
-EXPORT_SYMBOL	 vmlinux 0x755f4ba3	blake2s_compress_generic
 EXPORT_SYMBOL	 vmlinux 0x75730cca	gnet_stats_copy_app
 EXPORT_SYMBOL	 vmlinux 0x75785073	pci_find_resource
 EXPORT_SYMBOL	 vmlinux 0x7580b821	is_nd_btt
