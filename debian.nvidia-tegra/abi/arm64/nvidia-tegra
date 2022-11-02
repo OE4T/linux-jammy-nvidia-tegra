@@ -8730,7 +8730,6 @@ EXPORT_SYMBOL	 vmlinux 0x75317c3d	tc_setup_cb_add
 EXPORT_SYMBOL	 vmlinux 0x75317d93	pci_request_selected_regions
 EXPORT_SYMBOL	 vmlinux 0x754ae836	padata_do_parallel
 EXPORT_SYMBOL	 vmlinux 0x755b78c6	meson_sm_call_write
-EXPORT_SYMBOL	 vmlinux 0x755f4ba3	blake2s_compress_generic
 EXPORT_SYMBOL	 vmlinux 0x756ef116	proc_symlink
 EXPORT_SYMBOL	 vmlinux 0x75871f5e	acpi_get_next_object
 EXPORT_SYMBOL	 vmlinux 0x759349a8	tc_setup_cb_destroy
