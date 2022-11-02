@@ -4,7 +4,6 @@
  *
  * Copyright (C) 1995-2002 Russell King
  * Copyright (C) 2012 ARM Ltd.
- * Copyright (C) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #include <linux/export.h>
@@ -78,9 +77,6 @@ EXPORT_SYMBOL(flush_dcache_page);
  * Additional functions defined in assembly.
  */
 EXPORT_SYMBOL(caches_clean_inval_pou);
-#ifdef CONFIG_EXPORT_DCACHE_OPS
-EXPORT_SYMBOL(dcache_clean_inval_poc);
-#endif
 
 #ifdef CONFIG_ARCH_HAS_PMEM_API
 void arch_wb_cache_pmem(void *addr, size_t size)
