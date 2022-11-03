@@ -17,7 +17,7 @@ if TEGRA_PLATFORM_DEVICES
 
 config TEGRA_EPL
 	bool "Tegra Error Propagation Layer Driver"
-	depends on ARCH_TEGRA_234_SOC && MAILBOX
+	depends on MAILBOX
 	help
 	  The tegra-epl driver provides interface for reporting software detected
 	  errors to Functional Safety Island (FSI) via HSP mailbox or MISC EC
