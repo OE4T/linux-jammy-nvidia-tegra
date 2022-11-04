@@ -1275,10 +1275,54 @@ static void tegra_dma_free_chan_resources(struct dma_chan *dc)
 	vchan_free_chan_resources(&tdc->vc);
 }
 
-static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
-					   struct of_dma *ofdma)
+static int tegra_dma_program_sid(struct tegra_dma_channel *tdc, int stream_id)
 {
-	struct tegra_dma *tdma = ofdma->of_dma_data;
+	unsigned int reg_val =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
+
+	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK);
+	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
+
+	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK, stream_id);
+	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK, stream_id);
+
+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, reg_val);
+	return 0;
+}
+
+static struct dma_chan *tegra_dma_get_slave_channel(struct tegra_dma *tdma,
+					    struct of_phandle_args *dma_spec)
+{
+	struct tegra_dma_channel *tdc;
+	struct dma_chan *chan;
+	unsigned int chan_id;
+
+
+	chan_id = dma_spec->args[1];
+	if (chan_id > hweight_long(tdma->chan_mask))
+		return NULL;
+
+	/* Adjust the chan_id as channel id from
+	 * DT is starting from an offset
+	 */
+	chan_id += (ffs(tdma->chan_mask) - 1);
+
+	chan = dma_get_slave_channel(&tdma->channels[chan_id].vc.chan);
+	if (!chan)
+		return NULL;
+
+	tdc = to_tegra_dma_chan(chan);
+	tdc->slave_id = dma_spec->args[0];
+	tdc->stream_id = dma_spec->args[2];
+
+	/* Re-program stream-id for this channel */
+	tegra_dma_program_sid(tdc, tdc->stream_id);
+
+	return chan;
+}
+
+static struct dma_chan *tegra_dma_get_any_slave_channel(struct tegra_dma *tdma,
+					    struct of_phandle_args *dma_spec)
+{
 	struct tegra_dma_channel *tdc;
 	struct dma_chan *chan;
 
@@ -1290,6 +1334,20 @@ static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
 	tdc->slave_id = dma_spec->args[0];
 
 	return chan;
+}
+
+static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
+					   struct of_dma *ofdma)
+{
+	struct tegra_dma *tdma = ofdma->of_dma_data;
+
+	/* Check if channel no and stream-id are specified in devicetree.
+	 * Get any channel and program default stream-id otherwise
+	 */
+	if (dma_spec->args_count == 3)
+		return tegra_dma_get_slave_channel(tdma, dma_spec);
+
+	return tegra_dma_get_any_slave_channel(tdma, dma_spec);
 }
 
 static const struct tegra_dma_chip_data tegra186_dma_chip_data = {
@@ -1330,20 +1388,6 @@ static const struct of_device_id tegra_dma_of_match[] = {
 	},
 };
 MODULE_DEVICE_TABLE(of, tegra_dma_of_match);
-
-static int tegra_dma_program_sid(struct tegra_dma_channel *tdc, int stream_id)
-{
-	unsigned int reg_val =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-
-	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK);
-	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
-
-	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK, stream_id);
-	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK, stream_id);
-
-	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, reg_val);
-	return 0;
-}
 
 static int tegra_dma_probe(struct platform_device *pdev)
 {
