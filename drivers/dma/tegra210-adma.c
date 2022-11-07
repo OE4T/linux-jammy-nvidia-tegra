@@ -2,7 +2,7 @@
 /*
  * ADMA driver for Nvidia's Tegra210 ADMA controller.
  *
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
  */
 
 #include <linux/clk.h>
@@ -79,6 +79,7 @@ struct tegra_adma;
  * @ch_fifo_size_mask: Mask for FIFO size field.
  * @sreq_index_offset: Slave channel index offset.
  * @has_outstanding_reqs: If DMA channel can have outstanding requests.
+ * @is_virtualized: Is DMA virtualized, if yes, it does not write to global PAGE
  */
 struct tegra_adma_chip_data {
 	unsigned int (*adma_get_burst_config)(unsigned int burst_size);
@@ -95,6 +96,7 @@ struct tegra_adma_chip_data {
 	unsigned int ch_fifo_size_mask;
 	unsigned int sreq_index_offset;
 	bool has_outstanding_reqs;
+	bool is_virtualized;
 };
 
 /*
@@ -221,7 +223,13 @@ static int tegra_adma_init(struct tegra_adma *tdma)
 	int ret;
 
 	/* Clear any interrupts */
-	tdma_write(tdma, tdma->cdata->ch_base_offset + tdma->cdata->global_int_clear, 0x1);
+	tdma_write(tdma, tdma->cdata->ch_base_offset +
+			tdma->cdata->global_int_clear, 0x1);
+
+	if (tdma->cdata->is_virtualized) {
+		tdma->global_cmd = 1;
+		return 0;
+	}
 
 	/* Assert soft reset */
 	tdma_write(tdma, ADMA_GLOBAL_SOFT_RESET, 0x1);
@@ -665,9 +673,12 @@ static struct dma_async_tx_descriptor *tegra_adma_prep_dma_cyclic(
 static int tegra_adma_alloc_chan_resources(struct dma_chan *dc)
 {
 	struct tegra_adma_chan *tdc = to_tegra_adma_chan(dc);
-	int ret;
+	int ret, flags;
 
-	ret = request_irq(tdc->irq, tegra_adma_isr, 0, dma_chan_name(dc), tdc);
+	flags = (tdc->tdma->cdata->is_virtualized) ? IRQF_NO_THREAD : 0;
+
+	ret = request_irq(tdc->irq, tegra_adma_isr, flags,
+						dma_chan_name(dc), tdc);
 	if (ret) {
 		dev_err(tdc2dev(tdc), "failed to get interrupt for %s\n",
 			dma_chan_name(dc));
@@ -734,9 +745,11 @@ static int __maybe_unused tegra_adma_runtime_suspend(struct device *dev)
 	struct tegra_adma_chan *tdc;
 	int i;
 
-	tdma->global_cmd = tdma_read(tdma, ADMA_GLOBAL_CMD);
-	if (!tdma->global_cmd)
-		goto clk_disable;
+	if (!tdma->cdata->is_virtualized) {
+		tdma->global_cmd = tdma_read(tdma, ADMA_GLOBAL_CMD);
+		if (!tdma->global_cmd)
+			goto clk_disable;
+	}
 
 	for (i = 0; i < tdma->nr_channels; i++) {
 		tdc = &tdma->channels[i];
@@ -771,7 +784,8 @@ static int __maybe_unused tegra_adma_runtime_resume(struct device *dev)
 		dev_err(dev, "ahub clk_enable failed: %d\n", ret);
 		return ret;
 	}
-	tdma_write(tdma, ADMA_GLOBAL_CMD, tdma->global_cmd);
+	if (!tdma->cdata->is_virtualized)
+		tdma_write(tdma, ADMA_GLOBAL_CMD, tdma->global_cmd);
 
 	if (!tdma->global_cmd)
 		return 0;
@@ -826,9 +840,28 @@ static const struct tegra_adma_chip_data tegra186_chip_data = {
 	.has_outstanding_reqs	= true,
 };
 
+static const struct tegra_adma_chip_data tegra234_virt_chip_data = {
+	.adma_get_burst_config  = tegra186_adma_get_burst_config,
+	.global_reg_offset	= 0,
+	.global_int_clear	= 0x402c,
+	.ch_req_tx_shift	= 27,
+	.ch_req_rx_shift	= 22,
+	.ch_base_offset		= 0x10000,
+	.ch_req_mask		= 0x1f,
+	.ch_req_max		= 20,
+	.ch_reg_size		= 0x100,
+	.nr_channels		= 32,
+	.ch_fifo_size_mask	= 0x1f,
+	.sreq_index_offset	= 4,
+	.has_outstanding_reqs	= true,
+	.is_virtualized		= true,
+};
+
 static const struct of_device_id tegra_adma_of_match[] = {
 	{ .compatible = "nvidia,tegra210-adma", .data = &tegra210_chip_data },
 	{ .compatible = "nvidia,tegra186-adma", .data = &tegra186_chip_data },
+	{ .compatible = "nvidia,tegra234-adma-virt",
+					.data = &tegra234_virt_chip_data },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, tegra_adma_of_match);
@@ -837,8 +870,10 @@ static int tegra_adma_probe(struct platform_device *pdev)
 {
 	const struct tegra_adma_chip_data *cdata;
 	struct tegra_adma *tdma;
-	struct resource	*res;
+	struct resource	*global_base, *page_base;
 	int ret, i;
+	unsigned int dma_chan_mask = 0xFFFFFFFF;
+	unsigned int chan_page_offset = 0;
 
 	cdata = of_device_get_match_data(&pdev->dev);
 	if (!cdata) {
@@ -857,8 +892,8 @@ static int tegra_adma_probe(struct platform_device *pdev)
 	tdma->nr_channels = cdata->nr_channels;
 	platform_set_drvdata(pdev, tdma);
 
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	tdma->base_addr = devm_ioremap_resource(&pdev->dev, res);
+	global_base = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	tdma->base_addr = devm_ioremap_resource(&pdev->dev, global_base);
 	if (IS_ERR(tdma->base_addr))
 		return PTR_ERR(tdma->base_addr);
 
@@ -868,14 +903,34 @@ static int tegra_adma_probe(struct platform_device *pdev)
 		return PTR_ERR(tdma->ahub_clk);
 	}
 
+	page_base = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	if (page_base)
+		chan_page_offset = (unsigned int) (page_base->start -
+				global_base->start - cdata->ch_base_offset);
+
+	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
+							&tdma->nr_channels);
+	if ((ret == 0) && (tdma->nr_channels > cdata->nr_channels)) {
+		tdma->nr_channels = cdata->nr_channels;
+		dev_info(&pdev->dev, "Overwriting dma-channels to %d\n",
+				cdata->nr_channels);
+	}
+
+	of_property_read_u32(pdev->dev.of_node, "dma-channel-mask",
+							&dma_chan_mask);
+
 	INIT_LIST_HEAD(&tdma->dma_dev.channels);
 	for (i = 0; i < tdma->nr_channels; i++) {
 		struct tegra_adma_chan *tdc = &tdma->channels[i];
+		int bit_pos = ffs(dma_chan_mask) - 1;
 
 		tdc->chan_addr = tdma->base_addr + cdata->ch_base_offset
-				 + (cdata->ch_reg_size * i);
+				 + chan_page_offset
+				 + (cdata->ch_reg_size * bit_pos);
 
-		tdc->irq = of_irq_get(pdev->dev.of_node, i);
+		dma_chan_mask &= ~(1 << bit_pos);
+
+		tdc->irq = of_irq_get(pdev->dev.of_node, bit_pos);
 		if (tdc->irq <= 0) {
 			ret = tdc->irq ?: -ENXIO;
 			goto irq_dispose;
