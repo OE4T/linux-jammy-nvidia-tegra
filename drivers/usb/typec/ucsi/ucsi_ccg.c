@@ -1359,11 +1359,6 @@ static int ucsi_ccg_probe(struct i2c_client *client,
 	INIT_WORK(&uc->pm_work, ccg_pm_workaround_work);
 
 	/* Only fail FW flashing when FW build information is not provided */
-	status = device_property_read_u16(dev, "ccgx,firmware-build",
-					  &uc->fw_build);
-	if (status)
-		dev_err(uc->dev, "failed to get FW build information\n");
-
 	status = device_property_read_string(dev, "cypress,firmware-build",
 					  &of_fw_build);
 	if (!status) {
