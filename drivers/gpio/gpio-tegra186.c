@@ -850,27 +850,8 @@ static int tegra186_gpio_probe(struct platform_device *pdev)
 	irq->parent_handler_data = gpio;
 	irq->num_parents = gpio->num_irq;
 
-	/*
-	 * To simplify things, use a single interrupt per bank for now. Some
-	 * chips support up to 8 interrupts per bank, which can be useful to
-	 * distribute the load and decrease the processing latency for GPIOs
-	 * but it also requires a more complicated interrupt routing than we
-	 * currently program.
-	 */
-	if (gpio->num_irqs_per_bank > 1) {
-		irq->parents = devm_kcalloc(&pdev->dev, gpio->num_banks,
-					    sizeof(*irq->parents), GFP_KERNEL);
-		if (!irq->parents)
-			return -ENOMEM;
-
-		for (i = 0; i < gpio->num_banks; i++)
-			irq->parents[i] = gpio->irq[i * gpio->num_irqs_per_bank];
-
-		irq->num_parents = gpio->num_banks;
-	} else {
-		irq->num_parents = gpio->num_irq;
-		irq->parents = gpio->irq;
-	}
+	irq->num_parents = gpio->num_irq;
+	irq->parents = gpio->irq;
 
 	if (gpio->soc->num_irqs_per_bank > 1)
 		tegra186_gpio_init_route_mapping(gpio);
