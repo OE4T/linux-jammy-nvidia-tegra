@@ -45,6 +45,7 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+#include <linux/syscore_ops.h>
 
 #include <soc/tegra/common.h>
 #include <soc/tegra/fuse.h>
@@ -180,6 +181,9 @@
 #define WAKE_AOWAKE_TIER0_ROUTING(x) (0x4b4 + ((x) << 2))
 #define WAKE_AOWAKE_TIER1_ROUTING(x) (0x4c0 + ((x) << 2))
 #define WAKE_AOWAKE_TIER2_ROUTING(x) (0x4cc + ((x) << 2))
+#define WAKE_AOWAKE_SW_STATUS_W_0	0x49c
+#define WAKE_AOWAKE_SW_STATUS(x)	(0x4a0 + ((x) << 2))
+#define WAKE_LATCH_SW			0x498
 
 #define WAKE_AOWAKE_CTRL 0x4f4
 #define  WAKE_AOWAKE_CTRL_INTR_POLARITY BIT(0)
@@ -354,6 +358,8 @@ struct tegra_pmc_soc {
 	 */
 	const struct tegra_wake_event *wake_events;
 	unsigned int num_wake_events;
+	unsigned int max_wake_events;
+	unsigned int max_wake_vectors;
 
 	const struct pmc_clk_init_data *pmc_clks_data;
 	unsigned int num_pmc_clks;
@@ -391,6 +397,11 @@ struct tegra_pmc_soc {
  * @domain: IRQ domain provided by the PMC
  * @irq: chip implementation for the IRQ domain
  * @clk_nb: pclk clock changes handler
+ * @wake_type_level_map: Bitmap indicating level type for non-dual edge wakes
+ * @wake_type_dual_edge_map: Bitmap indicating if a wake is dual-edge or not
+ * @wake_sw_status_map: Bitmap to hold raw status of wakes without mask
+ * @wake_cntrl_level_map: Bitmap to hold wake levels to be programmed in
+ *     cntrl register associated with each wake during system suspend.
  */
 struct tegra_pmc {
 	struct device *dev;
@@ -431,6 +442,12 @@ struct tegra_pmc {
 
 	bool core_domain_state_synced;
 	bool core_domain_registered;
+
+	unsigned long *wake_type_level_map;
+	unsigned long *wake_type_dual_edge_map;
+	unsigned long *wake_sw_status_map;
+	unsigned long *wake_cntrl_level_map;
+	struct syscore_ops syscore;
 };
 
 static struct tegra_pmc *pmc = &(struct tegra_pmc) {
@@ -1891,10 +1908,30 @@ static int tegra_pmc_parse_dt(struct tegra_pmc *pmc, struct device_node *np)
 	return 0;
 }
 
-static void tegra_pmc_init(struct tegra_pmc *pmc)
+static int tegra_pmc_init(struct tegra_pmc *pmc)
 {
+	if (pmc->soc->max_wake_events > 0) {
+		pmc->wake_type_level_map = bitmap_zalloc(pmc->soc->max_wake_events, GFP_KERNEL);
+		if (!pmc->wake_type_level_map)
+			return -ENOMEM;
+
+		pmc->wake_type_dual_edge_map = bitmap_zalloc(pmc->soc->max_wake_events, GFP_KERNEL);
+		if (!pmc->wake_type_dual_edge_map)
+			return -ENOMEM;
+
+		pmc->wake_sw_status_map = bitmap_zalloc(pmc->soc->max_wake_events, GFP_KERNEL);
+		if (!pmc->wake_sw_status_map)
+			return -ENOMEM;
+
+		pmc->wake_cntrl_level_map = bitmap_zalloc(pmc->soc->max_wake_events, GFP_KERNEL);
+		if (!pmc->wake_cntrl_level_map)
+			return -ENOMEM;
+	}
+
 	if (pmc->soc->init)
 		pmc->soc->init(pmc);
+
+	return 0;
 }
 
 static void tegra_pmc_init_tsense_reset(struct tegra_pmc *pmc)
@@ -2377,15 +2414,21 @@ static int tegra186_pmc_irq_set_type(struct irq_data *data, unsigned int type)
 	case IRQ_TYPE_EDGE_RISING:
 	case IRQ_TYPE_LEVEL_HIGH:
 		value |= WAKE_AOWAKE_CNTRL_LEVEL;
+		set_bit(data->hwirq, pmc->wake_type_level_map);
+		clear_bit(data->hwirq, pmc->wake_type_dual_edge_map);
 		break;
 
 	case IRQ_TYPE_EDGE_FALLING:
 	case IRQ_TYPE_LEVEL_LOW:
 		value &= ~WAKE_AOWAKE_CNTRL_LEVEL;
+		clear_bit(data->hwirq, pmc->wake_type_level_map);
+		clear_bit(data->hwirq, pmc->wake_type_dual_edge_map);
 		break;
 
 	case IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING:
 		value ^= WAKE_AOWAKE_CNTRL_LEVEL;
+		clear_bit(data->hwirq, pmc->wake_type_level_map);
+		set_bit(data->hwirq, pmc->wake_type_dual_edge_map);
 		break;
 
 	default:
@@ -2889,7 +2932,11 @@ static int tegra_pmc_probe(struct platform_device *pdev)
 
 	pmc->dev = &pdev->dev;
 
-	tegra_pmc_init(pmc);
+	err = tegra_pmc_init(pmc);
+	if (err < 0) {
+		dev_err(&pdev->dev, "failed to initialize PMC: %d\n", err);
+		return err;
+	}
 
 	tegra_pmc_init_tsense_reset(pmc);
 
@@ -2955,6 +3002,117 @@ cleanup_sysfs:
 	clk_notifier_unregister(pmc->clk, &pmc->clk_nb);
 
 	return err;
+}
+
+/*
+ * Ensures that sufficient time is passed for a register write to
+ * serialize into the 32KHz domain.
+ */
+static void wke_32kwritel(struct tegra_pmc *pmc, u32 value, unsigned int offset)
+{
+	writel(value, pmc->wake + offset);
+	udelay(130);
+}
+
+static void wke_write_wake_level(struct tegra_pmc *pmc, int wake, int level)
+{
+	unsigned int offset = WAKE_AOWAKE_CNTRL(wake);
+	u32 value;
+
+	value = readl(pmc->wake + offset);
+	if (level)
+		value |= WAKE_AOWAKE_CNTRL_LEVEL;
+	else
+		value &= ~WAKE_AOWAKE_CNTRL_LEVEL;
+
+	writel(value, pmc->wake + offset);
+}
+
+static void wke_write_wake_levels(struct tegra_pmc *pmc)
+{
+	unsigned int i;
+
+	for (i = 0; i < pmc->soc->max_wake_events; i++)
+		wke_write_wake_level(pmc, i, test_bit(i, pmc->wake_cntrl_level_map));
+}
+
+static void wke_clear_sw_wake_status(struct tegra_pmc *pmc)
+{
+	wke_32kwritel(pmc, 1, WAKE_AOWAKE_SW_STATUS_W_0);
+}
+
+static void wke_read_sw_wake_status(struct tegra_pmc *pmc)
+{
+	unsigned long status;
+	unsigned int wake, i;
+
+	for (i = 0; i < pmc->soc->max_wake_events; i++)
+		wke_write_wake_level(pmc, i, 0);
+
+	wke_clear_sw_wake_status(pmc);
+
+	wke_32kwritel(pmc, 1, WAKE_LATCH_SW);
+
+	/*
+	 * WAKE_AOWAKE_SW_STATUS is edge triggered, so in order to
+	 * obtain the current status of the input wake signals, change
+	 * the polarity of the wake level from 0->1 while latching to force
+	 * a positive edge if the sampled signal is '1'.
+	 */
+	for (i = 0; i < pmc->soc->max_wake_events; i++)
+		wke_write_wake_level(pmc, i, 1);
+
+	/*
+	 * Wait for the update to be synced into the 32kHz domain,
+	 * and let enough time lapse, so that the wake signals have time to
+	 * be sampled.
+	 */
+	udelay(300);
+
+	wke_32kwritel(pmc, 0, WAKE_LATCH_SW);
+
+	bitmap_zero(pmc->wake_sw_status_map, pmc->soc->max_wake_events);
+
+	for (i = 0; i < pmc->soc->max_wake_vectors; i++) {
+		status = readl(pmc->wake + WAKE_AOWAKE_SW_STATUS(i));
+
+		for_each_set_bit(wake, &status, 32)
+			set_bit(wake + (i * 32), pmc->wake_sw_status_map);
+	}
+}
+
+static void wke_clear_wake_status(struct tegra_pmc *pmc)
+{
+	unsigned long status;
+	unsigned int i, wake;
+	u32 mask;
+
+	for (i = 0; i < pmc->soc->max_wake_vectors; i++) {
+		mask = readl(pmc->wake + WAKE_AOWAKE_TIER2_ROUTING(i));
+		status = readl(pmc->wake + WAKE_AOWAKE_STATUS_R(i)) & mask;
+
+		for_each_set_bit(wake, &status, 32)
+			wke_32kwritel(pmc, 0x1, WAKE_AOWAKE_STATUS_W((i * 32) + wake));
+	}
+}
+
+static int tegra186_pmc_wake_syscore_suspend(void)
+{
+	wke_read_sw_wake_status(pmc);
+
+	/* flip the wakeup trigger for dual-edge triggered pads
+	 * which are currently asserting as wakeups
+	 */
+	bitmap_andnot(pmc->wake_cntrl_level_map, pmc->wake_type_dual_edge_map,
+		      pmc->wake_sw_status_map, pmc->soc->max_wake_events);
+	bitmap_or(pmc->wake_cntrl_level_map, pmc->wake_cntrl_level_map,
+		  pmc->wake_type_level_map, pmc->soc->max_wake_events);
+
+	/* Clear PMC Wake Status registers while going to suspend */
+	wke_clear_wake_status(pmc);
+	wke_write_wake_levels(pmc);
+
+	return 0;
 }
 
 #if defined(CONFIG_PM_SLEEP) && defined(CONFIG_ARM)
@@ -3595,6 +3753,13 @@ static const struct tegra_pmc_regs tegra186_pmc_regs = {
 	.rst_level_mask = 0x3,
 };
 
+static void tegra186_pmc_init(struct tegra_pmc *pmc)
+{
+	pmc->syscore.suspend = tegra186_pmc_wake_syscore_suspend;
+
+	register_syscore_ops(&pmc->syscore);
+}
+
 static void tegra186_pmc_setup_irq_polarity(struct tegra_pmc *pmc,
 					    struct device_node *np,
 					    bool invert)
@@ -3673,7 +3838,7 @@ static const struct tegra_pmc_soc tegra186_pmc_soc = {
 	.num_pin_descs = ARRAY_SIZE(tegra186_pin_descs),
 	.pin_descs = tegra186_pin_descs,
 	.regs = &tegra186_pmc_regs,
-	.init = NULL,
+	.init = tegra186_pmc_init,
 	.setup_irq_polarity = tegra186_pmc_setup_irq_polarity,
 	.irq_set_wake = tegra186_pmc_irq_set_wake,
 	.irq_set_type = tegra186_pmc_irq_set_type,
@@ -3683,6 +3848,8 @@ static const struct tegra_pmc_soc tegra186_pmc_soc = {
 	.num_reset_levels = ARRAY_SIZE(tegra186_reset_levels),
 	.num_wake_events = ARRAY_SIZE(tegra186_wake_events),
 	.wake_events = tegra186_wake_events,
+	.max_wake_events = 96,
+	.max_wake_vectors = 3,
 	.pmc_clks_data = NULL,
 	.num_pmc_clks = 0,
 	.has_blink_output = false,
@@ -3847,7 +4014,7 @@ static const struct tegra_pmc_soc tegra194_pmc_soc = {
 	.num_pin_descs = ARRAY_SIZE(tegra194_pin_descs),
 	.pin_descs = tegra194_pin_descs,
 	.regs = &tegra194_pmc_regs,
-	.init = NULL,
+	.init = tegra186_pmc_init,
 	.setup_irq_polarity = tegra186_pmc_setup_irq_polarity,
 	.irq_set_wake = tegra186_pmc_irq_set_wake,
 	.irq_set_type = tegra186_pmc_irq_set_type,
@@ -3857,6 +4024,8 @@ static const struct tegra_pmc_soc tegra194_pmc_soc = {
 	.num_reset_levels = ARRAY_SIZE(tegra186_reset_levels),
 	.num_wake_events = ARRAY_SIZE(tegra194_wake_events),
 	.wake_events = tegra194_wake_events,
+	.max_wake_events = 96,
+	.max_wake_vectors = 3,
 	.pmc_clks_data = NULL,
 	.num_pmc_clks = 0,
 	.has_blink_output = false,
@@ -3969,7 +4138,7 @@ static const struct tegra_pmc_soc tegra234_pmc_soc = {
 	.num_pin_descs = ARRAY_SIZE(tegra234_pin_descs),
 	.pin_descs = tegra234_pin_descs,
 	.regs = &tegra234_pmc_regs,
-	.init = NULL,
+	.init = tegra186_pmc_init,
 	.setup_irq_polarity = tegra186_pmc_setup_irq_polarity,
 	.irq_set_wake = tegra186_pmc_irq_set_wake,
 	.irq_set_type = tegra186_pmc_irq_set_type,
@@ -3979,6 +4148,8 @@ static const struct tegra_pmc_soc tegra234_pmc_soc = {
 	.num_reset_levels = ARRAY_SIZE(tegra186_reset_levels),
 	.num_wake_events = ARRAY_SIZE(tegra234_wake_events),
 	.wake_events = tegra234_wake_events,
+	.max_wake_events = 96,
+	.max_wake_vectors = 3,
 	.pmc_clks_data = NULL,
 	.num_pmc_clks = 0,
 	.has_blink_output = false,
