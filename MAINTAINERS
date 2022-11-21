@@ -20870,3 +20870,11 @@ Q:	http://patchwork.kernel.org/project/LKML/list/
 T:	git git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 F:	*
 F:	*/
+
+HSIERRRPTINJ
+M:	Prasun Kumar <prasunk@nvidia.com>
+S:	Supported
+B:	Mobile_Linux_Kernel
+F:	Documentation/devicetree/bindings/platform/tegra/tegra-hsierrrptinj.yaml
+F:	drivers/platform/tegra/tegra-hsierrrptinj.c
+F:	include/linux/tegra-hsierrrptinj.h
