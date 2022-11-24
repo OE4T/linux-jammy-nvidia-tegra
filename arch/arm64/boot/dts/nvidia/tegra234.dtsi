@@ -1211,6 +1211,11 @@
 			reg = <0x03e00000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 0>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1218,6 +1223,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03e10000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 1>;
 
 			#phy-cells = <0>;
 		};
@@ -1227,6 +1237,11 @@
 			reg = <0x03e20000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 2>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1234,6 +1249,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03e30000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 3>;
 
 			#phy-cells = <0>;
 		};
@@ -1243,6 +1263,11 @@
 			reg = <0x03e40000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 4>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1250,6 +1275,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03e50000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 5>;
 
 			#phy-cells = <0>;
 		};
@@ -1259,6 +1289,11 @@
 			reg = <0x03e60000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 342 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 6>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1266,6 +1301,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03e70000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 7>;
 
 			#phy-cells = <0>;
 		};
@@ -1275,6 +1315,11 @@
 			reg = <0x03e90000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 344 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 8>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1282,6 +1327,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03ea0000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 345 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 9>;
 
 			#phy-cells = <0>;
 		};
@@ -1291,6 +1341,11 @@
 			reg = <0x03eb0000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 346 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 10>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1298,6 +1353,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03ec0000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 347 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 11>;
 
 			#phy-cells = <0>;
 		};
@@ -1307,6 +1367,11 @@
 			reg = <0x03ed0000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 348 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 12>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1314,6 +1379,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03ee0000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 349 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 13>;
 
 			#phy-cells = <0>;
 		};
@@ -1323,6 +1393,11 @@
 			reg = <0x03ef0000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 350 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 14>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1330,6 +1405,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03f00000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 351 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 15>;
 
 			#phy-cells = <0>;
 		};
@@ -1339,6 +1419,11 @@
 			reg = <0x03f20000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 16>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1346,6 +1431,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03f30000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 17>;
 
 			#phy-cells = <0>;
 		};
@@ -1355,6 +1445,11 @@
 			reg = <0x03f40000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 18>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1362,6 +1457,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03f50000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 19>;
 
 			#phy-cells = <0>;
 		};
@@ -1371,6 +1471,11 @@
 			reg = <0x03f60000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 20>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1378,6 +1483,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03f70000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 21>;
 
 			#phy-cells = <0>;
 		};
@@ -1387,6 +1497,11 @@
 			reg = <0x03f80000 0x10000>;
 			reg-names = "ctl";
 
+			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 22>;
+
 			#phy-cells = <0>;
 		};
 
@@ -1394,6 +1509,11 @@
 			compatible = "nvidia,tegra234-p2u";
 			reg = <0x03f90000 0x10000>;
 			reg-names = "ctl";
+
+			interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "intr";
+
+			nvidia,bpmp = <&bpmp 23>;
 
 			#phy-cells = <0>;
 		};
