@@ -2000,6 +2000,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE8AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE8AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE8>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE8 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2053,6 +2054,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE9AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE9AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE9>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE9 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2106,6 +2108,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE10AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE10AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE10>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE10 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2159,6 +2162,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE1R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE1W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE1>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE1 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2212,6 +2216,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE2AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE2AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE2>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE2 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2265,6 +2270,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE3R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE3W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE3>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE3 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2318,6 +2324,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE4R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE4W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE4>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE4 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2371,6 +2378,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE0R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE0W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE0>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE0 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2424,6 +2432,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE5R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE5W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE5>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE5 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2477,6 +2486,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE6AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE6AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE6>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE6 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2530,6 +2540,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE7AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE7AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE7>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE7 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2568,6 +2579,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE5R &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE5W &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE5>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE5 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2606,6 +2618,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE6AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE6AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso0 TEGRA234_SID_PCIE6>;
 		iommu-map = <0x0 &smmu_niso0 TEGRA234_SID_PCIE6 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2644,6 +2657,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE7AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE7AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE7>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE7 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
@@ -2682,6 +2696,7 @@
 		interconnects = <&mc TEGRA234_MEMORY_CLIENT_PCIE10AR &emc>,
 				<&mc TEGRA234_MEMORY_CLIENT_PCIE10AW &emc>;
 		interconnect-names = "dma-mem", "write";
+		iommus = <&smmu_niso1 TEGRA234_SID_PCIE10>;
 		iommu-map = <0x0 &smmu_niso1 TEGRA234_SID_PCIE10 0x1000>;
 		iommu-map-mask = <0x0>;
 		dma-coherent;
