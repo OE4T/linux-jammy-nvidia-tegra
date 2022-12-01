@@ -7,6 +7,8 @@
 #include <dt-bindings/memory/tegra234-mc.h>
 #include <dt-bindings/power/tegra234-powergate.h>
 #include <dt-bindings/reset/tegra234-reset.h>
+#include <dt-bindings/thermal/tegra234-bpmp-thermal.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
 	compatible = "nvidia,tegra234";
@@ -2915,6 +2917,20 @@
 			nvidia,bpmp-bus-id = <5>;
 			#address-cells = <1>;
 			#size-cells = <0>;
+
+			tegra_tmp451: thermal-sensor@4c {
+				compatible = "ti,tmp451";
+				reg = <0x4c>;
+				/* vcc-supply configured in the platform-specific dtsi */
+				#thermal-sensor-cells = <1>;
+				status = "disabled";
+			};
+		};
+
+		bpmp_thermal: thermal {
+			compatible = "nvidia,tegra186-bpmp-thermal";
+			#thermal-sensor-cells = <1>;
+			status = "disabled";
 		};
 	};
 
@@ -2936,6 +2952,7 @@
 			d-cache-line-size = <64>;
 			d-cache-sets = <256>;
 			next-level-cache = <&l2c0_0>;
+			#cooling-cells = <2>;
 		};
 
 		cpu0_1: cpu@100 {
@@ -3000,6 +3017,7 @@
 			d-cache-line-size = <64>;
 			d-cache-sets = <256>;
 			next-level-cache = <&l2c1_0>;
+			#cooling-cells = <2>;
 		};
 
 		cpu1_1: cpu@10100 {
@@ -3064,6 +3082,7 @@
 			d-cache-line-size = <64>;
 			d-cache-sets = <256>;
 			next-level-cache = <&l2c2_0>;
+			#cooling-cells = <2>;
 		};
 
 		cpu2_1: cpu@20100 {
@@ -3327,5 +3346,293 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 		interrupt-parent = <&gic>;
 		always-on;
+	};
+
+	thermal-zones {
+		cpu-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_CPU>;
+			status = "disabled";
+
+			trips {
+				cpu_sw_shutdown: cpu-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				cpu_sw_throttle: cpu-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		gpu-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_GPU>;
+			status = "disabled";
+
+			trips {
+				gpu_sw_shutdown: gpu-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				gpu_sw_throttle: gpu-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&gpu_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		cv0-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_CV0>;
+			status = "disabled";
+
+			trips {
+				cv0_sw_shutdown: cv0-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				cv0_sw_throttle: cv0-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cv0_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+
+		cv1-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_CV1>;
+			status = "disabled";
+
+			trips {
+				cv1_sw_shutdown: cv1-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				cv1_sw_throttle: cv1-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cv1_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		cv2-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_CV2>;
+			status = "disabled";
+
+			trips {
+				cv2_sw_shutdown: cv2-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				cv2_sw_throttle: cv2-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cv2_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		soc0-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_SOC0>;
+			status = "disabled";
+
+			trips {
+				soc0_sw_shutdown: soc0-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				soc0_sw_throttle: soc0-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&soc0_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		soc1-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_SOC1>;
+			status = "disabled";
+
+			trips {
+				soc1_sw_shutdown: soc1-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				soc1_sw_throttle: soc1-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&soc1_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		soc2-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_SOC2>;
+			status = "disabled";
+
+			trips {
+				soc2_sw_shutdown: soc2-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+
+				soc2_sw_throttle: soc2-sw-throttle {
+					temperature = <99000>;
+					hysteresis = <0>;
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&soc2_sw_throttle>;
+					cooling-device = <&cpu0_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		tj-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&bpmp_thermal TEGRA234_THERMAL_ZONE_TJ_MAX>;
+			status = "disabled";
+
+			trips {
+				tj_sw_shutdown: tj-sw-shutdown {
+					temperature = <104500>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+			};
+		};
+
+		tboard-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&tegra_tmp451 0>;
+			status = "disabled";
+
+			trips {
+				tboard_sw_shutdown: tboard-sw-shutdown {
+					temperature = <107000>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+			};
+		};
+
+		tdiode-thermal {
+			polling-delay = <1000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&tegra_tmp451 1>;
+			status = "disabled";
+
+			trips {
+				tdiode_sw_shutdown: tdiode-sw-shutdown {
+					temperature = <107000>;
+					hysteresis = <0>;
+					type = "critical";
+				};
+			};
+		};
 	};
 };

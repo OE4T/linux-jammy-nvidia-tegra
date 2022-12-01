@@ -2086,4 +2086,23 @@
 		phy-names = "p2u-0", "p2u-1", "p2u-2", "p2u-3", "p2u-4",
 			    "p2u-5", "p2u-6", "p2u-7";
 	};
+
+	bpmp {
+		i2c {
+			thermal-sensor@4c {
+				vcc-supply = <&{/regulator-vdd-1v8-ao}>;
+				status = "okay";
+			};
+		};
+	};
+
+	thermal-zones {
+		tboard-thermal {
+			status = "okay";
+		};
+
+		tdiode-thermal {
+			status = "okay";
+		};
+	};
 };
