@@ -117,4 +117,48 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
+
+	bpmp {
+		thermal {
+			status = "okay";
+		};
+	};
+
+	thermal-zones {
+		cpu-thermal {
+			status = "okay";
+		};
+
+		gpu-thermal {
+			status = "okay";
+		};
+
+		cv0-thermal {
+			status = "okay";
+		};
+
+		cv1-thermal {
+			status = "okay";
+		};
+
+		cv2-thermal {
+			status = "okay";
+		};
+
+		soc0-thermal {
+			status = "okay";
+		};
+
+		soc1-thermal {
+			status = "okay";
+		};
+
+		soc2-thermal {
+			status = "okay";
+		};
+
+		tj-thermal {
+			status = "okay";
+		};
+	};
 };
