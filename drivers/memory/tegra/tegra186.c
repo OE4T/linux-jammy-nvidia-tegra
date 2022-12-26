@@ -110,7 +110,6 @@ static void tegra186_mc_client_sid_override(struct tegra_mc *mc,
 const struct tegra_mc_ops tegra186_mc_ops = {
 	.probe = tegra186_mc_probe,
 	.remove = tegra186_mc_remove,
-	.resume = tegra186_mc_resume,
 	.handle_irq = tegra30_mc_handle_irq,
 };
 
