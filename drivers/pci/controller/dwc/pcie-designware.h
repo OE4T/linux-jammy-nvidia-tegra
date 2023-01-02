@@ -20,6 +20,10 @@
 #include <linux/pci-epc.h>
 #include <linux/pci-epf.h>
 
+/* DWC PCIe IP-core versions */
+#define DW_PCIE_VER_500A		0x3530302A
+#define DW_PCIE_VER_562A		0x3536322A
+
 /* Parameters for the waiting for link up routine */
 #define LINK_WAIT_MAX_RETRIES		10
 #define LINK_WAIT_USLEEP_MIN		90000
