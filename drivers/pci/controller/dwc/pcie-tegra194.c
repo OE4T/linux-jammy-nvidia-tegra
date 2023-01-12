@@ -2985,12 +2985,11 @@ static int tegra_pcie_dw_remove(struct platform_device *pdev)
 #endif
 
 	if (pcie->of_data->mode == DW_PCIE_RC_TYPE) {
+		disable_irq(pcie->prsnt_irq);
 		if (!pcie->link_state)
 			return 0;
 		if (!pm_runtime_enabled(pcie->dev))
 			return 0;
-
-		disable_irq(pcie->prsnt_irq);
 		debugfs_remove_recursive(pcie->debugfs);
 		tegra_pcie_deinit_controller(pcie);
 		pm_runtime_put_sync(pcie->dev);
@@ -3125,17 +3124,15 @@ static void tegra_pcie_dw_shutdown(struct platform_device *pdev)
 	struct tegra_pcie_dw *pcie = platform_get_drvdata(pdev);
 
 	if (pcie->of_data->mode == DW_PCIE_RC_TYPE) {
-		if (!pcie->link_state)
-			return;
-		if (!pm_runtime_enabled(pcie->dev))
-			return;
-
 		debugfs_remove_recursive(pcie->debugfs);
 		disable_irq(pcie->prsnt_irq);
 		disable_irq(pcie->pci.pp.irq);
 		if (IS_ENABLED(CONFIG_PCI_MSI))
 			disable_irq(pcie->pci.pp.msi_irq);
-
+		if (!pcie->link_state)
+			return;
+		if (!pm_runtime_enabled(pcie->dev))
+			return;
 		tegra_pcie_dw_pme_turnoff(pcie);
 		tegra_pcie_unconfig_controller(pcie);
 		pm_runtime_put_sync(pcie->dev);
