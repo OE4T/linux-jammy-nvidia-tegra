@@ -156,6 +156,7 @@ struct sdhci_tegra_soc_data {
 	u32 nvquirks;
 	u8 min_tap_delay;
 	u8 max_tap_delay;
+	unsigned int min_host_clk;
 };
 
 /* Magic pull up and pull down pad calibration offsets */
@@ -799,6 +800,8 @@ static void tegra_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
 	 */
 	host_clk = tegra_host->ddr_signaling ? clock * 2 : clock;
 
+	if (host_clk < tegra_host->soc_data->min_host_clk)
+		host_clk = tegra_host->soc_data->min_host_clk;
 	err = dev_pm_opp_set_rate(dev, host_clk);
 	if (err)
 		dev_err(dev, "failed to set clk rate to %luHz: %d\n",
@@ -1619,6 +1622,7 @@ static const struct sdhci_tegra_soc_data soc_data_tegra234 = {
 		    NVQUIRK_HAS_TMCLK,
 	.min_tap_delay = 95,
 	.max_tap_delay = 111,
+	.min_host_clk = 20000000,
 };
 
 static const struct of_device_id sdhci_tegra_dt_match[] = {
