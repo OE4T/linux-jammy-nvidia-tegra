@@ -80,8 +80,15 @@ struct tegra_hsp_sm_ops {
 	void (*recv)(struct tegra_hsp_channel *channel);
 };
 
+struct tegra_hsp_shared_interrupt {
+	unsigned int index;
+	unsigned int irq;
+	bool enabled;
+};
+
 struct tegra_hsp_mailbox {
 	struct tegra_hsp_channel channel;
+	struct tegra_hsp_shared_interrupt *si;
 	const struct tegra_hsp_sm_ops *ops;
 	unsigned int index;
 	bool producer;
@@ -106,8 +113,6 @@ struct tegra_hsp {
 	struct mbox_controller mbox_sm;
 	void __iomem *regs;
 	unsigned int doorbell_irq;
-	unsigned int *shared_irqs;
-	unsigned int shared_irq;
 	unsigned int num_sm;
 	unsigned int num_as;
 	unsigned int num_ss;
@@ -119,6 +124,7 @@ struct tegra_hsp {
 
 	struct list_head doorbells;
 	struct tegra_hsp_mailbox *mailboxes;
+	struct tegra_hsp_shared_interrupt *shared_irqs;
 
 	unsigned long mask;
 };
@@ -178,6 +184,41 @@ tegra_hsp_doorbell_get(struct tegra_hsp *hsp, unsigned int master)
 	spin_unlock_irqrestore(&hsp->lock, flags);
 
 	return db;
+}
+
+/*
+ * Enables or disables interrupt for a mailbox. Should be called with
+ * hsp->lock held.
+ */
+static void tegra_hsp_sm_set_irq(struct tegra_hsp_mailbox *mb, bool enable)
+{
+	struct tegra_hsp_shared_interrupt *si = mb->si;
+	struct tegra_hsp_channel *ch = &mb->channel;
+	struct tegra_hsp *hsp = mb->channel.hsp;
+	unsigned int shift;
+	unsigned int mask;
+
+	shift = mb->producer ? HSP_INT_EMPTY_SHIFT : HSP_INT_FULL_SHIFT;
+	mask = tegra_hsp_readl(hsp, HSP_INT_IE(si->index));
+
+	if (enable) {
+		mask |= BIT(shift + mb->index);
+		hsp->mask |= BIT(shift + mb->index);
+	} else {
+		mask &= ~BIT(shift + mb->index);
+		hsp->mask &= ~BIT(shift + mb->index);
+	}
+
+	tegra_hsp_writel(hsp, mask, HSP_INT_IE(si->index));
+
+	if (hsp->soc->has_per_mb_ie) {
+		unsigned int reg_ie;
+
+		reg_ie = mb->producer ? HSP_SM_SHRD_MBOX_EMPTY_INT_IE :
+					HSP_SM_SHRD_MBOX_FULL_INT_IE;
+
+		tegra_hsp_channel_writel(ch, enable ? 0x1 : 0x0, reg_ie);
+	}
 }
 
 static irqreturn_t tegra_hsp_doorbell_irq(int irq, void *data)
@@ -243,9 +284,7 @@ static irqreturn_t tegra_hsp_shared_irq(int irq, void *data)
 			 */
 			spin_lock(&hsp->lock);
 
-			hsp->mask &= ~BIT(HSP_INT_EMPTY_SHIFT + mb->index);
-			tegra_hsp_writel(hsp, hsp->mask,
-					 HSP_INT_IE(hsp->shared_irq));
+			tegra_hsp_sm_set_irq(mb, false);
 
 			spin_unlock(&hsp->lock);
 
@@ -463,10 +502,7 @@ static int tegra_hsp_mailbox_send_data(struct mbox_chan *chan, void *data)
 
 	/* enable EMPTY interrupt for the shared mailbox */
 	spin_lock_irqsave(&hsp->lock, flags);
-
-	hsp->mask |= BIT(HSP_INT_EMPTY_SHIFT + mb->index);
-	tegra_hsp_writel(hsp, hsp->mask, HSP_INT_IE(hsp->shared_irq));
-
+	tegra_hsp_sm_set_irq(mb, true);
 	spin_unlock_irqrestore(&hsp->lock, flags);
 
 	return 0;
@@ -502,7 +538,6 @@ static int tegra_hsp_mailbox_flush(struct mbox_chan *chan,
 static int tegra_hsp_mailbox_startup(struct mbox_chan *chan)
 {
 	struct tegra_hsp_mailbox *mb = chan->con_priv;
-	struct tegra_hsp_channel *ch = &mb->channel;
 	struct tegra_hsp *hsp = mb->channel.hsp;
 	unsigned long flags;
 
@@ -522,22 +557,11 @@ static int tegra_hsp_mailbox_startup(struct mbox_chan *chan)
 	spin_lock_irqsave(&hsp->lock, flags);
 
 	if (mb->producer)
-		hsp->mask &= ~BIT(HSP_INT_EMPTY_SHIFT + mb->index);
+		tegra_hsp_sm_set_irq(mb, false);
 	else
-		hsp->mask |= BIT(HSP_INT_FULL_SHIFT + mb->index);
-
-	tegra_hsp_writel(hsp, hsp->mask, HSP_INT_IE(hsp->shared_irq));
+		tegra_hsp_sm_set_irq(mb, true);
 
 	spin_unlock_irqrestore(&hsp->lock, flags);
-
-	if (hsp->soc->has_per_mb_ie) {
-		if (mb->producer)
-			tegra_hsp_channel_writel(ch, 0x0,
-						 HSP_SM_SHRD_MBOX_EMPTY_INT_IE);
-		else
-			tegra_hsp_channel_writel(ch, 0x1,
-						 HSP_SM_SHRD_MBOX_FULL_INT_IE);
-	}
 
 	return 0;
 }
@@ -559,14 +583,7 @@ static void tegra_hsp_mailbox_shutdown(struct mbox_chan *chan)
 	}
 
 	spin_lock_irqsave(&hsp->lock, flags);
-
-	if (mb->producer)
-		hsp->mask &= ~BIT(HSP_INT_EMPTY_SHIFT + mb->index);
-	else
-		hsp->mask &= ~BIT(HSP_INT_FULL_SHIFT + mb->index);
-
-	tegra_hsp_writel(hsp, hsp->mask, HSP_INT_IE(hsp->shared_irq));
-
+	tegra_hsp_sm_set_irq(mb, false);
 	spin_unlock_irqrestore(&hsp->lock, flags);
 }
 
@@ -688,13 +705,72 @@ static int tegra_hsp_add_mailboxes(struct tegra_hsp *hsp, struct device *dev)
 	return 0;
 }
 
+static int tegra_hsp_sm_map_shared_interrupts(struct tegra_hsp *hsp,
+					       unsigned int default_si)
+{
+	struct device_node *phandle = hsp->dev->of_node;
+	unsigned int num_mappings;
+	unsigned int i;
+	int err;
+
+	/* Assign default shared interrupt. */
+	for (i = 0; i < hsp->num_sm; i++)
+		hsp->mailboxes[i].si = &(hsp->shared_irqs[default_si]);
+
+	/* Get the configuration from device-tree. */
+	err = of_property_count_u32_elems(phandle, "nvidia,mailbox-interrupts");
+	if (err <= 0)
+		return 0;
+
+	num_mappings = err / 2;
+
+	for (i = 0; i < num_mappings; i++) {
+		struct tegra_hsp_shared_interrupt *si;
+		struct tegra_hsp_mailbox *mb;
+		unsigned int shared_irq;
+		unsigned int index;
+		int err;
+
+		err = of_property_read_u32_index(phandle,
+						 "nvidia,mailbox-interrupts",
+						 (i * 2), &index);
+		if (err || index >= hsp->num_sm)
+			return -EINVAL;
+
+		err = of_property_read_u32_index(phandle,
+						 "nvidia,mailbox-interrupts",
+						 (i * 2) + 1, &shared_irq);
+		if (err || shared_irq >= hsp->num_si)
+			return -EINVAL;
+
+		si = &hsp->shared_irqs[shared_irq];
+		mb = &hsp->mailboxes[index];
+
+		if (!si->enabled) {
+			dev_err(hsp->dev,
+			       "shared interrupt: %u is not available\n",
+			       shared_irq);
+			return -EINVAL;
+		}
+
+		mb->si = si;
+
+		dev_dbg(hsp->dev, "shared interrupt: %d mapped to mailbox %d\n",
+			shared_irq, index);
+	}
+
+	return 0;
+}
+
 static int tegra_hsp_request_shared_irq(struct tegra_hsp *hsp)
 {
 	unsigned int i, irq = 0;
+	unsigned int default_si = hsp->num_si;
+	unsigned int value;
 	int err;
 
 	for (i = 0; i < hsp->num_si; i++) {
-		irq = hsp->shared_irqs[i];
+		irq = hsp->shared_irqs[i].irq;
 		if (irq <= 0)
 			continue;
 
@@ -706,22 +782,26 @@ static int tegra_hsp_request_shared_irq(struct tegra_hsp *hsp)
 			continue;
 		}
 
-		hsp->shared_irq = i;
+		hsp->shared_irqs[i].enabled = true;
 
-		/* disable all interrupts */
-		tegra_hsp_writel(hsp, 0, HSP_INT_IE(hsp->shared_irq));
+		value = tegra_hsp_readl(hsp, HSP_INT_IE(i));
+		if (value) {
+			dev_warn(hsp->dev,
+				 "disabling interrupts for si: %d\n", i);
+			tegra_hsp_writel(hsp, 0, HSP_INT_IE(i));
+		}
 
-		dev_dbg(hsp->dev, "interrupt requested: %u\n", irq);
-
-		break;
+		/* Use first available interrupt as default. */
+		if (default_si == hsp->num_si)
+			default_si = i;
 	}
 
-	if (i == hsp->num_si) {
+	if (default_si == hsp->num_si) {
 		dev_err(hsp->dev, "failed to find available interrupt\n");
 		return -ENOENT;
 	}
 
-	return 0;
+	return tegra_hsp_sm_map_shared_interrupts(hsp, default_si);
 }
 
 static int tegra_hsp_probe(struct platform_device *pdev)
@@ -775,7 +855,8 @@ static int tegra_hsp_probe(struct platform_device *pdev)
 
 			err = platform_get_irq_byname_optional(pdev, name);
 			if (err >= 0) {
-				hsp->shared_irqs[i] = err;
+				hsp->shared_irqs[i].irq = err;
+				hsp->shared_irqs[i].index = i;
 				count++;
 			}
 
