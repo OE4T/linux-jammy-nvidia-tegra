@@ -103,6 +103,23 @@ properties:
   "#mbox-cells":
     const: 2
 
+  nvidia,mailbox-interrupts:
+    description:
+      Array nvidia,mailbox-interrupts is an optional property. It specifies
+      the mailbox to shared interrupt mapping as <MAILBOXID INTERRUPTID>.
+      Whereas, MAILBOXID ranges 0-7 and INTERRUPTID ranges 0-7.
+      For example, nvidia,mailbox-interrupts = <0 1> maps mailbox 0 to shared
+      interrupt 1.
+    minitems: 1
+    maxitems: 8
+
+required:
+  - compatible
+  - reg
+  - interrupts
+  - interrupt-names
+  - mbox-cells
+
 additionalProperties: false
 
 examples:
@@ -113,8 +130,21 @@ examples:
     hsp_top0: hsp@3c00000 {
         compatible = "nvidia,tegra186-hsp";
         reg = <0x03c00000 0xa0000>;
-        interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+        interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
+                     <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-names = "doorbell", "shared0", "shared1", "shared2",
+                          "shared3", "shared4", "shared5", "shared6",
+                          "shared7";
         interrupt-names = "doorbell";
+        nvidia,mailbox-interrupts = <0 1>,
+                                    <1 2>;
         #mbox-cells = <2>;
     };
 
