@@ -3,7 +3,7 @@
  * drivers/soc/tegra/pmc.c
  *
  * Copyright (c) 2010 Google, Inc
- * Copyright (c) 2018-2022, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2018-2023, NVIDIA CORPORATION. All rights reserved.
  *
  * Author:
  *	Colin Cross <ccross@google.com>
@@ -2958,7 +2958,7 @@ static int tegra_pmc_probe(struct platform_device *pdev)
 
 	tegra_pmc_reset_sysfs_init(pmc);
 
-	if (IS_ENABLED(CONFIG_DEBUG_FS)) {
+	if (IS_ENABLED(CONFIG_DEBUG_FS) && debugfs_initialized()) {
 		err = tegra_powergate_debugfs_init();
 		if (err < 0)
 			goto cleanup_sysfs;
