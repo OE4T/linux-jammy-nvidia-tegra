@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2015-2016, Linaro Limited
+ * Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -8,11 +9,14 @@
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/i2c.h>
+#include <linux/jiffies.h>
 #include <linux/slab.h>
 #include <linux/tee_drv.h>
 #include "optee_private.h"
 #include "optee_smc.h"
 #include "optee_rpc_cmd.h"
+
+#define SLEEP_TIMEOUT (msecs_to_jiffies(100))
 
 struct wq_entry {
 	struct list_head link;
@@ -169,7 +173,7 @@ static void wq_sleep(struct optee_wait_queue *wq, u32 key)
 	struct wq_entry *w = wq_entry_get(wq, key);
 
 	if (w) {
-		wait_for_completion(&w->c);
+		(void)wait_for_completion_timeout(&w->c, SLEEP_TIMEOUT);
 		mutex_lock(&wq->mu);
 		list_del(&w->link);
 		mutex_unlock(&wq->mu);
