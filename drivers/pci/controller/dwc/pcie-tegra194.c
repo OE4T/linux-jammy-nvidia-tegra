@@ -368,6 +368,8 @@ struct tegra_pcie_dw_of_data {
 	u32 cdm_chk_int_en_bit;
 	u32 gen4_preset_vec;
 	u8 n_fts[2];
+	/* L2 Latency entrance values(Rest/Prod) */
+	u32 aspm_l1_enter_lat;
 };
 
 struct tegra_pcie_dw {
@@ -1109,6 +1111,8 @@ static void init_host_aspm(struct tegra_pcie_dw *pcie)
 	val = dw_pcie_readl_dbi(pci, PCIE_PORT_AFR);
 	val &= ~PORT_AFR_L0S_ENTRANCE_LAT_MASK;
 	val |= (pcie->aspm_l0s_enter_lat << PORT_AFR_L0S_ENTRANCE_LAT_SHIFT);
+	val &= ~PORT_AFR_L1_ENTRANCE_LAT_MASK;
+	val |= (pcie->of_data->aspm_l1_enter_lat << PORT_AFR_L1_ENTRANCE_LAT_SHIFT);
 	val |= PORT_AFR_ENTER_ASPM;
 	dw_pcie_writel_dbi(pci, PCIE_PORT_AFR, val);
 }
@@ -3149,6 +3153,7 @@ static const struct tegra_pcie_dw_of_data tegra194_pcie_dw_rc_of_data = {
 	/* Gen4 - 5, 6, 8 and 9 presets enabled */
 	.gen4_preset_vec = 0x360,
 	.n_fts = { 52, 52 },
+	.aspm_l1_enter_lat = 3,
 };
 
 static const struct tegra_pcie_dw_of_data tegra194_pcie_dw_ep_of_data = {
@@ -3158,6 +3163,7 @@ static const struct tegra_pcie_dw_of_data tegra194_pcie_dw_ep_of_data = {
 	/* Gen4 - 5, 6, 8 and 9 presets enabled */
 	.gen4_preset_vec = 0x360,
 	.n_fts = { 52, 52 },
+	.aspm_l1_enter_lat = 3,
 };
 
 static const struct tegra_pcie_dw_of_data tegra234_pcie_dw_rc_of_data = {
@@ -3170,6 +3176,7 @@ static const struct tegra_pcie_dw_of_data tegra234_pcie_dw_rc_of_data = {
 	/* Gen4 - 6, 8 and 9 presets enabled */
 	.gen4_preset_vec = 0x340,
 	.n_fts = { 52, 80 },
+	.aspm_l1_enter_lat = 4,
 };
 
 static const struct tegra_pcie_dw_of_data tegra234_pcie_dw_ep_of_data = {
@@ -3182,6 +3189,7 @@ static const struct tegra_pcie_dw_of_data tegra234_pcie_dw_ep_of_data = {
 	/* Gen4 - 6, 8 and 9 presets enabled */
 	.gen4_preset_vec = 0x340,
 	.n_fts = { 52, 80 },
+	.aspm_l1_enter_lat = 5,
 };
 
 static const struct of_device_id tegra_pcie_dw_of_match[] = {
