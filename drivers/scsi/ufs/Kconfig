@@ -199,3 +199,11 @@ config SCSI_UFS_FAULT_INJECTION
 	help
 	  Enable fault injection support in the UFS driver. This makes it easier
 	  to test the UFS error handler and abort handler.
+
+config SCSI_UFSHCD_QUERY_EXPORT
+	bool "UFS HCD QUERY APIS exported"
+	def_bool y
+	depends on SCSI_UFSHCD
+	help
+	  Export the  UFS HCD query APIs for provisioning the UFS. This config will
+	  tell whether APIs are exported or not.
