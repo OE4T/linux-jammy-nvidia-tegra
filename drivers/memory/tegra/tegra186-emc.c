@@ -351,13 +351,14 @@ static int tegra186_emc_probe(struct platform_device *pdev)
 
 	mc = dev_get_drvdata(emc->dev->parent);
 	if (mc && mc->soc->icc_ops) {
-		if (tegra_bpmp_mrq_is_supported(emc->bpmp, MRQ_BWMGR_INT)) {
-			err = tegra_emc_interconnect_init(emc);
-			if (err)
-				goto put_bpmp;
-		} else {
+		err = tegra_emc_interconnect_init(emc);
+		if (err)
+			goto put_bpmp;
+
+		if (tegra_bpmp_mrq_is_supported(emc->bpmp, MRQ_BWMGR_INT))
+			mc->bwmgr_mrq_supported = true;
+		else
 			dev_info(&pdev->dev, "MRQ_BWMGR_INT not present\n");
-		}
 	}
 
 	return 0;
