@@ -1336,6 +1336,7 @@ dwmac-meson8b
 dwmac-qcom-ethqos
 dwmac-rk
 dwmac-sun8i
+dwmac-tegra
 dwmac-visconti
 dyna_pci10xx
 dynapro
@@ -2410,6 +2411,7 @@ io-domain
 io_edgeport
 io_ti
 ionic
+iosm
 iowarrior
 ip6_gre
 ip6_tables
@@ -3123,7 +3125,6 @@ mdc800
 mdev
 mdio
 mdio-bcm-unimac
-mdio-bitbang
 mdio-cavium
 mdio-gpio
 mdio-hisi-femac
