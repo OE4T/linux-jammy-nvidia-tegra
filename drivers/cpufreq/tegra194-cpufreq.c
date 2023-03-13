@@ -69,6 +69,7 @@ struct tegra_cpufreq_soc {
 	int maxcpus_per_cluster;
 	unsigned int num_clusters;
 	phys_addr_t actmon_cntr_base;
+	bool fmin_offline_cpus;
 };
 
 struct tegra194_cpufreq_data {
@@ -80,6 +81,7 @@ struct tegra194_cpufreq_data {
 };
 
 static struct workqueue_struct *read_counters_wq;
+static enum cpuhp_state hp_state;
 
 static int tegra_cpufreq_set_bw(struct cpufreq_policy *policy, unsigned long freq_khz)
 {
@@ -172,6 +174,7 @@ static const struct tegra_cpufreq_soc tegra234_cpufreq_soc = {
 	.actmon_cntr_base = 0x9000,
 	.maxcpus_per_cluster = 4,
 	.num_clusters = 3,
+	.fmin_offline_cpus = true,
 };
 
 static const struct tegra_cpufreq_soc tegra239_cpufreq_soc = {
@@ -179,6 +182,7 @@ static const struct tegra_cpufreq_soc tegra239_cpufreq_soc = {
 	.actmon_cntr_base = 0x4000,
 	.maxcpus_per_cluster = 8,
 	.num_clusters = 1,
+	.fmin_offline_cpus = true,
 };
 
 static void tegra194_get_cpu_cluster_id(u32 cpu, u32 *cpuid, u32 *clusterid)
@@ -534,6 +538,7 @@ static const struct tegra_cpufreq_soc tegra194_cpufreq_soc = {
 	.ops = &tegra194_cpufreq_ops,
 	.maxcpus_per_cluster = 2,
 	.num_clusters = 4,
+	.fmin_offline_cpus = false,
 };
 
 static void tegra194_cpufreq_free_resources(void)
@@ -611,6 +616,17 @@ tegra_cpufreq_bpmp_read_lut(struct platform_device *pdev, struct tegra_bpmp *bpm
 	freq_table[index].frequency = CPUFREQ_TABLE_END;
 
 	return freq_table;
+}
+
+static int tegra234_cpufreq_offline(unsigned int cpu)
+{
+	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
+	u32 clusterid = data->phys_ids[cpu].clusterid;
+
+	/* Set CPU to Fmin */
+	writel(data->bpmp_luts[clusterid]->driver_data, data->phys_ids[cpu].freq_core_reg);
+
+	return 0;
 }
 
 static int tegra194_cpufreq_store_physids(unsigned int cpu, struct tegra194_cpufreq_data *data)
@@ -716,6 +732,17 @@ static int tegra194_cpufreq_probe(struct platform_device *pdev)
 			data->icc_dram_bw_scaling = true;
 	}
 
+	if (data->soc->fmin_offline_cpus) {
+		err = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+						"tegra234_cpufreq:online", NULL,
+						tegra234_cpufreq_offline);
+		if (err < 0) {
+			dev_info(&pdev->dev, "fail to register cpuhp state\n");
+			goto err_free_res;
+		}
+		hp_state = err;
+	}
+
 	err = cpufreq_register_driver(&tegra194_cpufreq_driver);
 	if (!err)
 		goto put_bpmp;
@@ -731,6 +758,8 @@ static int tegra194_cpufreq_remove(struct platform_device *pdev)
 {
 	cpufreq_unregister_driver(&tegra194_cpufreq_driver);
 	tegra194_cpufreq_free_resources();
+	if (hp_state > 0)
+		cpuhp_remove_state_nocalls(hp_state);
 
 	return 0;
 }
@@ -743,10 +772,39 @@ static const struct of_device_id tegra194_cpufreq_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tegra194_cpufreq_of_match);
 
+#ifdef CONFIG_PM_SLEEP
+static int tegra194_cpufreq_resume(struct device *dev)
+{
+	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
+	u32 cpu;
+
+	if (data->regs && data->soc->fmin_offline_cpus) {
+		/*
+		 * If mmio registers are used for frequency requests and
+		 * hp notifier is enabled to set offline cores to Fmin,
+		 * then use the mmio register to keep offline cpu core to fmin.
+		 * If sysreg are used then we can't set fmin as sysreg can
+		 * be accessed from the target CPU only but that is offline.
+		 */
+		for_each_possible_cpu(cpu) {
+			if (!cpu_online(cpu))
+				tegra234_cpufreq_offline(cpu);
+		}
+	}
+
+	return 0;
+}
+#endif
+
+static const struct dev_pm_ops tegra194_cpufreq_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(NULL, tegra194_cpufreq_resume)
+};
+
 static struct platform_driver tegra194_ccplex_driver = {
 	.driver = {
 		.name = "tegra194-cpufreq",
 		.of_match_table = tegra194_cpufreq_of_match,
+		.pm = &tegra194_cpufreq_pm_ops,
 	},
 	.probe = tegra194_cpufreq_probe,
 	.remove = tegra194_cpufreq_remove,
