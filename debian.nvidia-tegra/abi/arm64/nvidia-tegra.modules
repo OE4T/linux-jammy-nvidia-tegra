@@ -1335,7 +1335,6 @@ dwmac-meson8b
 dwmac-qcom-ethqos
 dwmac-rk
 dwmac-sun8i
-dwmac-tegra
 dwmac-visconti
 dyna_pci10xx
 dynapro
