@@ -737,6 +737,10 @@ static void check_reg_format(struct check *c, struct dt_info *dti,
 	struct property *prop;
 	int addr_cells, size_cells, entrylen;
 
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
+		return;
+
 	prop = get_property(node, "reg");
 	if (!prop)
 		return; /* No "reg", that's fine */
@@ -766,6 +770,10 @@ static void check_ranges_format(struct check *c, struct dt_info *dti,
 	struct property *prop;
 	int c_addr_cells, p_addr_cells, c_size_cells, p_size_cells, entrylen;
 	const char *ranges = c->data;
+
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
+		return;
 
 	prop = get_property(node, ranges);
 	if (!prop)
@@ -996,6 +1004,10 @@ static const struct bus_type i2c_bus = {
 
 static void check_i2c_bus_bridge(struct check *c, struct dt_info *dti, struct node *node)
 {
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
+		return;
+
 	if (strprefixeq(node->name, node->basenamelen, "i2c-bus") ||
 	    strprefixeq(node->name, node->basenamelen, "i2c-arb")) {
 		node->bus = &i2c_bus;
@@ -1074,6 +1086,10 @@ static const struct bus_type spi_bus = {
 static void check_spi_bus_bridge(struct check *c, struct dt_info *dti, struct node *node)
 {
 	int spi_addr_cells = 1;
+
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
+		return;
 
 	if (strprefixeq(node->name, node->basenamelen, "spi")) {
 		node->bus = &spi_bus;
@@ -1175,6 +1191,10 @@ static void check_avoid_default_addr_size(struct check *c, struct dt_info *dti,
 
 	if (!node->parent)
 		return; /* Ignore root node */
+
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
+		return;
 
 	reg = get_property(node, "reg");
 	ranges = get_property(node, "ranges");
@@ -1588,6 +1608,10 @@ static void check_interrupts_property(struct check *c,
 
 	irq_prop = get_property(node, "interrupts");
 	if (!irq_prop)
+		return;
+
+	/* Ignore for plugin */
+	if (dti->dtsflags & DTSF_PLUGIN)
 		return;
 
 	if (irq_prop->val.len % sizeof(cell_t))
