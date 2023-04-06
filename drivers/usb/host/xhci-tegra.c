@@ -2,7 +2,7 @@
 /*
  * NVIDIA Tegra xHCI host controller driver
  *
- * Copyright (c) 2014-2020, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2014-2023, NVIDIA CORPORATION. All rights reserved.
  * Copyright (C) 2014 Google, Inc.
  */
 
@@ -1512,10 +1512,9 @@ static int tegra_xusb_init_usb_phy(struct tegra_xusb *tegra)
 		tegra->usbphy[i] = devm_usb_get_phy_by_node(tegra->dev,
 							phy->dev.of_node,
 							&tegra->id_nb);
-		if (!IS_ERR(tegra->usbphy[i])) {
+		if (!IS_ERR(tegra->usbphy[i]))
 			dev_dbg(tegra->dev, "usbphy-%d registered", i);
-			otg_set_host(tegra->usbphy[i]->otg, &tegra->hcd->self);
-		} else {
+		else {
 			/*
 			 * usb-phy is optional, continue if its not available.
 			 */
