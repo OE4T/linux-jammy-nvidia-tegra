@@ -85,6 +85,7 @@ static enum cpuhp_state hp_state;
 
 static int tegra_cpufreq_set_bw(struct cpufreq_policy *policy, unsigned long freq_khz)
 {
+	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
 	struct dev_pm_opp *opp;
 	struct device *dev;
 	int ret;
@@ -98,6 +99,9 @@ static int tegra_cpufreq_set_bw(struct cpufreq_policy *policy, unsigned long fre
 		return PTR_ERR(opp);
 
 	ret = dev_pm_opp_set_opp(dev, opp);
+	if (ret)
+		data->icc_dram_bw_scaling = false;
+
 	dev_pm_opp_put(opp);
 	return ret;
 }
