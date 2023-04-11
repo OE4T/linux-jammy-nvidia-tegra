@@ -90,15 +90,15 @@ define install_control =
 	done
 endef
 
-# Ensure the directory prefix is exactly 100 characters long so pathnames are the
+# Ensure the directory prefix is exactly 120 characters long so pathnames are the
 # exact same length in any binary files produced by the builds.  These will be
 # commonised later.
 dkms_20d=....................
-dkms_100d=$(dkms_20d)$(dkms_20d)$(dkms_20d)$(dkms_20d)$(dkms_20d)
-dkms_100c=$(shell echo '$(dkms_100d)' | sed -e 's/\./_/g')
+dkms_120d=$(dkms_20d)$(dkms_20d)$(dkms_20d)$(dkms_20d)$(dkms_20d)$(dkms_20d)
+dkms_120c=$(shell echo '$(dkms_120d)' | sed -e 's/\./_/g')
 define dkms_dir_prefix =
-$(shell echo $(1)/$(dkms_100c) | \
-	sed -e 's/\($(dkms_100d)\).*/\1/' -e 's/^\(.*\)....$$/\1dkms/')
+$(shell echo $(1)/$(dkms_120c) | \
+	sed -e 's/\($(dkms_120d)\).*/\1/' -e 's/^\(.*\)....$$/\1dkms/')
 endef
 
 # Install the finished build
