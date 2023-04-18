@@ -7,6 +7,7 @@
  * Copyright (C) 1999 Gregory P. Smith
  * Copyright (C) 2001 Brad Hards (bhards@bigpond.net.au)
  * Copyright (C) 2012 Intel Corp (tianyu.lan@intel.com)
+ * Copyright (c) 2023 NVIDIA CORPORATION. All rights reserved.
  *
  *  move struct usb_hub to this file.
  */
