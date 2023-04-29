@@ -78,6 +78,8 @@ static DEFINE_MUTEX(hs_state_mutex);
 
 static struct task_struct *fsi_handshake_thread;
 
+static bool enable_deinit_notify;
+
 static void tegra_hsp_tx_empty_notify(struct mbox_client *cl,
 					 void *data, int empty_value)
 {
@@ -265,10 +267,11 @@ static int epl_client_fsi_handshake(void *arg)
 
 static int __maybe_unused epl_client_suspend(struct device *dev)
 {
-	int ret;
+	int ret = 0;
 	pr_debug("tegra-epl: suspend called\n");
 
-	ret = epl_client_fsi_pm_notify(PM_SUSPEND);
+	if (enable_deinit_notify)
+		ret = epl_client_fsi_pm_notify(PM_SUSPEND);
 	mutex_lock(&hs_state_mutex);
 	hs_state = HANDSHAKE_PENDING;
 	mutex_unlock(&hs_state_mutex);
@@ -381,6 +384,9 @@ static int epl_client_probe(struct platform_device *pdev)
 		}
 	}
 
+	if (of_property_read_bool(np, "enable-deinit-notify"))
+		enable_deinit_notify = true;
+
 	mission_err_status_va = devm_platform_ioremap_resource(pdev, NUM_SW_GENERIC_ERR * 2);
 	if (IS_ERR(mission_err_status_va)) {
 		isAddrMappOk = false;
@@ -402,8 +408,9 @@ static void epl_client_shutdown(struct platform_device *pdev)
 {
 	pr_debug("tegra-epl: shutdown called\n");
 
-	if (epl_client_fsi_pm_notify(PM_SHUTDOWN) < 0)
-		pr_err("Unable to send notification to fsi\n");
+	if (enable_deinit_notify)
+		if (epl_client_fsi_pm_notify(PM_SHUTDOWN) < 0)
+			pr_err("Unable to send notification to fsi\n");
 
 	mutex_lock(&hs_state_mutex);
 	hs_state = HANDSHAKE_PENDING;
