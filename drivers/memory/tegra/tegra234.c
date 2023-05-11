@@ -467,6 +467,106 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 			},
 		},
 	}, {
+		.id = TEGRA234_MEMORY_CLIENT_VICSRD,
+		.name = "vicsrd",
+		.sid = TEGRA234_SID_VIC,
+		.regs = {
+			.sid = {
+				.override = 0x360,
+				.security = 0x364,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_VICSWR,
+		.name = "vicswr",
+		.sid = TEGRA234_SID_VIC,
+		.regs = {
+			.sid = {
+				.override = 0x368,
+				.security = 0x36c,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVDECSRD,
+		.name = "nvdecsrd",
+		.sid = TEGRA234_SID_NVDEC,
+		.regs = {
+			.sid = {
+				.override = 0x3c0,
+				.security = 0x3c4,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVDECSWR,
+		.name = "nvdecswr",
+		.sid = TEGRA234_SID_NVDEC,
+		.regs = {
+			.sid = {
+				.override = 0x3c8,
+				.security = 0x3cc,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVENCSRD,
+		.name = "nvencsrd",
+		.sid = TEGRA234_SID_NVENC,
+		.regs = {
+			.sid = {
+				.override = 0xe0,
+				.security = 0xe4,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVENCSWR,
+		.name = "nvencswr",
+		.sid = TEGRA234_SID_NVENC,
+		.regs = {
+			.sid = {
+				.override = 0x158,
+				.security = 0x15c,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVJPGSRD,
+		.name = "nvjpgsrd",
+		.sid = TEGRA234_SID_NVJPG,
+		.regs = {
+			.sid = {
+				.override = 0x3f0,
+				.security = 0x3f4,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVJPGSWR,
+		.name = "nvjpgswr",
+		.sid = TEGRA234_SID_NVJPG,
+		.regs = {
+			.sid = {
+				.override = 0x3f8,
+				.security = 0x3fc,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVJPG1SRD,
+		.name = "nvjpg1srd",
+		.sid = TEGRA234_SID_NVJPG1,
+		.regs = {
+			.sid = {
+				.override = 0x918,
+				.security = 0x91c,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_NVJPG1SWR,
+		.name = "nvjpg1swr",
+		.sid = TEGRA234_SID_NVJPG1,
+		.regs = {
+			.sid = {
+				.override = 0x920,
+				.security = 0x924,
+			},
+		},
+	}, {
 		.id = TEGRA234_MEMORY_CLIENT_PCIE0R,
 		.name = "pcie0r",
 		.bpmp_id = TEGRA_ICC_BPMP_PCIE_0,
