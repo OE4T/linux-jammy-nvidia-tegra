@@ -11,6 +11,7 @@
 #include <linux/platform_device.h>
 
 #include <soc/tegra/mc.h>
+#include <soc/tegra/tegra-platform-helper.h>
 
 #if defined(CONFIG_ARCH_TEGRA_186_SOC)
 #include <dt-bindings/memory/tegra186-mc.h>
@@ -113,6 +114,11 @@ static int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev)
 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
 	struct of_phandle_args args;
 	unsigned int i, index = 0;
+
+	if (is_tegra_hypervisor_mode() == true) {
+		pr_debug("MC register access not allowed in Guest Linux\n");
+		return 0;
+	}
 
 	while (!of_parse_phandle_with_args(dev->of_node, "interconnects", "#interconnect-cells",
 					   index, &args)) {
