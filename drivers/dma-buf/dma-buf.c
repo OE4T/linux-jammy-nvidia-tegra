@@ -68,6 +68,9 @@ EXPORT_SYMBOL(dma_buf_disable_defer_unmapping);
 static bool dmabuf_can_defer_unmap(struct dma_buf *dmabuf,
 		struct device *device)
 {
+	if (!IS_ENABLED(CONFIG_DMABUF_DEFERRED_UNMAPPING))
+		return false;
+
 	if (!(dmabuf->flags & DMABUF_CAN_DEFER_UNMAP))
 		return false;
 
@@ -678,6 +681,7 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
 	dmabuf->ops = exp_info->ops;
 	dmabuf->size = exp_info->size;
 	dmabuf->exp_name = exp_info->exp_name;
+	dmabuf->flags = exp_info->exp_flags;
 	dmabuf->owner = exp_info->owner;
 	spin_lock_init(&dmabuf->name_lock);
 	init_waitqueue_head(&dmabuf->poll);
