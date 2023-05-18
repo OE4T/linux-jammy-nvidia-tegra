@@ -1767,6 +1767,53 @@ static int lm90_init_client(struct i2c_client *client, struct lm90_data *data)
 	return devm_add_action_or_reset(&client->dev, lm90_restore_conf, data);
 }
 
+static void lm90_init_limits(struct lm90_data *data)
+{
+	struct device_node *np;
+	struct device *dev;
+	u32 val;
+
+	if (!data || !data->client) return;
+
+	np = data->client->dev.of_node;
+	dev = &data->client->dev;
+	if (!of_property_read_u32(np, "local-max", &val))
+		if (lm90_temp_write(dev, hwmon_temp_max, 0, val))
+			dev_warn(dev, "Unable to set max limit for local sensor\n");
+
+	if (!of_property_read_u32(np, "remote-max", &val))
+		if (lm90_temp_write(dev, hwmon_temp_max, 1, val))
+			dev_warn(dev, "Unable to set max limit for remote sensor\n");
+
+	if (data->flags & LM90_HAVE_CRIT) {
+		if (!of_property_read_u32(np, "local-crit", &val))
+			if (lm90_temp_write(dev, hwmon_temp_crit, 0, val))
+				dev_warn(dev, "Unable to set crit limit for local sensor\n");
+
+		if (!of_property_read_u32(np, "remote-crit", &val))
+			if (lm90_temp_write(dev, hwmon_temp_crit, 1, val))
+				dev_warn(dev, "Unable to set crit limit for remote sensor\n");
+	}
+
+	if (data->flags & LM90_HAVE_TEMP3) {
+		if (!of_property_read_u32(np, "remote2-max", &val)) {
+			if (lm90_temp_write(dev, hwmon_temp_max, 2, val))
+				dev_warn(dev, "Unable to set max limit for second remote sensor\n");
+		}
+
+		if (!of_property_read_u32(np, "remote2-crit", &val)) {
+			if (lm90_temp_write(dev, hwmon_temp_crit, 2, val))
+				dev_warn(dev,
+					 "Unable to set crit limit for second remote sensor\n");
+		}
+	}
+
+	if (data->flags & LM90_HAVE_OFFSET)
+		if (!of_property_read_u32(np, "remote-offset", &val))
+			if (lm90_temp_write(dev, hwmon_temp_offset, 1, val))
+				dev_warn(dev, "Unable to set offset for remote sensor\n");
+}
+
 static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
 {
 	struct lm90_data *data = i2c_get_clientdata(client);
@@ -1964,6 +2011,10 @@ static int lm90_probe(struct i2c_client *client)
 		dev_err(dev, "Failed to initialize device\n");
 		return err;
 	}
+
+	/* Initialize the limits defined in the device-tree if any */
+	if (client->dev.of_node)
+		lm90_init_limits(data);
 
 	/*
 	 * The 'pec' attribute is attached to the i2c device and thus created
