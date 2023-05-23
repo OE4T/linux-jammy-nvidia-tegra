@@ -679,9 +679,9 @@ static int tegra_get_gpiochip_from_name(struct gpio_chip *chip, void *data)
 	return !strcmp(chip->label, data);
 }
 
-static int tegra_gpiochip_match(struct gpio_chip *chip, void *data)
+static int tegra_get_gpiochip_from_of_node(struct gpio_chip *chip, void *data)
 {
-	return chip->fwnode == of_node_to_fwnode(data);
+	return chip->of_node == data;
 }
 
 static int tegra_hte_probe(struct platform_device *pdev)
@@ -774,7 +774,7 @@ static int tegra_hte_probe(struct platform_device *pdev)
 			}
 
 			hte_dev->c = gpiochip_find(gpio_ctrl,
-						   tegra_gpiochip_match);
+					tegra_get_gpiochip_from_of_node);
 			of_node_put(gpio_ctrl);
 		}
 
