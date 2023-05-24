@@ -154,6 +154,11 @@ struct tegra_adma {
 	void __iomem			*base_addr;
 	struct clk			*ahub_clk;
 	unsigned int			nr_channels;
+	/* Used in virtualization case where individual
+	   channel page could be assigned to indivudual
+	   guest OS. Offset is used to skip channel pages
+	   not assigned to current guest OS */
+	unsigned int			chan_page_offset;
 	unsigned long			rx_requests_reserved;
 	unsigned long			tx_requests_reserved;
 
@@ -223,8 +228,8 @@ static int tegra_adma_init(struct tegra_adma *tdma)
 	int ret;
 
 	/* Clear any interrupts */
-	tdma_write(tdma, tdma->cdata->ch_base_offset +
-			tdma->cdata->global_int_clear, 0x1);
+	tdma_write(tdma, tdma->cdata->ch_base_offset + tdma->chan_page_offset
+					+ tdma->cdata->global_int_clear, 0x1);
 
 	if (tdma->cdata->is_virtualized) {
 		tdma->global_cmd = 1;
@@ -907,6 +912,7 @@ static int tegra_adma_probe(struct platform_device *pdev)
 	if (page_base)
 		chan_page_offset = (unsigned int) (page_base->start -
 				global_base->start - cdata->ch_base_offset);
+	tdma->chan_page_offset = chan_page_offset;
 
 	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
 							&tdma->nr_channels);
