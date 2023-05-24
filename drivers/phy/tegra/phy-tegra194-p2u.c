@@ -155,7 +155,7 @@ static int tegra_p2u_power_on(struct phy *x)
 		p2u_writel(phy, val, P2U_DIR_SEARCH_CTRL);
 	}
 
-	if (phy->of_data->lane_margin) {
+	if (phy->of_data->lane_margin && phy->bpmp) {
 		val = P2U_RX_MARGIN_SW_INT_EN_READINESS |
 		      P2U_RX_MARGIN_SW_INT_EN_MARGIN_START |
 		      P2U_RX_MARGIN_SW_INT_EN_MARGIN_CHANGE |
@@ -385,8 +385,8 @@ static int tegra_p2u_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct phy *generic_phy;
 	struct tegra_p2u *phy;
+	int irq = -ENODEV;
 	int ret;
-	u32 irq;
 
 	phy = devm_kzalloc(dev, sizeof(*phy), GFP_KERNEL);
 	if (!phy)
@@ -420,15 +420,14 @@ static int tegra_p2u_probe(struct platform_device *pdev)
 	if (IS_ERR(phy_provider))
 		return PTR_ERR(phy_provider);
 
-	if (phy->of_data->lane_margin) {
+	if (phy->of_data->lane_margin)
+		irq = platform_get_irq_byname(pdev, "intr");
+
+	if (irq < 0) {
+		dev_warn(dev, "Device tree update required to enable lane margining\n");
+	} else {
 		spin_lock_init(&phy->next_state_lock);
 		INIT_WORK(&phy->rx_margin_work, rx_margin_work_fn);
-
-		irq = platform_get_irq_byname(pdev, "intr");
-		if (!irq) {
-			dev_err(dev, "failed to get intr interrupt\n");
-			return irq;
-		}
 
 		ret = devm_request_irq(&pdev->dev, irq, tegra_p2u_irq_handler,
 				       0, "tegra-p2u-intr", phy);
@@ -456,7 +455,7 @@ static int tegra_p2u_remove(struct platform_device *pdev)
 {
 	struct tegra_p2u *phy = platform_get_drvdata(pdev);
 
-	if (phy->of_data->lane_margin)
+	if (phy->bpmp)
 		tegra_bpmp_put(phy->bpmp);
 
 	return 0;
