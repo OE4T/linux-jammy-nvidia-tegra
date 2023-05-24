@@ -693,6 +693,7 @@ static const struct spi_device_id spidev_spi_ids[] = {
 	{ .name = "spi-petra" },
 	{ .name = "spi-authenta" },
 	{ .name = "em3581" },
+	{ .name = "tegra-spidev" },
 	{},
 };
 MODULE_DEVICE_TABLE(spi, spidev_spi_ids);
