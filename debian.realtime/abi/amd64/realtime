@@ -18112,6 +18112,7 @@ EXPORT_SYMBOL_GPL	 net/netfilter/nf_synproxy_core 0xd04c5f69	synproxy_send_clien
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_synproxy_core 0xf8031630	synproxy_parse_options
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_synproxy_core 0xfa96c945	ipv4_synproxy_hook
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_tables 0x06c6ca47	nft_meta_policy
+EXPORT_SYMBOL_GPL	 net/netfilter/nf_tables 0x0ec2eb72	nf_tables_activate_set
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_tables 0x11c18ac7	nft_meta_set_destroy
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_tables 0x16bbfa64	nft_meta_get_dump
 EXPORT_SYMBOL_GPL	 net/netfilter/nf_tables 0x1d43aa60	nft_meta_set_eval
