@@ -290,64 +290,71 @@ static int tegra186_emc_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, emc);
 	emc->dev = &pdev->dev;
 
-	memset(&msg, 0, sizeof(msg));
-	msg.mrq = MRQ_EMC_DVFS_LATENCY;
-	msg.tx.data = NULL;
-	msg.tx.size = 0;
-	msg.rx.data = &response;
-	msg.rx.size = sizeof(response);
+	if (tegra_bpmp_mrq_is_supported(emc->bpmp, MRQ_EMC_DVFS_LATENCY)) {
+		memset(&msg, 0, sizeof(msg));
+		msg.mrq = MRQ_EMC_DVFS_LATENCY;
+		msg.tx.data = NULL;
+		msg.tx.size = 0;
+		msg.rx.data = &response;
+		msg.rx.size = sizeof(response);
 
-	err = tegra_bpmp_transfer(emc->bpmp, &msg);
-	if (err < 0) {
-		dev_err(&pdev->dev, "failed to EMC DVFS pairs: %d\n", err);
-		goto put_bpmp;
+		err = tegra_bpmp_transfer(emc->bpmp, &msg);
+		if (err < 0) {
+			dev_err(&pdev->dev, "failed to EMC DVFS pairs: %d\n", err);
+			goto put_bpmp;
+		}
+		if (msg.rx.ret < 0) {
+			err = -EINVAL;
+			dev_err(&pdev->dev, "EMC DVFS MRQ failed: %d (BPMP error code)\n", msg.rx.ret);
+			goto put_bpmp;
+		}
+
+		emc->debugfs.min_rate = ULONG_MAX;
+		emc->debugfs.max_rate = 0;
+
+		emc->num_dvfs = response.num_pairs;
+
+		emc->dvfs = devm_kmalloc_array(&pdev->dev, emc->num_dvfs,
+					       sizeof(*emc->dvfs), GFP_KERNEL);
+		if (!emc->dvfs) {
+			err = -ENOMEM;
+			goto put_bpmp;
+		}
+
+		dev_dbg(&pdev->dev, "%u DVFS pairs:\n", emc->num_dvfs);
+
+		for (i = 0; i < emc->num_dvfs; i++) {
+			emc->dvfs[i].rate = response.pairs[i].freq * 1000;
+			emc->dvfs[i].latency = response.pairs[i].latency;
+
+			if (emc->dvfs[i].rate < emc->debugfs.min_rate)
+				emc->debugfs.min_rate = emc->dvfs[i].rate;
+
+			if (emc->dvfs[i].rate > emc->debugfs.max_rate)
+				emc->debugfs.max_rate = emc->dvfs[i].rate;
+
+			dev_dbg(&pdev->dev, "  %2u: %lu Hz -> %lu us\n", i,
+				emc->dvfs[i].rate, emc->dvfs[i].latency);
+		}
+
+		err = clk_set_rate_range(emc->clk, emc->debugfs.min_rate,
+					 emc->debugfs.max_rate);
+		if (err < 0) {
+			dev_err(&pdev->dev,
+				"failed to set rate range [%lu-%lu] for %pC\n",
+				emc->debugfs.min_rate, emc->debugfs.max_rate,
+				emc->clk);
+			goto put_bpmp;
+		}
+
+		emc->debugfs.root = debugfs_create_dir("emc", NULL);
+		debugfs_create_file("available_rates", S_IRUGO, emc->debugfs.root,
+				    emc, &tegra186_emc_debug_available_rates_fops);
+		debugfs_create_file("min_rate", S_IRUGO | S_IWUSR, emc->debugfs.root,
+				    emc, &tegra186_emc_debug_min_rate_fops);
+		debugfs_create_file("max_rate", S_IRUGO | S_IWUSR, emc->debugfs.root,
+				    emc, &tegra186_emc_debug_max_rate_fops);
 	}
-
-	emc->debugfs.min_rate = ULONG_MAX;
-	emc->debugfs.max_rate = 0;
-
-	emc->num_dvfs = response.num_pairs;
-
-	emc->dvfs = devm_kmalloc_array(&pdev->dev, emc->num_dvfs,
-				       sizeof(*emc->dvfs), GFP_KERNEL);
-	if (!emc->dvfs) {
-		err = -ENOMEM;
-		goto put_bpmp;
-	}
-
-	dev_dbg(&pdev->dev, "%u DVFS pairs:\n", emc->num_dvfs);
-
-	for (i = 0; i < emc->num_dvfs; i++) {
-		emc->dvfs[i].rate = response.pairs[i].freq * 1000;
-		emc->dvfs[i].latency = response.pairs[i].latency;
-
-		if (emc->dvfs[i].rate < emc->debugfs.min_rate)
-			emc->debugfs.min_rate = emc->dvfs[i].rate;
-
-		if (emc->dvfs[i].rate > emc->debugfs.max_rate)
-			emc->debugfs.max_rate = emc->dvfs[i].rate;
-
-		dev_dbg(&pdev->dev, "  %2u: %lu Hz -> %lu us\n", i,
-			emc->dvfs[i].rate, emc->dvfs[i].latency);
-	}
-
-	err = clk_set_rate_range(emc->clk, emc->debugfs.min_rate,
-				 emc->debugfs.max_rate);
-	if (err < 0) {
-		dev_err(&pdev->dev,
-			"failed to set rate range [%lu-%lu] for %pC\n",
-			emc->debugfs.min_rate, emc->debugfs.max_rate,
-			emc->clk);
-		goto put_bpmp;
-	}
-
-	emc->debugfs.root = debugfs_create_dir("emc", NULL);
-	debugfs_create_file("available_rates", S_IRUGO, emc->debugfs.root,
-			    emc, &tegra186_emc_debug_available_rates_fops);
-	debugfs_create_file("min_rate", S_IRUGO | S_IWUSR, emc->debugfs.root,
-			    emc, &tegra186_emc_debug_min_rate_fops);
-	debugfs_create_file("max_rate", S_IRUGO | S_IWUSR, emc->debugfs.root,
-			    emc, &tegra186_emc_debug_max_rate_fops);
 
 	mc = dev_get_drvdata(emc->dev->parent);
 	if (mc && mc->soc->icc_ops) {
