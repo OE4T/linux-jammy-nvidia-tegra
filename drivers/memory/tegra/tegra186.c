@@ -115,7 +115,7 @@ static int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev)
 	struct of_phandle_args args;
 	unsigned int i, index = 0;
 
-	if (is_tegra_hypervisor_mode() == true) {
+	if (tegra_is_hypervisor_mode() == true) {
 		pr_debug("MC register access not allowed in Guest Linux\n");
 		return 0;
 	}

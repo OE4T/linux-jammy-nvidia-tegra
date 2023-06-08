@@ -6,7 +6,7 @@
 #ifndef TEGRA_PLATFORM_HELPER_H
 #define TEGRA_PLATFORM_HELPER_H
 
-static inline bool is_tegra_hypervisor_mode(void)
+static inline bool tegra_is_hypervisor_mode(void)
 {
 #ifdef CONFIG_OF
 	return of_property_read_bool(of_chosen,
