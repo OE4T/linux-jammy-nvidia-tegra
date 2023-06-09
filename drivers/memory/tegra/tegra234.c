@@ -929,7 +929,7 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 		return 0;
 
 	if (!mc->bwmgr_mrq_supported)
-		return -EINVAL;
+		return 0;
 
 	bpmp = of_tegra_bpmp_get();
 	if (IS_ERR(bpmp)) {
@@ -978,7 +978,7 @@ static int tegra234_mc_icc_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
 	struct tegra_mc *mc = icc_provider_to_tegra_mc(p);
 
 	if (!mc->bwmgr_mrq_supported)
-		return -EINVAL;
+		return 0;
 
 	if (node->id == TEGRA_ICC_MC_CPU_CLUSTER0 ||
 	    node->id == TEGRA_ICC_MC_CPU_CLUSTER1 ||
