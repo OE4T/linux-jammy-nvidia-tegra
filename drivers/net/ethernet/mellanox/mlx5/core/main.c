@@ -53,6 +53,7 @@
 #include <linux/version.h>
 #include <net/devlink.h>
 #include "mlx5_core.h"
+#include "thermal.h"
 #include "lib/eq.h"
 #include "fs_core.h"
 #include "lib/mpfs.h"
@@ -1546,6 +1547,10 @@ static int probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		dev_err(&pdev->dev, "mlx5_crdump_enable failed with error code %d\n", err);
 
+	err = mlx5_thermal_init(dev);
+	if (err)
+		dev_err(&pdev->dev, "mlx5_thermal_init failed with error code %d\n", err);
+
 	pci_save_state(pdev);
 	if (!mlx5_core_is_mp_slave(dev))
 		devlink_reload_enable(devlink);
@@ -1569,6 +1574,7 @@ static void remove_one(struct pci_dev *pdev)
 	struct devlink *devlink = priv_to_devlink(dev);
 
 	devlink_reload_disable(devlink);
+	mlx5_thermal_uninit(dev);
 	mlx5_crdump_disable(dev);
 	mlx5_drain_health_wq(dev);
 	mlx5_uninit_one(dev);
