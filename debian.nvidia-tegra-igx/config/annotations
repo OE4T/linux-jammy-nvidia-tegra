@@ -1,8 +1,8 @@
 # Menu: HEADER
 # FORMAT: 4
 # ARCH: arm64
-# FLAVOUR: arm64-nvidia-tegra arm64-nvidia-tegra-rt
-# FLAVOUR_DEP: {'arm64-nvidia-tegra': 'arm64-realtime', 'arm64-nvidia-tegra-rt': 'arm64-realtime'}
+# FLAVOUR: arm64-nvidia-tegra-igx arm64-nvidia-tegra-igx-rt
+# FLAVOUR_DEP: {'arm64-nvidia-tegra-igx': 'arm64-realtime', 'arm64-nvidia-tegra-igx-rt': 'arm64-realtime'}
 
 include "../../debian.realtime/config/annotations"
 
@@ -18,7 +18,7 @@ CONFIG_PCIE_EDR                                 note<'LP: #1965241'>
 CONFIG_PCI_MESON                                policy<{'arm64': 'n'}>
 CONFIG_PCI_MESON                                note<'LP: #2007745'>
 
-CONFIG_PREEMPT_RT                               policy<{'arm64': 'y', 'arm64-nvidia-tegra': 'n'}>
+CONFIG_PREEMPT_RT                               policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_PREEMPT_RT                               note<'must be enabled in the real-time kernel'>
 
 CONFIG_SPEAKUP                                  policy<{'arm64': '-'}>
@@ -38,87 +38,94 @@ CONFIG_VMWARE_VMCI_VSOCKETS                     note<'LP: #1978145'>
 
 CONFIG_A11Y_BRAILLE_CONSOLE                     policy<{'arm64': '-'}>
 CONFIG_ACPI_CPPC_CPUFREQ_FIE                    policy<{'arm64': 'n'}>
-CONFIG_ARCH_INLINE_READ_LOCK                    policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_LOCK_BH                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_LOCK_IRQ                policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_LOCK_IRQSAVE            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_UNLOCK                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_UNLOCK_BH               policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_UNLOCK_IRQ              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_READ_UNLOCK_IRQRESTORE       policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_LOCK                    policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_LOCK_BH                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_LOCK_IRQ                policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_LOCK_IRQSAVE            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_TRYLOCK                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_TRYLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_UNLOCK                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_UNLOCK_BH               policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_UNLOCK_IRQ              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_SPIN_UNLOCK_IRQRESTORE       policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_LOCK                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_LOCK_BH                policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_LOCK_IRQ               policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_LOCK_IRQSAVE           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_UNLOCK                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_UNLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
+CONFIG_ARCH_INLINE_READ_LOCK                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_LOCK_BH                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_LOCK_IRQ                policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_LOCK_IRQSAVE            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_UNLOCK                  policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_UNLOCK_BH               policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_UNLOCK_IRQ              policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_READ_UNLOCK_IRQRESTORE       policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_LOCK                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_LOCK_BH                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_LOCK_IRQ                policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_LOCK_IRQSAVE            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_TRYLOCK                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_TRYLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_UNLOCK                  policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_UNLOCK_BH               policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_UNLOCK_IRQ              policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_SPIN_UNLOCK_IRQRESTORE       policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_LOCK                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_LOCK_BH                policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_LOCK_IRQ               policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_LOCK_IRQSAVE           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_UNLOCK                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_UNLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
-CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'm'}>
+CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': '-', 'arm64-nvidia-tegra-igx-rt': 'm'}>
 CONFIG_CGROUP_WRITEBACK                         policy<{'arm64': '-'}>
-CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
-CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'n'}>
+CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-', 'arm64-nvidia-tegra-igx-rt': 'n'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
 CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
 CONFIG_HZ_1000                                  policy<{'arm64': 'y'}>
 CONFIG_HZ_250                                   policy<{'arm64': 'n'}>
-CONFIG_INLINE_READ_LOCK                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_LOCK_BH                      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_LOCK_IRQ                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_LOCK_IRQSAVE                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_UNLOCK                       policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_UNLOCK_BH                    policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_UNLOCK_IRQ                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_READ_UNLOCK_IRQRESTORE            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_LOCK                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_LOCK_BH                      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_LOCK_IRQ                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_LOCK_IRQSAVE                 policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_TRYLOCK                      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_TRYLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_UNLOCK_BH                    policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_UNLOCK_IRQ                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_SPIN_UNLOCK_IRQRESTORE            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_LOCK                        policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_LOCK_BH                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_LOCK_IRQ                    policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_LOCK_IRQSAVE                policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_UNLOCK                      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
+CONFIG_INLINE_READ_LOCK                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_LOCK_BH                      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_LOCK_IRQ                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_LOCK_IRQSAVE                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_UNLOCK                       policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_UNLOCK_BH                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_UNLOCK_IRQ                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_READ_UNLOCK_IRQRESTORE            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_LOCK                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_LOCK_BH                      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_LOCK_IRQ                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_LOCK_IRQSAVE                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_TRYLOCK                      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_TRYLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_UNLOCK_BH                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_UNLOCK_IRQ                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_SPIN_UNLOCK_IRQRESTORE            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_LOCK                        policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_LOCK_BH                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_LOCK_IRQ                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_LOCK_IRQSAVE                policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_UNLOCK                      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_MEMCG                                    policy<{'arm64': 'n'}>
 CONFIG_MEMCG_KMEM                               policy<{'arm64': '-'}>
 CONFIG_MEMCG_SWAP                               policy<{'arm64': '-'}>
 CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
-CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_NUMA_BALANCING                           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
-CONFIG_PREEMPTION                               policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
-CONFIG_PREEMPT_COUNT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
-CONFIG_PREEMPT_LAZY                             policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
-CONFIG_PREEMPT_RCU                              policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
-CONFIG_PREEMPT_TRACER                           policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-'}>
-CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_QUEUED_RWLOCKS                           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_RCU_BOOST                                policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
-CONFIG_RCU_BOOST_DELAY                          policy<{'arm64': '500', 'arm64-nvidia-tegra': '-'}>
+CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_NUMA_BALANCING                           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_PREEMPTION                               policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_PREEMPT_COUNT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_PREEMPT_LAZY                             policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_PREEMPT_RCU                              policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_PREEMPT_TRACER                           policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_QUEUED_RWLOCKS                           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_RCU_BOOST                                policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_RCU_BOOST_DELAY                          policy<{'arm64': '500', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_SCSI_UFSHCD_QUERY_EXPORT                 policy<{'arm64': 'y'}>
-CONFIG_SLAB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
-CONFIG_SLOB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
+CONFIG_SLAB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_SLOB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_SND_SOC_TEGRA186_ASRC                    policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_ADX                     policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_AMX                     policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_MIXER                   policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_MVC                     policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_OPE                     policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_TEGRA210_SFC                     policy<{'arm64': 'm'}>
 CONFIG_SOC_TEGRA_CBB                            policy<{'arm64': 'y'}>
 CONFIG_SPEAKUP_SYNTH_ACNTSA                     policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_APOLLO                     policy<{'arm64': '-'}>
@@ -132,14 +139,15 @@ CONFIG_SPEAKUP_SYNTH_SOFT                       policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_SPKOUT                     policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_TXPRT                      policy<{'arm64': '-'}>
 CONFIG_SYSFB_SIMPLEFB                           policy<{'arm64': 'n'}>
-CONFIG_TASKS_RCU                                policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
+CONFIG_TASKS_RCU                                policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_TEGRA186_GPC_DMA                         policy<{'arm64': 'y'}>
+CONFIG_TEGRA186_TIMER                           policy<{'arm64': 'y'}>
 CONFIG_TEGRA_EPL                                policy<{'arm64': 'y'}>
 CONFIG_TEGRA_HOST1X_CONTEXT_BUS                 policy<{'arm64': 'y'}>
 CONFIG_TEGRA_HSIERRRPTINJ                       policy<{'arm64': 'y'}>
 CONFIG_TEGRA_PLATFORM_DEVICES                   policy<{'arm64': 'y'}>
 CONFIG_TEST_UBSAN                               policy<{'arm64': '-'}>
-CONFIG_TRANSPARENT_HUGEPAGE                     policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
+CONFIG_TRANSPARENT_HUGEPAGE                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_UBSAN_ALIGNMENT                          policy<{'arm64': '-'}>
 CONFIG_UBSAN_BOOL                               policy<{'arm64': '-'}>
 CONFIG_UBSAN_BOUNDS                             policy<{'arm64': '-'}>
