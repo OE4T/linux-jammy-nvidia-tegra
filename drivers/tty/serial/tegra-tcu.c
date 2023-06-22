@@ -19,6 +19,7 @@
 #define TCU_MBOX_BYTE_V(x, i)			(((x) >> (i * 8)) & 0xff)
 #define TCU_MBOX_NUM_BYTES(x)			((x) << 24)
 #define TCU_MBOX_NUM_BYTES_V(x)			(((x) >> 24) & 0x3)
+#define TCU_ESCAPE_CHAR				(0xFFU)
 
 struct tegra_tcu {
 	struct uart_driver driver;
@@ -29,6 +30,8 @@ struct tegra_tcu {
 
 	struct mbox_client tx_client, rx_client;
 	struct mbox_chan *tx, *rx;
+
+	bool expecting_ccplex_id;
 };
 
 static unsigned int tegra_tcu_uart_tx_empty(struct uart_port *port)
@@ -158,18 +161,36 @@ static int tegra_tcu_console_setup(struct console *cons, char *options)
 }
 #endif
 
+static bool tegra_tcu_is_rx_char(struct tegra_tcu *tcu, unsigned char ch)
+{
+	if (ch == TCU_ESCAPE_CHAR) {
+		tcu->expecting_ccplex_id = true;
+		return false;
+	} else if (tcu->expecting_ccplex_id) {
+		tcu->expecting_ccplex_id = false;
+		return false;
+	}
+
+	return true;
+}
+
 static void tegra_tcu_receive(struct mbox_client *cl, void *msg)
 {
 	struct tegra_tcu *tcu = container_of(cl, struct tegra_tcu, rx_client);
 	struct tty_port *port = &tcu->port.state->port;
 	u32 value = (u32)(unsigned long)msg;
 	unsigned int num_bytes, i;
+	unsigned char ch;
 
 	num_bytes = TCU_MBOX_NUM_BYTES_V(value);
 
-	for (i = 0; i < num_bytes; i++)
-		tty_insert_flip_char(port, TCU_MBOX_BYTE_V(value, i),
-				     TTY_NORMAL);
+	for (i = 0; i < num_bytes; i++) {
+		ch = TCU_MBOX_BYTE_V(value, i);
+
+		if (tegra_tcu_is_rx_char(tcu, ch))
+			tty_insert_flip_char(port, TCU_MBOX_BYTE_V(value, i),
+					     TTY_NORMAL);
+	}
 
 	tty_flip_buffer_push(port);
 }
