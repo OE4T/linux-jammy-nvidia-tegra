@@ -2892,7 +2892,6 @@ void device_initialize(struct device *dev)
 	dev->dma_io_tlb_mem = &io_tlb_default_mem;
 #endif
 	dev->context_dev = false;
-	dev->dmabuf_defer_unmap = false;
 }
 EXPORT_SYMBOL_GPL(device_initialize);
 
