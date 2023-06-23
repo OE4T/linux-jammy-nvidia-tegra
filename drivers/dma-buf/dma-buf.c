@@ -42,16 +42,28 @@ static struct dma_buf_list db_list;
 
 static struct mutex context_dev_lock;
 
-int dma_buf_defer_unmapping(struct device *device, bool enable)
+/*
+ * once this flag is set, no device
+ * should be able to disable its defer unmapping feature.
+ * Using this flag avoids unnecessary complex ref counting
+ * and locking that could make the defer unmapping feature
+ * complex.
+ */
+static bool dmabuf_stop_disabling_defer_unmapping;
+
+/**
+ * dma_buf_disable_defer_unmapping - Set device specific data to disable
+ * defer unmapping for that specific device. Once disabled, defer unmapping
+ * cannot be enabled again.
+ *
+ * @device	[in]	Device for which the defer unmapping need to be
+ *			disabled.
+ */
+int dma_buf_disable_defer_unmapping(struct device *device)
 {
-	if (!IS_ENABLED(CONFIG_DMABUF_DEFERRED_UNMAPPING))
-		return -ENOENT;
-
-	device->dmabuf_defer_unmap = enable;
-
 	return 0;
 }
-EXPORT_SYMBOL(dma_buf_defer_unmapping);
+EXPORT_SYMBOL(dma_buf_disable_defer_unmapping);
 
 static bool dmabuf_can_defer_unmap(struct dma_buf *dmabuf,
 		struct device *device)
@@ -62,7 +74,7 @@ static bool dmabuf_can_defer_unmap(struct dma_buf *dmabuf,
 	if (!(dmabuf->flags & DMABUF_CAN_DEFER_UNMAP))
 		return false;
 
-	return device->dmabuf_defer_unmap;
+	return true;
 }
 
 static void dma_buf_release_attachment(struct dma_buf_attachment *attach)
@@ -633,6 +645,8 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
 	size_t alloc_size = sizeof(struct dma_buf);
 	int ret;
 
+	dmabuf_stop_disabling_defer_unmapping = true;
+
 	if (!exp_info->resv)
 		alloc_size += sizeof(struct dma_resv);
 	else
@@ -878,11 +892,8 @@ dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
 
 	dma_resv_unlock(dmabuf->resv);
 	attach = kzalloc(sizeof(*attach), GFP_KERNEL);
-	if (!attach) {
-		if (dev->context_dev)
-			mutex_unlock(&context_dev_lock);
+	if (!attach)
 		return ERR_PTR(-ENOMEM);
-	}
 
 	attach->dev = dev;
 	attach->dmabuf = dmabuf;
@@ -1162,19 +1173,17 @@ struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
 		 */
 		if (attach->dir != direction &&
 		    attach->dir != DMA_BIDIRECTIONAL)
-			sg_table = ERR_PTR(-EBUSY);
+			return ERR_PTR(-EBUSY);
 
-		goto finish;
+		return attach->sgt;
 	}
 
 	if (dma_buf_is_dynamic(attach->dmabuf)) {
 		dma_resv_assert_held(attach->dmabuf->resv);
 		if (!IS_ENABLED(CONFIG_DMABUF_MOVE_NOTIFY)) {
 			r = attach->dmabuf->ops->pin(attach);
-			if (r) {
-				sg_table = ERR_PTR(r);
-				goto finish;
-			}
+			if (r)
+				return ERR_PTR(r);
 		}
 	}
 

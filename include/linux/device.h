@@ -583,7 +583,6 @@ struct device {
 	 * for that purpose.
 	 */
 	bool			context_dev;
-	bool			dmabuf_defer_unmap;
 	struct list_head	attachments;
 };
 
