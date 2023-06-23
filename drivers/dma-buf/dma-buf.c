@@ -68,9 +68,6 @@ EXPORT_SYMBOL(dma_buf_disable_defer_unmapping);
 static bool dmabuf_can_defer_unmap(struct dma_buf *dmabuf,
 		struct device *device)
 {
-	if (!(dmabuf->flags & DMABUF_CAN_DEFER_UNMAP))
-		return false;
-
 	return true;
 }
 
@@ -1157,9 +1154,6 @@ struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
 	if (attach->sgt) {
 		sg_table = attach->sgt;
 		if (dmabuf_can_defer_unmap(attach->dmabuf, attach->dev)) {
-			if (!(attach->dmabuf->flags & DMABUF_SKIP_CACHE_SYNC))
-				dma_sync_sg_for_device(attach->dev, sg_table->sgl,
-					sg_table->nents, direction);
 			goto finish;
 		}
 
@@ -1245,9 +1239,6 @@ void dma_buf_unmap_attachment(struct dma_buf_attachment *attach,
 		return;
 
 	if (dmabuf_can_defer_unmap(attach->dmabuf, attach->dev)) {
-		if (!(attach->dmabuf->flags & DMABUF_SKIP_CACHE_SYNC))
-			dma_sync_sg_for_device(attach->dev, sg_table->sgl,
-				sg_table->nents, direction);
 		goto finish;
 	}
 
