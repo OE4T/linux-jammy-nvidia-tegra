@@ -2872,7 +2872,6 @@ void device_initialize(struct device *dev)
 	lockdep_set_novalidate_class(&dev->mutex);
 	spin_lock_init(&dev->devres_lock);
 	INIT_LIST_HEAD(&dev->devres_head);
-	INIT_LIST_HEAD(&dev->attachments);
 	device_pm_init(dev);
 	set_dev_node(dev, -1);
 #ifdef CONFIG_GENERIC_MSI_IRQ
@@ -2891,7 +2890,6 @@ void device_initialize(struct device *dev)
 #ifdef CONFIG_SWIOTLB
 	dev->dma_io_tlb_mem = &io_tlb_default_mem;
 #endif
-	dev->context_dev = false;
 }
 EXPORT_SYMBOL_GPL(device_initialize);
 
