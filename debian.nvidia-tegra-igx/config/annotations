@@ -38,6 +38,7 @@ CONFIG_VMWARE_VMCI_VSOCKETS                     note<'LP: #1978145'>
 
 CONFIG_A11Y_BRAILLE_CONSOLE                     policy<{'arm64': '-'}>
 CONFIG_ACPI_CPPC_CPUFREQ_FIE                    policy<{'arm64': 'n'}>
+CONFIG_AQUANTIA_PHY                             policy<{'arm64': 'n'}>
 CONFIG_ARCH_INLINE_READ_LOCK                    policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_ARCH_INLINE_READ_LOCK_BH                 policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_ARCH_INLINE_READ_LOCK_IRQ                policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
