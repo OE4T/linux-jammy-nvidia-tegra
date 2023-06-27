@@ -1,1 +1,1 @@
-do_enforce_all = false
+do_enforce_all = true
