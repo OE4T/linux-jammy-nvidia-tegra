@@ -1065,7 +1065,10 @@ static int lm90_set_temp11(struct lm90_data *data, int index, long val)
 		val -= 16000;
 	}
 
-	if (data->flags & LM90_HAVE_EXTENDED_TEMP)
+	/* Support negative remote offset for the TMP451 */
+	if (data->kind == tmp451 && index == REMOTE_OFFSET)
+		data->temp11[index] = temp_to_s16(val);
+	else if (data->flags & LM90_HAVE_EXTENDED_TEMP)
 		data->temp11[index] = temp_to_u16_adt7461(data, val);
 	else if (data->kind == max6646)
 		data->temp11[index] = temp_to_u8(val) << 8;
@@ -1771,6 +1774,7 @@ static void lm90_init_limits(struct lm90_data *data)
 {
 	struct device_node *np;
 	struct device *dev;
+	int offset;
 	u32 val;
 
 	if (!data || !data->client) return;
@@ -1809,8 +1813,8 @@ static void lm90_init_limits(struct lm90_data *data)
 	}
 
 	if (data->flags & LM90_HAVE_OFFSET)
-		if (!of_property_read_u32(np, "remote-offset", &val))
-			if (lm90_temp_write(dev, hwmon_temp_offset, 1, val))
+		if (!of_property_read_s32(np, "remote-offset", &offset))
+			if (lm90_temp_write(dev, hwmon_temp_offset, 1, offset))
 				dev_warn(dev, "Unable to set offset for remote sensor\n");
 }
 
