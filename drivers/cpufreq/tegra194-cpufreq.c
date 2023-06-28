@@ -77,6 +77,7 @@ struct tegra194_cpufreq_data {
 	struct cpufreq_frequency_table **bpmp_luts;
 	const struct tegra_cpufreq_soc *soc;
 	bool icc_dram_bw_scaling;
+	bool skip_bw_scaling;
 	struct physical_ids *phys_ids;
 };
 
@@ -526,7 +527,7 @@ static int tegra194_cpufreq_set_target(struct cpufreq_policy *policy,
 	 */
 	data->soc->ops->set_cpu_ndiv(policy, (u64)tbl->driver_data);
 
-	if (data->icc_dram_bw_scaling)
+	if (data->icc_dram_bw_scaling && !data->skip_bw_scaling)
 		tegra_cpufreq_set_bw(policy, tbl->frequency);
 
 	return 0;
@@ -790,6 +791,14 @@ static const struct of_device_id tegra194_cpufreq_of_match[] = {
 MODULE_DEVICE_TABLE(of, tegra194_cpufreq_of_match);
 
 #ifdef CONFIG_PM_SLEEP
+static int tegra194_cpufreq_suspend(struct device *dev)
+{
+	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
+
+	data->skip_bw_scaling = true;
+	return 0;
+}
+
 static int tegra194_cpufreq_resume(struct device *dev)
 {
 	struct tegra194_cpufreq_data *data = cpufreq_get_driver_data();
@@ -808,13 +817,14 @@ static int tegra194_cpufreq_resume(struct device *dev)
 				tegra234_cpufreq_offline(cpu);
 		}
 	}
+	data->skip_bw_scaling = false;
 
 	return 0;
 }
 #endif
 
 static const struct dev_pm_ops tegra194_cpufreq_pm_ops = {
-	SET_SYSTEM_SLEEP_PM_OPS(NULL, tegra194_cpufreq_resume)
+	SET_SYSTEM_SLEEP_PM_OPS(tegra194_cpufreq_suspend, tegra194_cpufreq_resume)
 };
 
 static struct platform_driver tegra194_ccplex_driver = {
