@@ -117,6 +117,8 @@ CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n', 'arm64-nvi
 CONFIG_QUEUED_RWLOCKS                           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_RCU_BOOST                                policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_RCU_BOOST_DELAY                          policy<{'arm64': '500', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_RTW88_8822C                              policy<{'arm64': '-'}>
+CONFIG_RTW88_8822CE                             policy<{'arm64': 'n'}>
 CONFIG_SCSI_UFSHCD_QUERY_EXPORT                 policy<{'arm64': 'y'}>
 CONFIG_SLAB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_SLOB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
