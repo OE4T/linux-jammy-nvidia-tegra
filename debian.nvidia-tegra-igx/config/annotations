@@ -66,11 +66,14 @@ CONFIG_ARCH_INLINE_WRITE_UNLOCK_BH              policy<{'arm64': '-', 'arm64-nvi
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
+CONFIG_CC_VERSION_TEXT                          policy<{'arm64': '"aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"'}>
 CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': '-', 'arm64-nvidia-tegra-igx-rt': 'm'}>
 CONFIG_CGROUP_WRITEBACK                         policy<{'arm64': '-'}>
+CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-', 'arm64-nvidia-tegra-igx-rt': 'n'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
+CONFIG_GCC_VERSION                              policy<{'arm64': '110400'}>
 CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
 CONFIG_HZ_1000                                  policy<{'arm64': 'y'}>
@@ -100,6 +103,7 @@ CONFIG_INLINE_WRITE_UNLOCK                      policy<{'arm64': '-', 'arm64-nvi
 CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_ISO9660_FS                               policy<{'arm64': 'y'}>
 CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_MEMCG                                    policy<{'arm64': 'n'}>
 CONFIG_MEMCG_KMEM                               policy<{'arm64': '-'}>
@@ -108,21 +112,28 @@ CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
 CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_NUMA_BALANCING                           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_PAHOLE_VERSION                           policy<{'arm64': '125'}>
+CONFIG_PINCTRL_TEGRA234                         policy<{'arm64': 'y'}>
 CONFIG_PREEMPTION                               policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_PREEMPT_COUNT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_PREEMPT_LAZY                             policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_PREEMPT_RCU                              policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_PREEMPT_TRACER                           policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n', 'arm64-nvidia-tegra-igx': 'y'}>
+CONFIG_PSTORE_BLK_CONSOLE_SIZE                  policy<{'arm64': '64'}>
+CONFIG_PSTORE_CONSOLE                           policy<{'arm64': 'y'}>
+CONFIG_PSTORE_RAM                               policy<{'arm64': 'y'}>
 CONFIG_QUEUED_RWLOCKS                           policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'y'}>
 CONFIG_R8169                                    policy<{'arm64': 'n'}>
 CONFIG_RCU_BOOST                                policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-'}>
 CONFIG_RCU_BOOST_DELAY                          policy<{'arm64': '500', 'arm64-nvidia-tegra-igx': '-'}>
+CONFIG_REED_SOLOMON                             policy<{'arm64': 'y'}>
 CONFIG_RTW88_8822C                              policy<{'arm64': '-'}>
 CONFIG_RTW88_8822CE                             policy<{'arm64': 'n'}>
 CONFIG_SCSI_UFSHCD_QUERY_EXPORT                 policy<{'arm64': 'y'}>
 CONFIG_SLAB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_SLOB                                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
+CONFIG_SND_AUDIO_GRAPH_CARD2                    policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA186_ASRC                    policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA210_ADX                     policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA210_AMX                     policy<{'arm64': 'm'}>
@@ -130,7 +141,9 @@ CONFIG_SND_SOC_TEGRA210_MIXER                   policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA210_MVC                     policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA210_OPE                     policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_TEGRA210_SFC                     policy<{'arm64': 'm'}>
+CONFIG_SND_TEST_COMPONENT                       policy<{'arm64': 'n'}>
 CONFIG_SOC_TEGRA_CBB                            policy<{'arm64': 'y'}>
+CONFIG_SOC_TEGRA_PLATFORM_HELPER                policy<{'arm64': 'y'}>
 CONFIG_SPEAKUP_SYNTH_ACNTSA                     policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_APOLLO                     policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_AUDPTR                     policy<{'arm64': '-'}>
@@ -150,6 +163,7 @@ CONFIG_TEGRA_EPL                                policy<{'arm64': 'y'}>
 CONFIG_TEGRA_HOST1X_CONTEXT_BUS                 policy<{'arm64': 'y'}>
 CONFIG_TEGRA_HSIERRRPTINJ                       policy<{'arm64': 'y'}>
 CONFIG_TEGRA_PLATFORM_DEVICES                   policy<{'arm64': 'y'}>
+CONFIG_TEGRA_PROD_ENABLE                        policy<{'arm64': 'y'}>
 CONFIG_TEST_UBSAN                               policy<{'arm64': '-'}>
 CONFIG_TRANSPARENT_HUGEPAGE                     policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_UBSAN_ALIGNMENT                          policy<{'arm64': '-'}>
@@ -162,3 +176,5 @@ CONFIG_UBSAN_SANITIZE_ALL                       policy<{'arm64': '-'}>
 CONFIG_UBSAN_SHIFT                              policy<{'arm64': '-'}>
 CONFIG_UBSAN_TRAP                               policy<{'arm64': '-'}>
 CONFIG_UBSAN_UNREACHABLE                        policy<{'arm64': '-'}>
+CONFIG_USB_CONFIGFS_F_ACC                       policy<{'arm64': 'y'}>
+CONFIG_USB_F_ACC                                policy<{'arm64': 'm'}>
