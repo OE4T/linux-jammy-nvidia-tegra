@@ -1094,7 +1094,6 @@ dccp_ipv6
 ddbridge
 ddbridge-dummy-fe
 de2104x
-decnet
 defxx
 denali
 denali_dt
@@ -1179,7 +1178,6 @@ dmfe
 dmi-sysfs
 dmm32at
 dmx3191d
-dn_rtmsg
 dnet
 dp83640
 dp83822
