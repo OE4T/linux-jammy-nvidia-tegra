@@ -10,6 +10,7 @@
 
 #define SPINOR_OP_RD_ANY_REG			0x65	/* Read any register */
 #define SPINOR_OP_WR_ANY_REG			0x71	/* Write any register */
+#define SPINOR_REG_CYPRESS_CFR1V		0x00800002
 #define SPINOR_REG_CYPRESS_CFR2V		0x00800003
 #define SPINOR_REG_CYPRESS_CFR2V_MEMLAT_11_24	0xb
 #define SPINOR_REG_CYPRESS_CFR3V		0x00800004
@@ -195,8 +196,54 @@ s25fs_s_post_bfpt_fixups(struct spi_nor *nor,
 	return 0;
 }
 
+static int s25fs_s_post_get_map_id(struct spi_nor *nor, const u32 *smpt, u8 smpt_len)
+{
+
+	/* Read Configuration Register 3 Volatile (CR3V) */
+	struct spi_mem_op op1 =
+		SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RD_ANY_REG, 1),
+			   SPI_MEM_OP_ADDR(3, SPINOR_REG_CYPRESS_CFR3V, 1),
+			   SPI_MEM_OP_NO_DUMMY,
+			   SPI_MEM_OP_DATA_IN(1, nor->bouncebuf, 1));
+
+	/* Read Configuration Register 1 Volatile (CR1V) */
+	struct spi_mem_op op2 =
+		SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RD_ANY_REG, 1),
+			   SPI_MEM_OP_ADDR(3, SPINOR_REG_CYPRESS_CFR1V, 1),
+			   SPI_MEM_OP_NO_DUMMY,
+			   SPI_MEM_OP_DATA_IN(1, nor->bouncebuf, 1));
+
+	u8 reg_cr3v_val, reg_cr1v_val;
+	int ret;
+
+	/* Read CR3V value from Configuration Register 3 Volatile */
+	ret = spi_mem_exec_op(nor->spimem, &op1);
+	if (ret)
+		return ret;
+	reg_cr3v_val = nor->bouncebuf[0];
+
+	/* Read CR1V value from Configuration Register 1 Volatile */
+	ret = spi_mem_exec_op(nor->spimem, &op2);
+	if (ret)
+		return ret;
+	reg_cr1v_val = nor->bouncebuf[0];
+
+	/* Determine the map ID based on CR3V[3] and CR1V[2] values */
+	if ((!(reg_cr3v_val & BIT(3))) && (!(reg_cr1v_val & BIT(2))))
+		return 1; /* CR3V[3] = 0, CR1V[2] = 0, map id = 1 */
+
+	if ((!(reg_cr3v_val & BIT(3))) && (reg_cr1v_val & BIT(2)))
+		return 3; /* CR3V[3] = 0, CR1V[2] = 1, map id = 3 */
+
+	if ((reg_cr3v_val & BIT(3)) && (!(reg_cr1v_val & BIT(2))))
+		return 5; /* CR3V[3] = 1, CR1V[2] = 0, map id = 5 */
+
+	return 0;
+}
+
 static struct spi_nor_fixups s25fs_s_fixups = {
 	.post_bfpt = s25fs_s_post_bfpt_fixups,
+	.post_get_map_id = s25fs_s_post_get_map_id,
 };
 
 static const struct flash_info spansion_parts[] = {
