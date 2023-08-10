@@ -2294,6 +2294,35 @@ int spi_nor_post_bfpt_fixups(struct spi_nor *nor,
 	return 0;
 }
 
+/*
+ * spi_nor_post_get_map_id_fixups - Perform post-processing
+ * fixups after getting the flash device's map ID.
+ * @nor: Pointer to the spi_nor structure describing the flash device.
+ * @smpt: Pointer to the sector map parameter table retrieved from the flash device.
+ * @smpt_len: Length of the sector map parameter table.
+ * @map_id: Pointer to the variable storing the map ID of the flash device (output).
+ *
+ * This function allows for post-processing fixups to be applied after obtaining the map ID
+ * of the flash device. It checks if there are any registered fixup functions provided by
+ * the flash device's info structure. If a fixup function is available, it is called to perform
+ * any necessary adjustments or corrections. If the fixup function returns a non-zero value,
+ * it updates the map ID accordingly.
+ *
+ * @return: None.
+ */
+void spi_nor_post_get_map_id_fixups(struct spi_nor *nor, const u32 *smpt,
+					 u8 smpt_len, u8 *map_id)
+{
+	int ret = 0;
+
+	if (nor->info->fixups && nor->info->fixups->post_get_map_id) {
+		ret = nor->info->fixups->post_get_map_id(nor, smpt, smpt_len);
+		if (ret)
+			*map_id = ret;
+	}
+	return;
+}
+
 static int spi_nor_select_read(struct spi_nor *nor,
 			       u32 shared_hwcaps)
 {
