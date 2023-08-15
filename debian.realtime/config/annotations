@@ -75,6 +75,7 @@ CONFIG_ARM64_CONT_PTE_SHIFT                     policy<{'arm64': '4'}>
 CONFIG_ARM64_ERRATUM_834220                     policy<{'arm64': '-'}>
 CONFIG_ARM64_PAGE_SHIFT                         policy<{'arm64': '12'}>
 CONFIG_ARM64_VA_BITS_39                         policy<{'arm64': 'n'}>
+CONFIG_CC_VERSION_TEXT                          policy<{'amd64': '"x86_64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"', 'arm64': '"aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"'}>
 CONFIG_CEC_GPIO                                 policy<{'amd64': 'm', 'arm64': 'n'}>
 CONFIG_CEC_PIN                                  policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_CEC_PIN_ERROR_INJ                        policy<{'amd64': 'y', 'arm64': 'n'}>
@@ -88,6 +89,7 @@ CONFIG_DEV_DAX_PMEM                             policy<{'amd64': '-', 'arm64': '
 CONFIG_DEV_DAX_PMEM_COMPAT                      policy<{'amd64': '-', 'arm64': '-'}>
 CONFIG_FORCE_MAX_ZONEORDER                      policy<{'arm64': '13'}>
 CONFIG_FS_DAX_PMD                               policy<{'amd64': '-', 'arm64': '-'}>
+CONFIG_GCC_VERSION                              policy<{'amd64': '110400', 'arm64': '110400'}>
 CONFIG_GPIO_AAEON                               policy<{'amd64': '-'}>
 CONFIG_HAVE_KVM_ARCH_TLB_FLUSH_ALL              policy<{'arm64': '-'}>
 CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT             policy<{'amd64': 'y', 'arm64': '-'}>
@@ -142,6 +144,7 @@ CONFIG_NET_RX_BUSY_POLL                         policy<{'amd64': '-', 'arm64': '
 CONFIG_NO_HZ_FULL                               policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_NUMA_BALANCING                           policy<{'amd64': '-', 'arm64': '-'}>
 CONFIG_NVHE_EL2_DEBUG                           policy<{'arm64': '-'}>
+CONFIG_PAHOLE_VERSION                           policy<{'amd64': '125', 'arm64': '125'}>
 CONFIG_PGTABLE_LEVELS                           policy<{'amd64': '5', 'arm64': '4'}>
 CONFIG_POSIX_CPU_TIMERS_TASK_WORK               policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_PREEMPTION                               policy<{'amd64': 'y', 'arm64': 'y'}>
