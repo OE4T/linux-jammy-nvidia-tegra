@@ -417,6 +417,7 @@ tegra234-cbb
 thermal
 ti-msgmgr
 ti_sci
+timer-tegra186
 tpm
 tpm_crb
 tpm_tis
