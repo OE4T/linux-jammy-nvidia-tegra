@@ -66,7 +66,6 @@ CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvi
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
 CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'm'}>
-CONFIG_CGROUP_WRITEBACK                         policy<{'arm64': '-'}>
 CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'n'}>
@@ -103,9 +102,6 @@ CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvi
 CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
-CONFIG_MEMCG                                    policy<{'arm64': 'n'}>
-CONFIG_MEMCG_KMEM                               policy<{'arm64': '-'}>
-CONFIG_MEMCG_SWAP                               policy<{'arm64': '-'}>
 CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
 CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
