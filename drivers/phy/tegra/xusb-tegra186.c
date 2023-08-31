@@ -699,6 +699,7 @@ static void tegra186_utmi_bias_pad_power_off(struct tegra_xusb_padctl *padctl)
 static void tegra186_utmi_pad_power_on(struct phy *phy)
 {
 	struct tegra_xusb_lane *lane = phy_get_drvdata(phy);
+	struct tegra_xusb_usb2_lane *usb2 = to_usb2_lane(lane);
 	struct tegra_xusb_padctl *padctl = lane->pad->padctl;
 	struct tegra_xusb_usb2_port *port;
 	struct device *dev = padctl->dev;
@@ -714,6 +715,9 @@ static void tegra186_utmi_pad_power_on(struct phy *phy)
 		return;
 	}
 
+	if (usb2->powered_on)
+		return;
+
 	dev_dbg(dev, "power on UTMI pad %u\n", index);
 
 	tegra186_utmi_bias_pad_power_on(padctl);
@@ -727,16 +731,22 @@ static void tegra186_utmi_pad_power_on(struct phy *phy)
 	value = padctl_readl(padctl, XUSB_PADCTL_USB2_OTG_PADX_CTL1(index));
 	value &= ~USB2_OTG_PD_DR;
 	padctl_writel(padctl, value, XUSB_PADCTL_USB2_OTG_PADX_CTL1(index));
+
+	usb2->powered_on = true;
 }
 
 static void tegra186_utmi_pad_power_down(struct phy *phy)
 {
 	struct tegra_xusb_lane *lane = phy_get_drvdata(phy);
+	struct tegra_xusb_usb2_lane *usb2 = to_usb2_lane(lane);
 	struct tegra_xusb_padctl *padctl = lane->pad->padctl;
 	unsigned int index = lane->index;
 	u32 value;
 
 	if (!phy)
+		return;
+
+	if (!usb2->powered_on)
 		return;
 
 	dev_dbg(padctl->dev, "power down UTMI pad %u\n", index);
@@ -752,6 +762,8 @@ static void tegra186_utmi_pad_power_down(struct phy *phy)
 	udelay(2);
 
 	tegra186_utmi_bias_pad_power_off(padctl);
+
+	usb2->powered_on = false;
 }
 
 static int tegra186_xusb_padctl_vbus_override(struct tegra_xusb_padctl *padctl,
