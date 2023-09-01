@@ -959,6 +959,11 @@ static int malidp_platform_remove(struct platform_device *pdev)
 	return 0;
 }
 
+static void malidp_platform_shutdown(struct platform_device *pdev)
+{
+	drm_atomic_helper_shutdown(platform_get_drvdata(pdev));
+}
+
 static int __maybe_unused malidp_pm_suspend(struct device *dev)
 {
 	struct drm_device *drm = dev_get_drvdata(dev);
@@ -1000,6 +1005,7 @@ static const struct dev_pm_ops malidp_pm_ops = {
 static struct platform_driver malidp_platform_driver = {
 	.probe		= malidp_platform_probe,
 	.remove		= malidp_platform_remove,
+	.shutdown	= malidp_platform_shutdown,
 	.driver	= {
 		.name = "mali-dp",
 		.pm = &malidp_pm_ops,

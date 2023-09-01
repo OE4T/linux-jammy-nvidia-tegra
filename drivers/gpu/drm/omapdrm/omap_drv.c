@@ -690,6 +690,13 @@ static int pdev_remove(struct platform_device *pdev)
 	return 0;
 }
 
+static void pdev_shutdown(struct platform_device *pdev)
+{
+	struct omap_drm_private *priv = platform_get_drvdata(pdev);
+
+	drm_atomic_helper_shutdown(priv->ddev);
+}
+
 #ifdef CONFIG_PM_SLEEP
 static int omap_drm_suspend(struct device *dev)
 {
@@ -719,6 +726,7 @@ static struct platform_driver pdev = {
 	},
 	.probe = pdev_probe,
 	.remove = pdev_remove,
+	.shutdown = pdev_shutdown,
 };
 
 static struct platform_driver * const drivers[] = {
