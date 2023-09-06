@@ -254,6 +254,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
 				size_t length;
 
 				maps = of_translate_dma_region(np, maps, &iova, &length);
+				if (iova == 0 && length == 0)
+					continue;
+
 				type = iommu_resv_region_get_type(dev, &phys, iova, length);
 
 				/* If there is overflow, replace size with max possible size */
