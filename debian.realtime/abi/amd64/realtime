@@ -6320,7 +6320,6 @@ EXPORT_SYMBOL	 vmlinux 0x0a79fd26	dmam_pool_create
 EXPORT_SYMBOL	 vmlinux 0x0a7b948f	set_pages_uc
 EXPORT_SYMBOL	 vmlinux 0x0a855fd2	napi_schedule_prep
 EXPORT_SYMBOL	 vmlinux 0x0a8925af	kthread_stop
-EXPORT_SYMBOL	 vmlinux 0x0a92ec74	boot_cpu_data
 EXPORT_SYMBOL	 vmlinux 0x0a967cd0	neigh_proc_dointvec_ms_jiffies
 EXPORT_SYMBOL	 vmlinux 0x0a9c0ccf	phy_set_max_speed
 EXPORT_SYMBOL	 vmlinux 0x0aa219f8	i2c_get_adapter
@@ -8530,7 +8529,6 @@ EXPORT_SYMBOL	 vmlinux 0x6e496589	init_net
 EXPORT_SYMBOL	 vmlinux 0x6e5b8651	xz_dec_run
 EXPORT_SYMBOL	 vmlinux 0x6e666f2d	tty_port_tty_get
 EXPORT_SYMBOL	 vmlinux 0x6e720ff2	rtnl_unlock
-EXPORT_SYMBOL	 vmlinux 0x6e841389	cpu_info
 EXPORT_SYMBOL	 vmlinux 0x6e90cbf6	dmam_free_coherent
 EXPORT_SYMBOL	 vmlinux 0x6e9dd606	__symbol_put
 EXPORT_SYMBOL	 vmlinux 0x6ea2bb13	napi_gro_flush
@@ -10422,6 +10420,7 @@ EXPORT_SYMBOL	 vmlinux 0xc20ce358	fib_notifier_ops_register
 EXPORT_SYMBOL	 vmlinux 0xc21349aa	pin_user_pages_unlocked
 EXPORT_SYMBOL	 vmlinux 0xc21a6f03	netdev_pick_tx
 EXPORT_SYMBOL	 vmlinux 0xc2200c47	xen_alloc_unpopulated_pages
+EXPORT_SYMBOL	 vmlinux 0xc224abae	boot_cpu_data
 EXPORT_SYMBOL	 vmlinux 0xc2424641	agp3_generic_cleanup
 EXPORT_SYMBOL	 vmlinux 0xc267960e	utf8_validate
 EXPORT_SYMBOL	 vmlinux 0xc270b98a	blk_mq_kick_requeue_list
@@ -10663,6 +10662,7 @@ EXPORT_SYMBOL	 vmlinux 0xccd4c999	__sg_page_iter_start
 EXPORT_SYMBOL	 vmlinux 0xccdbfab8	genlmsg_put
 EXPORT_SYMBOL	 vmlinux 0xccef37e4	ZSTD_DStreamOutSize
 EXPORT_SYMBOL	 vmlinux 0xccf545a6	phy_register_fixup_for_uid
+EXPORT_SYMBOL	 vmlinux 0xccfb7c06	cpu_info
 EXPORT_SYMBOL	 vmlinux 0xccfb9e07	dst_default_metrics
 EXPORT_SYMBOL	 vmlinux 0xccfd2ebc	scsi_dev_info_list_del_keyed
 EXPORT_SYMBOL	 vmlinux 0xccff4edd	pci_map_biosrom
@@ -21167,6 +21167,7 @@ EXPORT_SYMBOL_GPL	 vmlinux 0x386d3a0d	xdp_rxq_info_unreg_mem_model
 EXPORT_SYMBOL_GPL	 vmlinux 0x3871f1a1	nf_route
 EXPORT_SYMBOL_GPL	 vmlinux 0x38722f80	kernel_fpu_end
 EXPORT_SYMBOL_GPL	 vmlinux 0x387ebe6c	uart_insert_char
+EXPORT_SYMBOL_GPL	 vmlinux 0x388264ea	amd_clear_divider
 EXPORT_SYMBOL_GPL	 vmlinux 0x389b64a2	static_key_count
 EXPORT_SYMBOL_GPL	 vmlinux 0x38a35348	devm_namespace_disable
 EXPORT_SYMBOL_GPL	 vmlinux 0x38aa1397	gpiod_add_lookup_table
