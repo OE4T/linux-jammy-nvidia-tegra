@@ -726,7 +726,9 @@ caif_virtio
 camcc-sc7180
 camcc-sdm845
 camcc-sm8250
+camchar
 camellia_generic
+camera-diagnostics
 can
 can-bcm
 can-dev
@@ -737,6 +739,7 @@ can-raw
 cap11xx
 capmode
 capsule-loader
+capture-ivc
 carl9170
 carminefb
 cassini
@@ -1469,6 +1472,7 @@ ezusb
 f2fs
 f71805f
 f71882fg
+f75308
 f75375s
 f81232
 f81534
@@ -1707,6 +1711,7 @@ go7007-usb
 goku_udc
 goldfish_battery
 goodix
+governor_pod_scaling
 gp2ap002
 gp2ap020a00f
 gp8psk-fe
@@ -2115,6 +2120,9 @@ hns_mdio
 hopper
 horus3a
 host1x
+host1x-fence
+host1x-next
+host1x-nvhost
 hostap
 hostap_pci
 hostap_plx
@@ -2128,6 +2136,7 @@ hpwdt
 hsi
 hsi_char
 hso
+hsp-mailbox-client
 hsr
 ht16k33
 htc-pasic3
@@ -2201,6 +2210,7 @@ i2c-mv64xxx
 i2c-nforce2
 i2c-nomadik
 i2c-nvidia-gpu
+i2c-nvvrs11
 i2c-ocores
 i2c-owl
 i2c-parport
@@ -2556,7 +2566,6 @@ isl6421
 isl6423
 isl68137
 isl9305
-isofs
 isp116x-hcd
 isp1704_charger
 isp1760
@@ -2567,6 +2576,8 @@ ite-cir
 ite-it66121
 itg3200
 iuu_phoenix
+ivc-bus
+ivc_ext
 ivtv
 ivtv-alsa
 ivtvfb
@@ -3078,6 +3089,8 @@ mb862xxfb
 mb86a16
 mb86a20s
 mc
+mc-hwpm
+mc-utils
 mc13783-adc
 mc13783-pwrbutton
 mc13783-regulator
@@ -3400,6 +3413,7 @@ mtk_scp_ipi
 mtk_thermal
 mtk_wdt
 mtouch
+mttcan
 mtu3
 multipath
 multiq3
@@ -3696,7 +3710,22 @@ nvec_kbd
 nvec_paz00
 nvec_power
 nvec_ps2
+nvethernet
+nvgpu
+nvhost-capture
+nvhost-isp5
+nvhost-nvcsi
+nvhost-nvcsi-t194
+nvhost-nvdla
+nvhost-pva
+nvhost-vi5
+nvhwpm
+nvidia
+nvidia-drm
+nvidia-modeset
+nvidia-vrs-pseq
 nvidiafb
+nvmap
 nvme
 nvme-core
 nvme-fabrics
@@ -3725,6 +3754,10 @@ nvmet
 nvmet-fc
 nvmet-rdma
 nvmet-tcp
+nvpmodel-clk-cap
+nvpps
+nvsciipc
+nvvrs-pseq-rtc
 nwl-dsi
 nxp-c45-tja11xx
 nxp-nci
@@ -4263,6 +4296,7 @@ pwm-sl28cpld
 pwm-sprd
 pwm-sun4i
 pwm-tegra
+pwm-tegra-tachometer
 pwm-tiecap
 pwm-tiehrpwm
 pwm-twl
@@ -4398,6 +4432,7 @@ r592
 r6040
 r8152
 r8153_ecm
+r8168
 r8188eu
 r8192e_pci
 r8192u_usb
@@ -4430,7 +4465,6 @@ raid456
 raid6_pq
 raid_class
 rainshadow-cec
-ramoops
 raspberrypi-cpufreq
 raspberrypi-hwmon
 raspberrypi-ts
@@ -4609,7 +4643,6 @@ realtek-smi
 reboot-mode
 redboot
 redrat3
-reed_solomon
 regmap-ac97
 regmap-i3c
 regmap-sccb
@@ -4853,6 +4886,7 @@ rtc-wm831x
 rtc-wm8350
 rtc-x1205
 rtc-zynqmp
+rtcpu-debug
 rtd520
 rti800
 rti802
@@ -4874,6 +4908,7 @@ rtl8723-common
 rtl8723ae
 rtl8723be
 rtl8821ae
+rtl8822ce
 rtl8xxxu
 rtl_pci
 rtl_usb
@@ -5366,6 +5401,7 @@ snd-soc-apq8016-sbc
 snd-soc-apq8096
 snd-soc-armada-370-db
 snd-soc-audio-graph-card
+snd-soc-audio-graph-card2
 snd-soc-bcm2835-i2s
 snd-soc-bd28623
 snd-soc-bt-sco
@@ -6101,17 +6137,29 @@ tee_bnxt_fw
 tef6862
 tegra-aconnect
 tegra-bpmp-thermal
+tegra-cactmon-mc-all
+tegra-camera
+tegra-camera-rtcpu
+tegra-dce
 tegra-drm
+tegra-drm-next
 tegra-gmi
 tegra-kbc
+tegra-mce
+tegra-se-nvhost
+tegra-se-nvrng
 tegra-vde
 tegra-video
 tegra-xudc
 tegra186-cpufreq
 tegra194-cpufreq
+tegra194_gte
+tegra194_gte_test
 tegra210-adma
 tegra210-emc
+tegra23x_perf_uncore
 tegra30-devfreq
+tegra_camera_platform
 tegra_cec
 tegra_nand
 tegra_wdt
@@ -6400,6 +6448,7 @@ usb4604
 usb8xxx
 usb_8dev
 usb_debug
+usb_f_accessory
 usb_f_acm
 usb_f_ecm
 usb_f_ecm_subset
@@ -6637,6 +6686,7 @@ walkera0701
 wanxl
 warrior
 wcd934x
+wch
 wcn36xx
 wcnss_ctrl
 wd719x

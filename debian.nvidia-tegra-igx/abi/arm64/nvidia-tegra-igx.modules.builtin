@@ -196,6 +196,7 @@ irq-mvebu-pic
 irq-renesas-irqc
 irq-ti-sci-inta
 irq-ti-sci-intr
+isofs
 jbd2
 jitterentropy_rng
 kgdboc
@@ -333,11 +334,13 @@ qcom-ipcc
 qcom-pdc
 qcom-scm
 qcom_rpmh
+ramoops
 rapidio
 raspberrypi
 raspberrypi-power
 rational
 rcar-usb2-clock-sel
+reed_solomon
 regmap-i2c
 regmap-mmio
 regmap-spi
