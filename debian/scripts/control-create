@@ -60,7 +60,12 @@ do
 
 	[ "$module_type" = "standalone" ] || continue
 
-	cat debian/control.d/flavour-module.stub | grep -v '^#' | sed	\
+	module_control=${DEBIAN}/control.d/$module.stub
+	if [ ! -f "$module_control" ]; then
+		module_control=debian/control.d/flavour-module.stub
+	fi
+
+	cat "$module_control" | grep -v '^#' | sed	\
 		-e "s#ARCH#$arch#g"		\
 		-e "s#MODULE#$module#g"		\
 		-e "s#FLAVOUR#$flavour#g"
