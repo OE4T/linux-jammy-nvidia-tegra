@@ -463,6 +463,18 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 			},
 		},
 	}, {
+		.id = TEGRA234_MEMORY_CLIENT_VIW,
+		.name = "viw",
+		.bpmp_id = TEGRA_ICC_BPMP_VI,
+		.type = TEGRA_ICC_ISO_VI,
+		.sid = TEGRA234_SID_ISO_VI,
+		.regs = {
+			.sid = {
+				.override = 0x390,
+				.security = 0x394,
+			},
+		},
+	}, {
 		.id = TEGRA234_MEMORY_CLIENT_NVDECSRD,
 		.name = "nvdecsrd",
 		.bpmp_id = TEGRA_ICC_BPMP_NVDEC,
@@ -632,6 +644,30 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 			.sid = {
 				.override = 0x508,
 				.security = 0x50c,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_VIFALR,
+		.name = "vifalr",
+		.bpmp_id = TEGRA_ICC_BPMP_VIFAL,
+		.type = TEGRA_ICC_ISO_VIFAL,
+		.sid = TEGRA234_SID_ISO_VIFALC,
+		.regs = {
+			.sid = {
+				.override = 0x5e0,
+				.security = 0x5e4,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_VIFALW,
+		.name = "vifalw",
+		.bpmp_id = TEGRA_ICC_BPMP_VIFAL,
+		.type = TEGRA_ICC_ISO_VIFAL,
+		.sid = TEGRA234_SID_ISO_VIFALC,
+		.regs = {
+			.sid = {
+				.override = 0x5e8,
+				.security = 0x5ec,
 			},
 		},
 	}, {
