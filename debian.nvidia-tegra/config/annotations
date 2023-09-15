@@ -64,6 +64,7 @@ CONFIG_ARCH_INLINE_WRITE_UNLOCK                 policy<{'arm64': '-', 'arm64-nvi
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
+CONFIG_BINFMT_MISC                              policy<{'arm64': 'y'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
 CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'm'}>
 CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
