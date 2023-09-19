@@ -158,6 +158,9 @@
 #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL2	BIT(1)
 #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL3	BIT(0)
 
+#define VEND1_GLOBAL_CMN_POR_CTRL	0x2681U
+#define PHY_RESET			BIT(0)
+
 /* Sleep and timeout for checking if the Processor-Intensive
  * MDIO operation is finished
  */
@@ -754,6 +757,11 @@ static int aqr107_config_init(struct phy_device *phydev)
 
 	WARN(phydev->interface == PHY_INTERFACE_MODE_XGMII,
 	     "Your devicetree is out of date, please update it. The AQR107 family doesn't support XGMII, maybe you mean USXGMII.\n");
+
+	/* SW WAR to reset PHY again to overcome link issues caused during boot */
+	err = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_CMN_POR_CTRL, PHY_RESET);
+	if (err < 0)
+		return err;
 
 	ret = aqr107_wait_reset_complete(phydev);
 	if (!ret)
