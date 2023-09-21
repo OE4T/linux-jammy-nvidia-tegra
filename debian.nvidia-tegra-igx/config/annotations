@@ -71,6 +71,8 @@ CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvi
 CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra-igx': 'n'}>
 CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra-igx': '-', 'arm64-nvidia-tegra-igx-rt': 'n'}>
+CONFIG_DRM_SIMPLEDRM                            policy<{'arm64': 'n'}>
+CONFIG_FB_SIMPLE                                policy<{'arm64': 'y'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
 CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
