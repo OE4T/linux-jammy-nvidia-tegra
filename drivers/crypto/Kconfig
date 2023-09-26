@@ -909,6 +909,18 @@ source "drivers/crypto/hisilicon/Kconfig"
 
 source "drivers/crypto/amlogic/Kconfig"
 
+config CRYPTO_DEV_TEGRA
+	tristate "Support Tegra Security Engine"
+	default m
+	depends on ARCH_TEGRA
+	select CRYPTO_ENGINE
+	help
+	  config to support Tegra SE driver. The config will primarily
+	  enable CONFIG_CRYPTO_ENGINE which is essential to compile tegra-se
+	  driver in nvidia-oot. Adding this config here since CRYPTO_ENGINE
+	  cannot be enabled from defconfig independently. It need to be
+	  selected by the dependent module.
+
 config CRYPTO_DEV_SA2UL
 	tristate "Support for TI security accelerator"
 	depends on ARCH_K3 || COMPILE_TEST
