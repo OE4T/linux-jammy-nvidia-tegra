@@ -177,6 +177,8 @@ i2c-core
 i2c-designware-core
 i2c-designware-platform
 i2c-dev
+i2c-mux
+i2c-mux-gpio
 i2c-omap
 i2c-sprd
 icc-core

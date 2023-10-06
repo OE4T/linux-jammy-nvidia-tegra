@@ -1194,6 +1194,7 @@ dpdmai
 dpot-dac
 dps310
 dps920ab
+dpt_i2o
 drbd
 drivetemp
 drm
@@ -2189,8 +2190,6 @@ i2c-matroxfb
 i2c-meson
 i2c-mlxbf
 i2c-mt65xx
-i2c-mux
-i2c-mux-gpio
 i2c-mux-gpmux
 i2c-mux-ltc4306
 i2c-mux-mlxcpld
