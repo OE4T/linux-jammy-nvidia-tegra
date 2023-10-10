@@ -767,6 +767,30 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 			},
 		},
 	}, {
+		.id = TEGRA234_MEMORY_CLIENT_RCER,
+		.name = "rcer",
+		.bpmp_id = TEGRA_ICC_BPMP_RCE,
+		.type = TEGRA_ICC_NISO,
+		.sid = TEGRA234_SID_RCE,
+		.regs = {
+			.sid = {
+				.override = 0x690,
+				.security = 0x694,
+			},
+		},
+	}, {
+		.id = TEGRA234_MEMORY_CLIENT_RCEW,
+		.name = "rcew",
+		.bpmp_id = TEGRA_ICC_BPMP_RCE,
+		.type = TEGRA_ICC_NISO,
+		.sid = TEGRA234_SID_RCE,
+		.regs = {
+			.sid = {
+				.override = 0x698,
+				.security = 0x69c,
+			},
+		},
+	}, {
 		.id = TEGRA234_MEMORY_CLIENT_PCIE0R,
 		.name = "pcie0r",
 		.bpmp_id = TEGRA_ICC_BPMP_PCIE_0,
