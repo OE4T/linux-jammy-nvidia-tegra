@@ -3709,7 +3709,6 @@ nvec_paz00
 nvec_power
 nvec_ps2
 nvethernet
-nvgpu
 nvhost-capture
 nvhost-isp5
 nvhost-nvcsi
@@ -3718,9 +3717,6 @@ nvhost-nvdla
 nvhost-pva
 nvhost-vi5
 nvhwpm
-nvidia
-nvidia-drm
-nvidia-modeset
 nvidia-vrs-pseq
 nvidiafb
 nvmap
@@ -5170,8 +5166,6 @@ sil164
 silead
 simple-bridge
 simple-mfd-i2c
-simpledrm
-simplefb
 siox-bus-gpio
 siox-core
 sir_ir
