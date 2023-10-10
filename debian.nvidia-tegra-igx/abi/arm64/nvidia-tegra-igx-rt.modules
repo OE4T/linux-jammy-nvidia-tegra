@@ -603,7 +603,6 @@ bh1750
 bh1770glc
 bh1780
 binder_linux
-binfmt_misc
 blake2b_generic
 block2mtd
 blocklayoutdriver
@@ -1196,6 +1195,7 @@ dpdmai
 dpot-dac
 dps310
 dps920ab
+dpt_i2o
 drbd
 drivetemp
 drm
@@ -5173,6 +5173,8 @@ sil164
 silead
 simple-bridge
 simple-mfd-i2c
+simpledrm
+simplefb
 siox-bus-gpio
 siox-core
 sir_ir

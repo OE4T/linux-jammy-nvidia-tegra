@@ -44,6 +44,7 @@ bcm84881
 bgmac
 bgmac-platform
 binfmt_elf
+binfmt_misc
 binfmt_script
 brcmstb_dpfe
 bsg
