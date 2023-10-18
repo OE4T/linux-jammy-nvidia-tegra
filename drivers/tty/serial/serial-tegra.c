@@ -45,6 +45,12 @@
 #define TEGRA_UART_MCR_CTS_EN			0x20
 #define TEGRA_UART_LSR_ANY			(UART_LSR_OE | UART_LSR_BI | \
 						UART_LSR_PE | UART_LSR_FE)
+
+#define TEGRA_UART_MSR_CD			BIT(7)
+#define TEGRA_UART_MSR_RI			BIT(6)
+#define TEGRA_UART_MSR_DSR			BIT(5)
+#define TEGRA_UART_MSR_CTS			BIT(4)
+
 #define TEGRA_UART_IRDA_CSR			0x08
 #define TEGRA_UART_SIR_ENABLED			0x80
 
@@ -174,19 +180,20 @@ static inline struct tegra_uart_port *to_tegra_uport(struct uart_port *u)
 static unsigned int tegra_uart_get_mctrl(struct uart_port *u)
 {
 	struct tegra_uart_port *tup = to_tegra_uport(u);
+	unsigned int status = tegra_uart_read(tup, UART_MSR);
+	unsigned int result = 0;
 
-	/*
-	 * RI - Ring detector is active
-	 * CD/DCD/CAR - Carrier detect is always active. For some reason
-	 *	linux has different names for carrier detect.
-	 * DSR - Data Set ready is active as the hardware doesn't support it.
-	 *	Don't know if the linux support this yet?
-	 * CTS - Clear to send. Always set to active, as the hardware handles
-	 *	CTS automatically.
-	 */
-	if (tup->enable_modem_interrupt)
-		return TIOCM_RI | TIOCM_CD | TIOCM_DSR | TIOCM_CTS;
-	return TIOCM_CTS;
+#define TIOCMBIT(uartbit, tiocmbit)	\
+	if (status & uartbit)		\
+		result |= tiocmbit;
+
+	TIOCMBIT(TEGRA_UART_MSR_CD, TIOCM_CD);
+	TIOCMBIT(TEGRA_UART_MSR_RI, TIOCM_RI);
+	TIOCMBIT(TEGRA_UART_MSR_DSR, TIOCM_DSR);
+	TIOCMBIT(TEGRA_UART_MSR_CTS, TIOCM_CTS);
+#undef TIOCMBIT
+
+	return result;
 }
 
 static void set_rts(struct tegra_uart_port *tup, bool active)
