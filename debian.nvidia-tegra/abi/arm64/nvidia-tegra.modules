@@ -604,7 +604,6 @@ bh1750
 bh1770glc
 bh1780
 binder_linux
-binfmt_misc
 blake2b_generic
 block2mtd
 blocklayoutdriver
