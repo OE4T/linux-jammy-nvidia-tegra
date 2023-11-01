@@ -178,6 +178,8 @@ i2c-core
 i2c-designware-core
 i2c-designware-platform
 i2c-dev
+i2c-mux
+i2c-mux-gpio
 i2c-omap
 i2c-sprd
 icc-core
@@ -381,6 +383,7 @@ serial_core
 serial_mctrl_gpio
 serio
 sg
+sh-sci
 sh_cmt
 sh_tmu
 sha1_generic
@@ -388,6 +391,7 @@ sha256_generic
 sha512_generic
 shpchp
 simple-pm-bus
+simplefb
 skcipher
 slhc
 smc91x

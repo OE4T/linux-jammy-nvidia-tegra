@@ -381,6 +381,7 @@ aptina-pll
 aqc111
 aquacomputer_d5next
 ar1021_i2c
+ar1335_common
 ar5523
 ar7part
 ar9331
@@ -404,6 +405,7 @@ arizona-spi
 ark3116
 arkfb
 arm-cmn
+arm64-ras
 arm_dmc620_pmu
 arm_dsu_pmu
 arm_mhu
@@ -608,6 +610,7 @@ block2mtd
 blocklayoutdriver
 blowfish_common
 blowfish_generic
+bluedroid_pm
 bluefield_edac
 bluetooth
 bluetooth_6lowpan
@@ -629,6 +632,7 @@ bme680_spi
 bmg160_core
 bmg160_i2c
 bmg160_spi
+bmi088
 bmi088-accel-core
 bmi088-accel-spi
 bmi160_core
@@ -722,6 +726,8 @@ caif_serial
 caif_socket
 caif_usb
 caif_virtio
+cam_cdi_tsc
+cam_fsync
 camcc-sc7180
 camcc-sdm845
 camcc-sm8250
@@ -777,6 +783,10 @@ cdc_ether
 cdc_mbim
 cdc_ncm
 cdc_subset
+cdi_dev
+cdi_gpio
+cdi_mgr
+cdi_pwm
 cdns-csi2rx
 cdns-csi2tx
 cdns-dphy
@@ -929,6 +939,8 @@ cppc_cpufreq
 cpr
 cptpf
 cptvf
+cpuidle-debugfs
+cpuidle-tegra-auto
 cqhci
 cramfs
 crc-itu-t
@@ -1592,6 +1604,7 @@ ftl
 ftm-quaddec
 ftsteutates
 fujitsu_ts
+fusb301
 fusb302
 fxas21002c_core
 fxas21002c_i2c
@@ -1761,6 +1774,7 @@ gpio-max730x
 gpio-max732x
 gpio-max77620
 gpio-max77650
+gpio-max77851
 gpio-mb86s7x
 gpio-mc33880
 gpio-menz127
@@ -2149,6 +2163,7 @@ hv_sock
 hv_storvsc
 hv_utils
 hv_vmbus
+hvc_sysfs
 hwmon-vid
 hwpoison-inject
 hx711
@@ -2195,8 +2210,6 @@ i2c-matroxfb
 i2c-meson
 i2c-mlxbf
 i2c-mt65xx
-i2c-mux
-i2c-mux-gpio
 i2c-mux-gpmux
 i2c-mux-ltc4306
 i2c-mux-mlxcpld
@@ -2545,6 +2558,10 @@ irps5401
 irq-madera
 irq-pruss-intc
 irqbypass
+isc_dev
+isc_gpio
+isc_mgr
+isc_pwm
 iscsi_boot_sysfs
 iscsi_ibft
 iscsi_target_mod
@@ -2574,6 +2591,7 @@ ite-it66121
 itg3200
 iuu_phoenix
 ivc-bus
+ivc-cdev
 ivc_ext
 ivtv
 ivtv-alsa
@@ -2623,6 +2641,7 @@ keyspan_pda
 keyspan_remote
 keywrap
 kfifo_buf
+kfuse
 khadas-mcu
 khadas_mcu_fan
 kheaders
@@ -2669,6 +2688,7 @@ l2tp_netlink
 l2tp_ppp
 l4f00242t03
 l64781
+lan743x
 lan743x
 lan78xx
 lan9303-core
@@ -2889,6 +2909,7 @@ lpfc
 lru_cache
 lrw
 lt3651-charger
+lt6911uxc
 ltc1660
 ltc2471
 ltc2485
@@ -3059,6 +3080,11 @@ max77693-regulator
 max77693_charger
 max77802-regulator
 max77826-regulator
+max77851
+max77851-poweroff
+max77851-regulator
+max77851_thermal
+max77851_wdt
 max8649
 max8660
 max8688
@@ -3079,7 +3105,12 @@ max8998
 max8998_charger
 max9271
 max9286
+max9295
+max9296
 max9611
+max96712
+maxim_gmsl_dp_serializer
+maxim_gmsl_hdmi_serializer
 maxim_thermocouple
 mb1232
 mb862xxfb
@@ -3255,6 +3286,7 @@ mms114
 mn88443x
 mn88472
 mn88473
+mods
 mos7720
 mos7840
 most_cdev
@@ -3702,6 +3734,16 @@ ntfs3
 ntxec
 null_blk
 nuvoton-cir
+nv-virtio-console-poc
+nv_ar0234
+nv_hawk_owl
+nv_imx185
+nv_imx219
+nv_imx274
+nv_imx318
+nv_imx390
+nv_imx477
+nv_ov5693
 nvec
 nvec_kbd
 nvec_paz00
@@ -3714,8 +3756,10 @@ nvhost-nvcsi
 nvhost-nvcsi-t194
 nvhost-nvdla
 nvhost-pva
+nvhost-vi-tpg-t19x
 nvhost-vi5
 nvhwpm
+nvidia-p2p
 nvidia-vrs-pseq
 nvidiafb
 nvmap
@@ -3749,6 +3793,8 @@ nvmet-rdma
 nvmet-tcp
 nvpmodel-clk-cap
 nvpps
+nvscic2c-pcie-epc
+nvscic2c-pcie-epf
 nvsciipc
 nvvrs-pseq-rtc
 nwl-dsi
@@ -3760,6 +3806,7 @@ nxp-tja11xx
 nxt200x
 nxt6000
 nzxt-kraken2
+oak_pci
 objagg
 ocfb
 ocfs2
@@ -3966,6 +4013,7 @@ pc300too
 pc87360
 pc87427
 pca9450-regulator
+pca9570
 pcap-regulator
 pcap_keys
 pcap_ts
@@ -3981,6 +4029,7 @@ pcf8574_keypad
 pcf8591
 pch_udc
 pci
+pci-epf-dma-test
 pci-epf-ntb
 pci-pf-stub
 pci-stub
@@ -3990,6 +4039,7 @@ pcie-iproc
 pcie-iproc-platform
 pcie-mediatek-gen3
 pcie-rockchip-host
+pcie-tegra-vf
 pcie-tegra194
 pcips2
 pcl711
@@ -4021,6 +4071,7 @@ peak_usb
 pegasus
 pegasus_notetaker
 penmount
+pex9749-thermal
 pf8x00-regulator
 pfuze100-regulator
 phantom
@@ -4130,6 +4181,7 @@ pinctrl-lochnagar
 pinctrl-lpass-lpi
 pinctrl-madera
 pinctrl-max77620
+pinctrl-max77851
 pinctrl-mcp23s08
 pinctrl-mcp23s08_i2c
 pinctrl-mcp23s08_spi
@@ -4165,6 +4217,8 @@ pinctrl-spmi-mpp
 pinctrl-ssbi-gpio
 pinctrl-ssbi-mpp
 pinctrl-stmfx
+pinctrl-tegra194-pexclk-padctrl
+pinctrl-tegra234-dpaux
 pinctrl-zynqmp
 ping
 pistachio-internal-dac
@@ -4818,6 +4872,7 @@ rtc-max6900
 rtc-max6902
 rtc-max6916
 rtc-max77686
+rtc-max77851
 rtc-max8907
 rtc-max8925
 rtc-max8997
@@ -4884,6 +4939,7 @@ rtd520
 rti800
 rti802
 rti_wdt
+rtk_btusb
 rtl2830
 rtl2832
 rtl2832_sdr
@@ -4986,6 +5042,7 @@ saa717x
 saa7185
 saa7706h
 safe_serial
+safety-i2s
 sahara
 sample-trace-array
 samsung-keypad
@@ -5112,6 +5169,7 @@ sdhci-xenon-driver
 sdhci_am654
 sdhci_f_sdh30
 sdio_uart
+sensor_kernel_tests
 sensorhub
 serial-tegra
 serial_ir
@@ -5615,24 +5673,43 @@ snd-soc-tas6424
 snd-soc-tda7419
 snd-soc-tegra-audio-graph-card
 snd-soc-tegra-machine
+snd-soc-tegra-machine-driver-oot
 snd-soc-tegra-pcm
+snd-soc-tegra-utils-oot
+snd-soc-tegra-virt-t210ref-pcm
 snd-soc-tegra-wm8903
+snd-soc-tegra186-arad-oot
 snd-soc-tegra186-asrc
+snd-soc-tegra186-asrc-oot
 snd-soc-tegra186-dspk
+snd-soc-tegra186-dspk-oot
 snd-soc-tegra20-ac97
 snd-soc-tegra20-das
 snd-soc-tegra20-i2s
 snd-soc-tegra20-spdif
 snd-soc-tegra210-admaif
+snd-soc-tegra210-admaif-oot
 snd-soc-tegra210-adx
+snd-soc-tegra210-adx-oot
+snd-soc-tegra210-afc-oot
 snd-soc-tegra210-ahub
+snd-soc-tegra210-ahub-oot
 snd-soc-tegra210-amx
+snd-soc-tegra210-amx-oot
 snd-soc-tegra210-dmic
+snd-soc-tegra210-dmic-oot
 snd-soc-tegra210-i2s
+snd-soc-tegra210-i2s-oot
+snd-soc-tegra210-iqc-oot
 snd-soc-tegra210-mixer
+snd-soc-tegra210-mixer-oot
 snd-soc-tegra210-mvc
+snd-soc-tegra210-mvc-oot
 snd-soc-tegra210-ope
+snd-soc-tegra210-ope-oot
 snd-soc-tegra210-sfc
+snd-soc-tegra210-sfc-oot
+snd-soc-tegra210-virt-alt-admaif
 snd-soc-tegra30-ahub
 snd-soc-tegra30-i2s
 snd-soc-tfa9879
@@ -5732,6 +5809,7 @@ socfpga
 socfpga-a10
 socinfo
 softdog
+softdog-platform
 softing
 solo6x10
 solos-pci
@@ -5760,6 +5838,7 @@ spi-altera-dfl
 spi-altera-platform
 spi-amd
 spi-armada-3700
+spi-aurix-tegra
 spi-axi-spi-engine
 spi-bcm-qspi
 spi-bcm2835
@@ -5816,8 +5895,10 @@ spi-sprd-adi
 spi-sun6i
 spi-synquacer
 spi-tegra114
+spi-tegra124-slave
 spi-tegra20-sflash
 spi-tegra20-slink
+spi-tegra210-quad
 spi-tegra210-quad
 spi-thunderx
 spi-tle62x0
@@ -6125,6 +6206,7 @@ tee
 tee_bnxt_fw
 tef6862
 tegra-aconnect
+tegra-bootloader-debug
 tegra-bpmp-thermal
 tegra-cactmon-mc-all
 tegra-camera
@@ -6132,11 +6214,17 @@ tegra-camera-rtcpu
 tegra-dce
 tegra-drm
 tegra-drm-next
+tegra-fsicom
 tegra-gmi
+tegra-hv-vse-safety
 tegra-kbc
 tegra-mce
+tegra-nvvse-cryptodev
+tegra-pcie-dma-test
+tegra-pcie-edma
 tegra-se-nvhost
 tegra-se-nvrng
+tegra-uss-io-proxy
 tegra-vde
 tegra-video
 tegra-xudc
@@ -6146,12 +6234,25 @@ tegra194_gte
 tegra194_gte_test
 tegra210-adma
 tegra210-emc
+tegra234-aon
+tegra234-oc-event
 tegra23x_perf_uncore
+tegra23x_psc
 tegra30-devfreq
+tegra_bpmp
 tegra_camera_platform
 tegra_cec
+tegra_gr_comm
+tegra_hv_mtd
+tegra_hv_pm_ctl
+tegra_hv_vblk_oops
+tegra_hv_vcpu_yield
 tegra_nand
+tegra_vblk
+tegra_vnet
 tegra_wdt
+tegra_wmark
+tegracam_log
 tehuti
 teranetics
 test_blackhole_dev
@@ -6203,6 +6304,7 @@ ti-tsc2046
 ti_am335x_adc
 ti_am335x_tsc
 ti_am335x_tscadc
+ti_fpdlink_dp_serializer
 ti_k3_dsp_remoteproc
 ti_k3_r5_remoteproc
 ti_sci_pm_domains
@@ -6296,6 +6398,7 @@ tsc2005
 tsc2007
 tsc200x-core
 tsc40
+tsecriscv
 tsi568
 tsi57x
 tsi721_mport
@@ -6388,6 +6491,8 @@ ueagle-atm
 ufs
 ufs-hisi
 ufs-mediatek
+ufs-tegra
+ufs-tegra-provision
 ufs_qcom
 ufshcd-core
 ufshcd-dwc
@@ -6483,6 +6588,7 @@ usbtv
 usdhi6rol0
 userio
 userspace-consumer
+userspace_ivc_mempool
 ushc
 uss720
 uvcvideo
@@ -6586,6 +6692,7 @@ virtio_snd
 virtio_vdpa
 virtiofs
 virtual
+virtual_i2c_mux
 virtual_ncidev
 visconti_wdt
 visor
@@ -6674,6 +6781,7 @@ wacom_w8001
 walkera0701
 wanxl
 warrior
+watchdog-tegra-t18x
 wcd934x
 wch
 wcn36xx
