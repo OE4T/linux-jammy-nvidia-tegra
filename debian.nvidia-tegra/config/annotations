@@ -107,6 +107,7 @@ CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvi
 CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
 CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
+CONFIG_NTFS_FS                                  policy<{'arm64': 'y'}>
 CONFIG_NUMA_BALANCING                           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_PINCTRL_TEGRA234                         policy<{'arm64': 'y'}>
 CONFIG_PREEMPTION                               policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
