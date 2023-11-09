@@ -38,8 +38,12 @@ config TEGRA_HSIERRRPTINJ
 
 endif # TEGRA_PLATFORM_DEVICES
 
+config TEGRA_PROD_LEGACY
+	bool
+
 config TEGRA_PROD_ENABLE
 	def_bool y
+	select TEGRA_PROD_LEGACY
 	help
 	  This config helps client driver to identify whether prod
 	  framework is supported or not.
