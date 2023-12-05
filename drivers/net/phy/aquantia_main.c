@@ -119,6 +119,7 @@
 /* Vendor specific 1, MDIO_MMD_VEND1 */
 #define VEND1_GLOBAL_FW_ID			0x0020
 #define VEND1_GLOBAL_FW_ID_MAJOR		GENMASK(15, 8)
+#define VEND1_GLOBAL_FW_ID_MASK			GENMASK(15, 0)
 #define VEND1_GLOBAL_FW_ID_MINOR		GENMASK(7, 0)
 
 #define VEND1_GLOBAL_GEN_STAT2			0xc831
@@ -431,7 +432,7 @@ static irqreturn_t aqr_handle_interrupt(struct phy_device *phydev)
 {
 	int reg, val, ret;
 	int irq_status;
-	
+
 	struct aqr107_priv *priv = phydev->priv;
 	reg = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_SGMII_TX_ALARM1);
 	if ((reg & MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK) ==
@@ -648,7 +649,9 @@ static int aqr107_wait_reset_complete(struct phy_device *phydev)
 	int val;
 
 	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
-					 VEND1_GLOBAL_FW_ID, val, val != 0,
+					 VEND1_GLOBAL_FW_ID, val,
+					 ((val & VEND1_GLOBAL_FW_ID_MASK) != 0 &&
+					 (val & VEND1_GLOBAL_FW_ID_MASK) != VEND1_GLOBAL_FW_ID_MASK),
 					 20000, 2000000, false);
 }
 
@@ -917,7 +920,7 @@ static int aqr107_suspend(struct phy_device *phydev)
 
 	if (priv->skip_lpm)
 		return 0;
-	
+
 	err = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, MDIO_CTRL1,
 			       MDIO_CTRL1_LPOWER);
 	if (err)
