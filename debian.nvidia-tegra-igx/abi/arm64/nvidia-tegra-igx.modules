@@ -1185,7 +1185,6 @@ dmard10
 dmc520_edac
 dme1737
 dmfe
-dmi-sysfs
 dmm32at
 dmx3191d
 dnet
@@ -6071,7 +6070,6 @@ surface_aggregator_registry
 surface_battery
 surface_charger
 surface_dtx
-surface_gpe
 surface_hid
 surface_hid_core
 surface_hotplug
