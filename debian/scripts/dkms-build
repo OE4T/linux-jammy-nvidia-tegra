@@ -144,7 +144,7 @@ shift 2
 # Copy the objects.
 echo "II: copying objects to '$to'"
 mkdir -p "$to"
-(cd "$from" && find -name \*.o -o -name \*.o.ur-\* | cpio -Lpd "$to")
+(cd "$from" && find -name \*.o -o -name \*.o.ur-\* -o -name \*.mod | cpio -Lpd "$to")
 
 # Call the original post_install script if there is one.
 [ "$script" = '' ] && exit 0
@@ -162,18 +162,20 @@ fakeroot=""
 [ $(id -u) -ne 0 ] && fakeroot="/usr/bin/fakeroot"
 rc=0
 $fakeroot /usr/sbin/dkms build --no-prepare-kernel --no-clean-kernel \
-	-k "$abi_flavour" \
+	-k "$abi_flavour" ${ARCH:+-a $ARCH} \
 	--sourcetree "$dkms_dir/source" \
 	--dkmstree "$dkms_dir/build" \
 	--kernelsourcedir "$dkms_dir/headers/linux-headers-$abi_flavour" \
-	"$dkms_conf" || rc=1
+	"$dkms_conf" || rc=$?
 
 # Find the log and add it to our own.
 for log in "$dkms_dir/build/$dkms_package/$dkms_version/$abi_flavour"/*/"log/make.log" "$dkms_dir/build/$dkms_package/$dkms_version/build/make.log"
 do
-	[ -f "$log" ] && break
+	if [ -f "$log" ]; then
+		sed -e "s@$dkms_dir@<<DKMSDIR>>@g" <"$log"
+		break
+	fi
 done
-sed -e "s@$dkms_dir@<<DKMSDIR>>@g" <"$log"
 
 # If this build failed then exit here.
 [ "$rc" != 0 ] && exit "$rc"
@@ -229,6 +231,14 @@ find "$dkms_dir/build/$dkms_package/$dkms_version/objects" -name \*.o -print | \
 while read object
 do
 	"$srcdir/debian/scripts/fix-filenames" "$object" "$dkms_dir"
+done
+
+# This assumes that .mod files are in the top level build tree
+# If there are ever .mod files in sub-directories, the dirname of objectlist needs to be stripped as well
+find "$dkms_dir/build/$dkms_package/$dkms_version/objects" -name \*.mod -print | \
+while read objectlist
+do
+	sed "s|^$dkms_dir/build/$dkms_package/$dkms_version/build/||" -i $objectlist
 done
 
 # Finally see if there is a dkms-package specific post processor present.  Hand
