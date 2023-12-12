@@ -6218,7 +6218,6 @@ tegra-mce
 tegra-nvvse-cryptodev
 tegra-pcie-dma-test
 tegra-pcie-edma
-tegra-se-nvhost
 tegra-se-nvrng
 tegra-uss-io-proxy
 tegra-vde
