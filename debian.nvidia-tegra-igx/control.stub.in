@@ -131,15 +131,3 @@ Depends: ${misc:Depends}, python3
 Description: Linux kernel VM host tools
  This package provides kernel tools useful for VM hosts.
 
-Package: SRCPKGNAME-tegra-igpu-igx-defaults
-Build-Profiles: <!stage1>
-Architecture: all
-Multi-Arch: foreign
-Section: kernel
-Priority: optional
-Depends: ${misc:Depends}
-Conflicts: nvidia-dkms-kernel, nvidia-prebuilt-kernel
-Description: Extra configuration required for IGX Orin iGPU modules.
- This package contains modprobe.d configuration required for loading IGX Orin
- iGPU modules with the appropriate module parameters.
-

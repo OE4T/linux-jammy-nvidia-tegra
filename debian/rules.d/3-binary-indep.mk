@@ -172,24 +172,12 @@ ifeq ($(do_tools_host),true)
 		$(hosttoolsman)/man1
 endif
 
-install-igpu-defaults:
-ifneq ($(pkg_igpu_defaults),)
-	dh_install -p$(pkg_igpu_defaults) \
-		debian/igpu-defaults/tegra-igpu-igx-defaults_nvidia-display.conf \
-		lib/modprobe.d
-	dh_installdocs -p$(pkg_igpu_defaults)
-	$(lockme) dh_gencontrol -p$(pkg_igpu_defaults)
-	dh_fixperms -p$(pkg_igpu_defaults)
-	dh_md5sums -p$(pkg_igpu_defaults)
-	dh_builddeb -p$(pkg_igpu_defaults)
-endif
-
 $(stampdir)/stamp-prepare-indep:
 	@echo Debug: $@
 	dh_prep -i
 	@touch $@
 
-install-indep: $(stampdir)/stamp-install-headers install-doc install-source install-tools install-igpu-defaults
+install-indep: $(stampdir)/stamp-install-headers install-doc install-source install-tools
 	@echo Debug: $@
 
 # This is just to make it easy to call manually. Normally done in

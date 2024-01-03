@@ -439,13 +439,6 @@ endif
 	  ) \
 	)
 
-ifneq ($(dkms_tegra-igpu-igx_pkg_name),)
-	$(if $(enable_tegra-igpu-igx), \
-		install -D -m644 \
-			$(CURDIR)/debian/igpu-defaults/tegra-igpu-igx_nvidia-display.conf \
-			$(dkms_tegra-igpu-igx_pkgdir)/lib/$(src_pkg_name)/nvidia-display_$(abi_release)-$*.conf; \
-	)
-endif
 
 ifneq ($(skipdbg),true)
 	# Add .gnu_debuglink sections to each stripped .ko
