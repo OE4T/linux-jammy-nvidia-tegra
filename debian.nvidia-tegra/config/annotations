@@ -71,9 +71,6 @@ CONFIG_CRYPTO_DEV_TEGRA                         policy<{'arm64': 'm'}>
 CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'n'}>
-CONFIG_DMI                                      policy<{'arm64': 'n'}>
-CONFIG_DMIID                                    policy<{'arm64': '-'}>
-CONFIG_DMI_SYSFS                                policy<{'arm64': '-'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
 CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
@@ -106,7 +103,6 @@ CONFIG_INLINE_WRITE_UNLOCK                      policy<{'arm64': '-', 'arm64-nvi
 CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
-CONFIG_IPMI_DMI_DECODE                          policy<{'arm64': '-'}>
 CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
@@ -148,7 +144,6 @@ CONFIG_SPEAKUP_SYNTH_LTLK                       policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_SOFT                       policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_SPKOUT                     policy<{'arm64': '-'}>
 CONFIG_SPEAKUP_SYNTH_TXPRT                      policy<{'arm64': '-'}>
-CONFIG_SURFACE_GPE                              policy<{'arm64': '-'}>
 CONFIG_SYSFB_SIMPLEFB                           policy<{'arm64': 'n'}>
 CONFIG_TASKS_RCU                                policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
 CONFIG_TEGRA186_GPC_DMA                         policy<{'arm64': 'y'}>
