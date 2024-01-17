@@ -258,6 +258,7 @@ n_null
 nfs_ssc
 nls_base
 nls_cp437
+ntfs
 nvmem_core
 nvmem_zynqmp_nvmem
 of_mdio
@@ -459,7 +460,6 @@ virtio_pci_modern_dev
 virtio_ring
 watch_queue
 watchdog
-wwan
 x509_key_parser
 xen-blkfront
 xen-netfront
