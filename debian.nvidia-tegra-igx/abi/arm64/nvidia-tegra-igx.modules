@@ -2423,6 +2423,7 @@ inv-mpu6050-spi
 io-domain
 io_edgeport
 io_ti
+ioctl_example
 ionic
 iosm
 iowarrior
@@ -3725,7 +3726,6 @@ ntb_pingpong
 ntb_tool
 ntb_transport
 ntc_thermistor
-ntfs
 ntfs3
 ntxec
 null_blk
@@ -3746,6 +3746,7 @@ nvec_paz00
 nvec_power
 nvec_ps2
 nvethernet
+nvgpu
 nvhost-capture
 nvhost-isp5
 nvhost-nvcsi
@@ -4270,8 +4271,6 @@ ppp_synctty
 pppoatm
 pppoe
 pppox
-pps-gpio
-pps-ldisc
 pps_parport
 pptp
 prestera
@@ -6201,6 +6200,7 @@ tee
 tee_bnxt_fw
 tef6862
 tegra-aconnect
+tegra-aon-ivc-echo
 tegra-bootloader-debug
 tegra-bpmp-thermal
 tegra-cactmon-mc-all
@@ -6217,6 +6217,7 @@ tegra-mce
 tegra-nvvse-cryptodev
 tegra-pcie-dma-test
 tegra-pcie-edma
+tegra-se
 tegra-se-nvrng
 tegra-uss-io-proxy
 tegra-vde
@@ -6256,6 +6257,7 @@ test_power
 tg3
 thc63lvd1024
 thermal-generic-adc
+thermal-trip-event
 thermal_mmio
 thmc50
 ths7303
@@ -6824,6 +6826,7 @@ wm8994
 wm8994-regulator
 wm97xx-ts
 wp512
+wwan
 wwan_hwsim
 x25
 x_tables

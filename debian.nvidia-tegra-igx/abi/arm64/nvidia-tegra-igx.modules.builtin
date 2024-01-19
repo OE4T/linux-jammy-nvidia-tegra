@@ -259,6 +259,7 @@ n_null
 nfs_ssc
 nls_base
 nls_cp437
+ntfs
 nvmem_core
 nvmem_zynqmp_nvmem
 of_mdio
@@ -326,6 +327,9 @@ pldmfw
 power_supply
 powercap_sys
 ppp_generic
+pps-gpio
+pps-ktimer
+pps-ldisc
 pps_core
 pretimeout_noop
 processor
@@ -463,7 +467,6 @@ virtio_pci_modern_dev
 virtio_ring
 watch_queue
 watchdog
-wwan
 x509_key_parser
 xen-blkfront
 xen-netfront
