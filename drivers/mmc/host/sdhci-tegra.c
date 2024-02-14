@@ -339,7 +339,17 @@ static bool tegra_sdhci_is_pad_and_regulator_valid(struct sdhci_host *host)
 	if (!(tegra_host->soc_data->nvquirks & NVQUIRK_NEEDS_PAD_CONTROL))
 		return true;
 
-	if (IS_ERR(host->mmc->supply.vqmmc))
+	/*
+	 * T19x onwards, pad control is supported through PMC and does not depend on the
+	 * VQMMC supplies. SDMMC pads are fed with always on 1.8v and 3.3V supplies that help
+	 * to switch between the signaling voltages based on the PMC register field.
+	 * Return true even if VQMMC regulator is not populated in the DT
+	 */
+
+	if (PTR_ERR(host->mmc->supply.vqmmc) == -ENODEV)
+		return true;
+
+	if (IS_ERR_OR_NULL(host->mmc->supply.vqmmc))
 		return false;
 
 	has_1v8 = regulator_is_supported_voltage(host->mmc->supply.vqmmc,
