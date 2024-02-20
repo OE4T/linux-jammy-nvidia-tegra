@@ -266,6 +266,7 @@ of_mdio
 ohci-hcd
 ohci-pci
 oid_registry
+optee
 owl-uart
 packing
 palmas
@@ -414,6 +415,7 @@ system_heap
 t10-pi
 tc3589x
 tcp_cubic
+tee
 tegra-ahb
 tegra-epl
 tegra-hsierrrptinj

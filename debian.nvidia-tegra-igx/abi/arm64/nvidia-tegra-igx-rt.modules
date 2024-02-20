@@ -1171,6 +1171,7 @@ dmard10
 dmc520_edac
 dme1737
 dmfe
+dmi-sysfs
 dmm32at
 dmx3191d
 dnet
@@ -2652,6 +2653,7 @@ l2tp_netlink
 l2tp_ppp
 l4f00242t03
 l64781
+lan743x
 lan78xx
 lan9303-core
 lan9303_i2c
@@ -3753,7 +3755,6 @@ onenand
 opencores-kbd
 openvswitch
 opt3001
-optee
 optee-rng
 opticon
 option
@@ -5775,6 +5776,7 @@ spi-synquacer
 spi-tegra114
 spi-tegra20-sflash
 spi-tegra20-slink
+spi-tegra210-quad
 spi-thunderx
 spi-tle62x0
 spi-xcomm
@@ -5949,6 +5951,7 @@ surface_aggregator_registry
 surface_battery
 surface_charger
 surface_dtx
+surface_gpe
 surface_hid
 surface_hid_core
 surface_hotplug
@@ -6076,7 +6079,6 @@ team_mode_broadcast
 team_mode_loadbalance
 team_mode_random
 team_mode_roundrobin
-tee
 tee_bnxt_fw
 tef6862
 tegra-aconnect
