@@ -633,8 +633,9 @@ static const struct nvmem_cell_lookup tegra234_fuse_lookups[] = {
 };
 
 static const struct nvmem_keepout tegra234_fuse_keepouts[] = {
-	{ .start = 0x1c, .end = 0x64 },
-	{ .start = 0x84, .end = 0xc8 },
+	{ .start = 0x01c, .end = 0x064 },
+	{ .start = 0x084, .end = 0x0a0 },
+	{ .start = 0x0a4, .end = 0x0c8 },
 	{ .start = 0x12c, .end = 0x164 },
 	{ .start = 0x16c, .end = 0x184 },
 	{ .start = 0x190, .end = 0x198 },
