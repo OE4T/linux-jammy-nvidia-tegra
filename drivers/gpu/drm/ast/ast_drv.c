@@ -141,7 +141,10 @@ static void ast_pci_remove(struct pci_dev *pdev)
 
 static void ast_pci_shutdown(struct pci_dev *pdev)
 {
-	drm_atomic_helper_shutdown(pci_get_drvdata(pdev));
+	struct drm_device *dev = pci_get_drvdata(pdev);
+
+	drm_dev_unregister(dev);
+	drm_atomic_helper_shutdown(dev);
 }
 
 static int ast_drm_freeze(struct drm_device *dev)
