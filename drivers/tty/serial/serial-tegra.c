@@ -4,7 +4,7 @@
  *
  * High-speed serial driver for NVIDIA Tegra SoCs
  *
- * Copyright (c) 2012-2019, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2012-2024, NVIDIA CORPORATION.  All rights reserved.
  *
  * Author: Laxman Dewangan <ldewangan@nvidia.com>
  */
@@ -722,6 +722,19 @@ static void tegra_uart_rx_buffer_push(struct tegra_uart_port *tup,
 	do_handle_rx_pio(tup);
 }
 
+static void tegra_uart_config_rx_interrupts(struct tegra_uart_port *tup, bool enable)
+{
+	unsigned long ier = tup->ier_shadow;
+
+	if (enable)
+		ier |= (UART_IER_RLSI | UART_IER_RTOIE | TEGRA_UART_IER_EORD);
+	else
+		ier &= ~(UART_IER_RLSI | UART_IER_RTOIE | TEGRA_UART_IER_EORD);
+
+	tup->ier_shadow = ier;
+	tegra_uart_write(tup, ier, UART_IER);
+}
+
 static void tegra_uart_rx_dma_complete(void *args)
 {
 	struct tegra_uart_port *tup = args;
@@ -729,8 +742,16 @@ static void tegra_uart_rx_dma_complete(void *args)
 	unsigned long flags;
 	struct dma_tx_state state;
 	enum dma_status status;
+	unsigned long ier;
 
 	spin_lock_irqsave(&u->lock, flags);
+
+	/* Deactivate flow control to stop sender */
+	if (tup->rts_active)
+		set_rts(tup, false);
+
+	/* Disable RX interrupts. */
+	tegra_uart_config_rx_interrupts(tup, false);
 
 	status = dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
 
@@ -739,19 +760,19 @@ static void tegra_uart_rx_dma_complete(void *args)
 		goto done;
 	}
 
-	/* Deactivate flow control to stop sender */
-	if (tup->rts_active)
-		set_rts(tup, false);
 
 	tup->rx_dma_active = false;
 	tegra_uart_rx_buffer_push(tup, 0);
 	tegra_uart_start_rx_dma(tup);
 
+done:
 	/* Activate flow control to start transfer */
 	if (tup->rts_active)
 		set_rts(tup, true);
 
-done:
+	/* Enable RX interrupts. */
+	tegra_uart_config_rx_interrupts(tup, true);
+
 	spin_unlock_irqrestore(&u->lock, flags);
 }
 
@@ -774,14 +795,20 @@ static void tegra_uart_terminate_rx_dma(struct tegra_uart_port *tup)
 
 static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
 {
+	unsigned long ier;
+
 	/* Deactivate flow control to stop sender */
 	if (tup->rts_active)
 		set_rts(tup, false);
 
+	tegra_uart_config_rx_interrupts(tup, false);
 	tegra_uart_terminate_rx_dma(tup);
+	tegra_uart_start_rx_dma(tup);
 
 	if (tup->rts_active)
 		set_rts(tup, true);
+
+	tegra_uart_config_rx_interrupts(tup, true);
 }
 
 static int tegra_uart_start_rx_dma(struct tegra_uart_port *tup)
@@ -834,27 +861,12 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
 	struct tegra_uart_port *tup = data;
 	struct uart_port *u = &tup->uport;
 	unsigned long iir;
-	unsigned long ier;
-	bool is_rx_start = false;
-	bool is_rx_int = false;
 	unsigned long flags;
 
 	spin_lock_irqsave(&u->lock, flags);
 	while (1) {
 		iir = tegra_uart_read(tup, UART_IIR);
 		if (iir & UART_IIR_NO_INT) {
-			if (!tup->use_rx_pio && is_rx_int) {
-				tegra_uart_handle_rx_dma(tup);
-				if (tup->rx_in_progress) {
-					ier = tup->ier_shadow;
-					ier |= (UART_IER_RLSI | UART_IER_RTOIE |
-						TEGRA_UART_IER_EORD | UART_IER_RDI);
-					tup->ier_shadow = ier;
-					tegra_uart_write(tup, ier, UART_IER);
-				}
-			} else if (is_rx_start) {
-				tegra_uart_start_rx_dma(tup);
-			}
 			spin_unlock_irqrestore(&u->lock, flags);
 			return IRQ_HANDLED;
 		}
@@ -873,25 +885,12 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
 		case 4: /* End of data */
 		case 6: /* Rx timeout */
 			if (!tup->use_rx_pio) {
-				is_rx_int = tup->rx_in_progress;
-				/* Disable Rx interrupts */
-				ier = tup->ier_shadow;
-				ier &= ~(UART_IER_RDI | UART_IER_RLSI |
-					UART_IER_RTOIE | TEGRA_UART_IER_EORD);
-				tup->ier_shadow = ier;
-				tegra_uart_write(tup, ier, UART_IER);
+				tegra_uart_handle_rx_dma(tup);
 				break;
 			}
 			fallthrough;
 		case 2: /* Receive */
-			if (!tup->use_rx_pio) {
-				is_rx_start = tup->rx_in_progress;
-				tup->ier_shadow  &= ~UART_IER_RDI;
-				tegra_uart_write(tup, tup->ier_shadow,
-						 UART_IER);
-			} else {
-				do_handle_rx_pio(tup);
-			}
+			do_handle_rx_pio(tup);
 			break;
 
 		case 3: /* Receive error */
@@ -1106,8 +1105,12 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 	 * If using DMA mode, enable EORD interrupt to notify about RX
 	 * completion.
 	 */
-	if (!tup->use_rx_pio)
+	if (!tup->use_rx_pio) {
+		tup->ier_shadow &= ~UART_IER_RDI;
 		tup->ier_shadow |= TEGRA_UART_IER_EORD;
+
+		tegra_uart_start_rx_dma(tup);
+	}
 
 	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
 	return 0;
