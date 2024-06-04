@@ -30,6 +30,12 @@ CONFIG_SPEAKUP                                  note<'LP: #1967702'>
 CONFIG_UBSAN                                    policy<{'arm64': 'n'}>
 CONFIG_UBSAN                                    note<'LP#1942215'>
 
+CONFIG_USB_IPHETH                               policy<{'arm64': 'm'}>
+CONFIG_USB_IPHETH                               note<'LP: #2067781'>
+
+CONFIG_USB_NET_RNDIS_WLAN                       policy<{'arm64': 'm'}>
+CONFIG_USB_NET_RNDIS_WLAN                       note<'LP: #2067781'>
+
 CONFIG_VMWARE_VMCI                              policy<{'arm64': 'n'}>
 CONFIG_VMWARE_VMCI                              note<'LP: #1978145'>
 
