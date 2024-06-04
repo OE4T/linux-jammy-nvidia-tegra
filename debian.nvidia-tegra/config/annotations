@@ -27,6 +27,9 @@ CONFIG_PREEMPT_RT                               note<'must be enabled in the rea
 CONFIG_SPEAKUP                                  policy<{'arm64': '-'}>
 CONFIG_SPEAKUP                                  note<'LP: #1967702'>
 
+CONFIG_TCG_FTPM_TEE                             policy<{'arm64': 'm'}>
+CONFIG_TCG_FTPM_TEE                             note<'LP: #2067781'>
+
 CONFIG_UBSAN                                    policy<{'arm64': 'n'}>
 CONFIG_UBSAN                                    note<'LP#1942215'>
 
