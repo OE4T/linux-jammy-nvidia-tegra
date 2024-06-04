@@ -9,6 +9,12 @@ include "../../debian.realtime/config/annotations"
 CONFIG_ACCESSIBILITY                            policy<{'arm64': 'n'}>
 CONFIG_ACCESSIBILITY                            note<'LP: #1967702'>
 
+CONFIG_BMG160                                   policy<{'arm64': 'm'}>
+CONFIG_BMG160                                   note<'LP: #2067781'>
+
+CONFIG_BMI088_ACCEL                             policy<{'arm64': 'm'}>
+CONFIG_BMI088_ACCEL                             note<'LP: #2067781'>
+
 CONFIG_DMATEST                                  policy<{'arm64': 'm'}>
 CONFIG_DMATEST                                  note<'LP: #2060337'>
 
