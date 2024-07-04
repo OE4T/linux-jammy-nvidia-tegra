@@ -2,7 +2,7 @@
 /*
  * NVIDIA Tegra xHCI host controller driver
  *
- * Copyright (c) 2014-2024, NVIDIA CORPORATION. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2014-2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  * Copyright (C) 2014 Google, Inc.
  */
 
@@ -1607,17 +1607,16 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 
 		for (i = 0; i < tegra->soc->num_wakes; i++) {
 			char irq_name[] = "wakeX";
-			struct irq_desc *desc;
+			struct irq_data *data;
 
 			snprintf(irq_name, sizeof(irq_name), "wake%d", i);
 			tegra->wake_irqs[i] = platform_get_irq_byname(pdev, irq_name);
 			if (tegra->wake_irqs[i] < 0)
 				return tegra->wake_irqs[i];
-			desc = irq_to_desc(tegra->wake_irqs[i]);
-			if (!desc)
+			data = irq_get_irq_data(tegra->wake_irqs[i]);
+			if (!data)
 				return -EINVAL;
-			irq_set_irq_type(tegra->wake_irqs[i],
-					irqd_get_trigger_type(&desc->irq_data));
+			irq_set_irq_type(tegra->wake_irqs[i], irqd_get_trigger_type(data));
 		}
 	}
 
