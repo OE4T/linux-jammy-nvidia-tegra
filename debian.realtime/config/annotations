@@ -8,6 +8,9 @@ include "../../debian.master/config/annotations"
 CONFIG_BLK_CGROUP_IOLATENCY                     policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_BLK_CGROUP_IOLATENCY                     note<'LP: #1961588'>
 
+CONFIG_DEBUG_PREEMPT                            policy<{'amd64': 'n', 'arm64': 'n'}>
+CONFIG_DEBUG_PREEMPT                            note<'LP: #2071853'>
+
 CONFIG_IRQ_TIME_ACCOUNTING                      policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_IRQ_TIME_ACCOUNTING                      note<'LP: #1961588'>
 
@@ -81,7 +84,6 @@ CONFIG_CEC_PIN_ERROR_INJ                        policy<{'amd64': 'y', 'arm64': '
 CONFIG_CONTEXT_TRACKING                         policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_CONTEXT_TRACKING_FORCE                   policy<{'amd64': 'n', 'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'amd64': '-', 'arm64': '-'}>
-CONFIG_DEBUG_PREEMPT                            policy<{'amd64': 'y', 'arm64': 'y'}>
 CONFIG_DEV_DAX                                  policy<{'amd64': '-', 'arm64': '-'}>
 CONFIG_DEV_DAX_KMEM                             policy<{'amd64': '-', 'arm64': '-'}>
 CONFIG_DEV_DAX_PMEM                             policy<{'amd64': '-', 'arm64': '-'}>
