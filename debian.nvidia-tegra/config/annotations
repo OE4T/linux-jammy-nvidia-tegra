@@ -18,6 +18,9 @@ CONFIG_BMI088_ACCEL                             note<'LP: #2067781'>
 CONFIG_DMATEST                                  policy<{'arm64': 'm'}>
 CONFIG_DMATEST                                  note<'LP: #2060337'>
 
+CONFIG_KVM                                      policy<{'arm64': 'y'}>
+CONFIG_KVM                                      note<'LP: #2074228'>
+
 CONFIG_LATENCYTOP                               policy<{'arm64': 'y'}>
 CONFIG_LATENCYTOP                               note<'https://lists.ubuntu.com/archives/kernel-team/2014-July/045006.html, LP#1655986'>
 
@@ -82,6 +85,7 @@ CONFIG_ARCH_INLINE_WRITE_UNLOCK                 policy<{'arm64': '-', 'arm64-nvi
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_BH              policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQ             policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE      policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
+CONFIG_ARM64_ERRATUM_834220                     policy<{'arm64': 'y'}>
 CONFIG_BINFMT_MISC                              policy<{'arm64': 'y'}>
 CONFIG_BMI088_ACCEL_I2C                         policy<{'arm64': 'm'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
@@ -91,6 +95,15 @@ CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'n'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_ARCH_TLB_FLUSH_ALL              policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT             policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_EVENTFD                         policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_IRQCHIP                         policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_IRQFD                           policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_IRQ_BYPASS                      policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_IRQ_ROUTING                     policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_MSI                             policy<{'arm64': 'y'}>
+CONFIG_HAVE_KVM_VCPU_RUN_PID_CHANGE             policy<{'arm64': 'y'}>
 CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
 CONFIG_HZ_1000                                  policy<{'arm64': 'y'}>
@@ -122,16 +135,23 @@ CONFIG_INLINE_WRITE_UNLOCK                      policy<{'arm64': '-', 'arm64-nvi
 CONFIG_INLINE_WRITE_UNLOCK_BH                   policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQ                  policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
+CONFIG_IRQ_BYPASS_MANAGER                       policy<{'arm64': 'y'}>
+CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT        policy<{'arm64': 'y'}>
+CONFIG_KVM_MMIO                                 policy<{'arm64': 'y'}>
+CONFIG_KVM_VFIO                                 policy<{'arm64': 'y'}>
+CONFIG_KVM_XFER_TO_GUEST_WORK                   policy<{'arm64': 'y'}>
 CONFIG_LEDS_TRIGGER_CPU                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
 CONFIG_MESON_SECURE_PM_DOMAINS                  policy<{'arm64': 'y'}>
 CONFIG_MESON_SM                                 policy<{'arm64': 'y'}>
 CONFIG_NET_RX_BUSY_POLL                         policy<{'arm64': '-', 'arm64-nvidia-tegra': 'y'}>
 CONFIG_NTFS_FS                                  policy<{'arm64': 'y'}>
 CONFIG_NUMA_BALANCING                           policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
+CONFIG_NVHE_EL2_DEBUG                           policy<{'arm64': 'n'}>
 CONFIG_PINCTRL_TEGRA234                         policy<{'arm64': 'y'}>
 CONFIG_PREEMPTION                               policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
 CONFIG_PREEMPT_COUNT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
 CONFIG_PREEMPT_LAZY                             policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
+CONFIG_PREEMPT_NOTIFIERS                        policy<{'arm64': 'y'}>
 CONFIG_PREEMPT_RCU                              policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-'}>
 CONFIG_PREEMPT_TRACER                           policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-'}>
 CONFIG_PREEMPT_VOLUNTARY                        policy<{'arm64': 'n', 'arm64-nvidia-tegra': 'y'}>
