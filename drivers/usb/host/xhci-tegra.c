@@ -1543,6 +1543,38 @@ static void tegra_xusb_deinit_usb_phy(struct tegra_xusb *tegra)
 			otg_set_host(tegra->usbphy[i]->otg, NULL);
 }
 
+static void tegra_xusb_setup_wakeup(struct platform_device *pdev, struct tegra_xusb *tegra)
+{
+	int i;
+
+	tegra->wake_irqs = devm_kcalloc(tegra->dev,
+				tegra->soc->num_wakes,
+				sizeof(*tegra->wake_irqs), GFP_KERNEL);
+	if (!tegra->wake_irqs)
+		return;
+
+	for (i = 0; i < tegra->soc->num_wakes; i++) {
+		char irq_name[] = "wakeX";
+		struct irq_data *data;
+
+		snprintf(irq_name, sizeof(irq_name), "wake%d", i);
+		tegra->wake_irqs[i] = platform_get_irq_byname(pdev, irq_name);
+		if (tegra->wake_irqs[i] < 0)
+			goto error;
+		data = irq_get_irq_data(tegra->wake_irqs[i]);
+		if (!data)
+			goto error;
+		irq_set_irq_type(tegra->wake_irqs[i], irqd_get_trigger_type(data));
+	}
+	return;
+
+error:
+	for (i = 0; i < tegra->soc->num_wakes && tegra->wake_irqs[i] >= 0; i++)
+		irq_dispose_mapping(tegra->wake_irqs[i]);
+	devm_kfree(tegra->dev, tegra->wake_irqs);
+	tegra->wake_irqs = NULL;
+}
+
 static int tegra_xusb_probe(struct platform_device *pdev)
 {
 	struct of_phandle_args args;
@@ -1598,27 +1630,8 @@ static int tegra_xusb_probe(struct platform_device *pdev)
 	if (IS_ERR(tegra->padctl))
 		return PTR_ERR(tegra->padctl);
 
-	if (tegra->soc->num_wakes) {
-		tegra->wake_irqs = devm_kcalloc(&pdev->dev,
-					tegra->soc->num_wakes,
-					sizeof(*tegra->wake_irqs), GFP_KERNEL);
-		if (!tegra->wake_irqs)
-			return -ENOMEM;
-
-		for (i = 0; i < tegra->soc->num_wakes; i++) {
-			char irq_name[] = "wakeX";
-			struct irq_data *data;
-
-			snprintf(irq_name, sizeof(irq_name), "wake%d", i);
-			tegra->wake_irqs[i] = platform_get_irq_byname(pdev, irq_name);
-			if (tegra->wake_irqs[i] < 0)
-				return tegra->wake_irqs[i];
-			data = irq_get_irq_data(tegra->wake_irqs[i]);
-			if (!data)
-				return -EINVAL;
-			irq_set_irq_type(tegra->wake_irqs[i], irqd_get_trigger_type(data));
-		}
-	}
+	if (tegra->soc->num_wakes)
+		tegra_xusb_setup_wakeup(pdev, tegra);
 
 	np = of_parse_phandle(pdev->dev.of_node, "nvidia,xusb-padctl", 0);
 	if (!np) {
@@ -1965,7 +1978,7 @@ static int tegra_xusb_remove(struct platform_device *pdev)
 	if (tegra->padctl_irq)
 		pm_runtime_disable(&pdev->dev);
 
-	for (i = 0; i < tegra->soc->num_wakes; i++)
+	for (i = 0; i < tegra->soc->num_wakes && tegra->wake_irqs; i++)
 		irq_dispose_mapping(tegra->wake_irqs[i]);
 
 	pm_runtime_put(&pdev->dev);
@@ -2408,7 +2421,7 @@ out:
 		if (device_may_wakeup(dev)) {
 			if (enable_irq_wake(tegra->padctl_irq))
 				dev_err(dev, "failed to enable padctl wakes\n");
-			for (i = 0; i < tegra->soc->num_wakes; i++)
+			for (i = 0; i < tegra->soc->num_wakes && tegra->wake_irqs; i++)
 				enable_irq_wake(tegra->wake_irqs[i]);
 		}
 	}
@@ -2440,7 +2453,7 @@ static __maybe_unused int tegra_xusb_resume(struct device *dev)
 	if (device_may_wakeup(dev)) {
 		if (disable_irq_wake(tegra->padctl_irq))
 			dev_err(dev, "failed to disable padctl wakes\n");
-		for (i = 0; i < tegra->soc->num_wakes; i++)
+		for (i = 0; i < tegra->soc->num_wakes && tegra->wake_irqs; i++)
 			disable_irq_wake(tegra->wake_irqs[i]);
 	}
 	tegra->suspended = false;
