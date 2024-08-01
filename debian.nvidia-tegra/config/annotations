@@ -15,6 +15,9 @@ CONFIG_BMG160                                   note<'LP: #2067781'>
 CONFIG_BMI088_ACCEL                             policy<{'arm64': 'm'}>
 CONFIG_BMI088_ACCEL                             note<'LP: #2067781'>
 
+CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-'}>
+CONFIG_DEBUG_PREEMPT                            note<'LP: #2071853'>
+
 CONFIG_DMATEST                                  policy<{'arm64': 'm'}>
 CONFIG_DMATEST                                  note<'LP: #2060337'>
 
@@ -93,7 +96,6 @@ CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvi
 CONFIG_CRYPTO_DEV_TEGRA                         policy<{'arm64': 'm'}>
 CONFIG_CRYPTO_SUPPORT_TEGRA_TESTS               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_MUTEXES                            policy<{'arm64': '-', 'arm64-nvidia-tegra': 'n'}>
-CONFIG_DEBUG_PREEMPT                            policy<{'arm64': 'y', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'n'}>
 CONFIG_FIQ                                      policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_ARCH_TLB_FLUSH_ALL              policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT             policy<{'arm64': 'y'}>
