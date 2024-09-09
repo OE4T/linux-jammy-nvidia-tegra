@@ -425,6 +425,8 @@ struct tegra_pcie_dw {
 	struct gpio_desc *pex_rst_gpiod;
 	struct gpio_desc *pex_refclk_sel_gpiod;
 	struct gpio_desc *pex_prsnt_gpiod;
+	struct gpio_desc *pex_wake_gpiod;
+	unsigned int pex_wake_irq;
 	unsigned int pex_rst_irq;
 	unsigned int prsnt_irq;
 	bool perst_irq_enabled;
@@ -1662,6 +1664,29 @@ static int tegra_pcie_dw_parse_dt(struct tegra_pcie_dw *pcie)
 	if (ret) {
 		dev_err(pcie->dev, "Failed to read Controller-ID: %d\n", ret);
 		return ret;
+	}
+
+	pcie->pex_wake_gpiod = devm_gpiod_get_optional(pcie->dev, "nvidia,pex-wake",
+			(pcie->of_data->mode == DW_PCIE_RC_TYPE) ? GPIOD_IN : GPIOD_OUT_HIGH);
+	if (IS_ERR(pcie->pex_wake_gpiod)) {
+		int err = PTR_ERR(pcie->pex_wake_gpiod);
+
+		if (err == -EPROBE_DEFER) {
+			dev_info(pcie->dev, "pex-wake GPIO probe deferred\n");
+			return err;
+		}
+		pcie->pex_wake_gpiod = NULL;
+	}
+
+	if (!IS_ERR_OR_NULL(pcie->pex_wake_gpiod)) {
+		device_init_wakeup(pcie->dev, true);
+
+		ret = gpiod_to_irq(pcie->pex_wake_gpiod);
+		if (ret < 0) {
+			dev_err(pcie->dev, "Failed to get IRQ for WAKE GPIO: %d\n", ret);
+			return ret;
+		}
+		pcie->pex_wake_irq = (unsigned int)ret;
 	}
 
 	ret = of_property_count_strings(np, "phy-names");
@@ -3059,6 +3084,7 @@ static int tegra_pcie_dw_suspend_late(struct device *dev)
 static int tegra_pcie_dw_suspend_noirq(struct device *dev)
 {
 	struct tegra_pcie_dw *pcie = dev_get_drvdata(dev);
+	int ret = 0;
 
 	if (pcie->of_data->mode == DW_PCIE_EP_TYPE)
 		return 0;
@@ -3070,6 +3096,11 @@ static int tegra_pcie_dw_suspend_noirq(struct device *dev)
 	tegra_pcie_dw_pme_turnoff(pcie);
 	tegra_pcie_unconfig_controller(pcie);
 
+	if (pcie->pex_wake_gpiod && device_may_wakeup(dev)) {
+		ret = enable_irq_wake(pcie->pex_wake_irq);
+		if (ret < 0)
+			dev_err(dev, "enable wake irq failed: %d\n", ret);
+	}
 	return 0;
 }
 
@@ -3083,6 +3114,12 @@ static int tegra_pcie_dw_resume_noirq(struct device *dev)
 
 	if (!pcie->link_state)
 		return 0;
+
+	if (pcie->pex_wake_gpiod && device_may_wakeup(dev)) {
+		ret = disable_irq_wake(pcie->pex_wake_irq);
+		if (ret < 0)
+			dev_err(dev, "disable wake irq failed: %d\n", ret);
+	}
 
 	ret = tegra_pcie_config_controller(pcie, true);
 	if (ret < 0)
