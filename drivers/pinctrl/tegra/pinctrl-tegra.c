@@ -281,7 +281,7 @@ static int tegra_pinctrl_set_mux(struct pinctrl_dev *pctldev,
 
 
 static const struct tegra_pingroup *tegra_pinctrl_get_group(struct pinctrl_dev *pctldev,
-                                                       unsigned int offset)
+					unsigned int offset, struct tegra_pingroup_config **config)
 {
 		struct tegra_pmx *pmx = pinctrl_dev_get_drvdata(pctldev);
 		unsigned int group, num_pins, j;
@@ -293,9 +293,12 @@ static const struct tegra_pingroup *tegra_pinctrl_get_group(struct pinctrl_dev *
 			if (ret < 0)
 				continue;
 			for (j = 0; j < num_pins; j++) {
-				if (offset == pins[j])
+				if (offset == pins[j]) {
+					if (config)
+						*config = &pmx->pingroup_configs[group];
 
 				return &pmx->soc->groups[group];
+				}
 			}
 		}
 
@@ -309,12 +312,14 @@ static int tegra_pinctrl_gpio_request_enable(struct pinctrl_dev *pctldev,
 {
 	struct tegra_pmx *pmx = pinctrl_dev_get_drvdata(pctldev);
 	const struct tegra_pingroup *group;
+	struct tegra_pingroup_config *config;
 	u32 value;
 
 	if (!pmx->soc->sfsel_in_mux)
 		return 0;
 
-	group = tegra_pinctrl_get_group(pctldev, offset);
+	group = tegra_pinctrl_get_group(pctldev, offset, &config);
+
 	if (!group)
 		return -EINVAL;
 
@@ -323,6 +328,7 @@ static int tegra_pinctrl_gpio_request_enable(struct pinctrl_dev *pctldev,
 		return -EINVAL;
 
 	value = pmx_readl(pmx, group->mux_bank, group->mux_reg);
+	config->is_sfsel = (value & BIT(group->sfsel_bit)) != 0;
 	value &= ~BIT(group->sfsel_bit);
 	pmx_writel(pmx, value, group->mux_bank, group->mux_reg);
 
@@ -335,12 +341,14 @@ static void tegra_pinctrl_gpio_disable_free(struct pinctrl_dev *pctldev,
 {
 	struct tegra_pmx *pmx = pinctrl_dev_get_drvdata(pctldev);
 	const struct tegra_pingroup *group;
+	struct tegra_pingroup_config *config;
 	u32 value;
 
 	if (!pmx->soc->sfsel_in_mux)
 		return;
 
-	group = tegra_pinctrl_get_group(pctldev, offset);
+	group = tegra_pinctrl_get_group(pctldev, offset, &config);
+
 	if (!group)
 		return;
 
@@ -348,7 +356,8 @@ static void tegra_pinctrl_gpio_disable_free(struct pinctrl_dev *pctldev,
 		return;
 
 	value = pmx_readl(pmx, group->mux_bank, group->mux_reg);
-	value |= BIT(group->sfsel_bit);
+	if (config->is_sfsel)
+		value |= BIT(group->sfsel_bit);
 	pmx_writel(pmx, value, group->mux_bank, group->mux_reg);
 }
 
@@ -800,6 +809,11 @@ int tegra_pinctrl_probe(struct platform_device *pdev,
 
 	pmx->dev = &pdev->dev;
 	pmx->soc = soc_data;
+
+	pmx->pingroup_configs = devm_kcalloc(&pdev->dev,
+		pmx->soc->ngroups, sizeof(*pmx->pingroup_configs), GFP_KERNEL);
+	if (!pmx->pingroup_configs)
+		return -ENOMEM;
 
 	/*
 	 * Each mux group will appear in 4 functions' list of groups.
