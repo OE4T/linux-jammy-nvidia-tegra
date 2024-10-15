@@ -262,7 +262,7 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
 
 	t = add_to_rbuf(chan, mssg);
 	if (t < 0) {
-		dev_err(chan->mbox->dev, "Try increasing MBOX_TX_QUEUE_LEN\n");
+		dev_warn(chan->mbox->dev, "Try increasing MBOX_TX_QUEUE_LEN\n");
 		return t;
 	}
 
