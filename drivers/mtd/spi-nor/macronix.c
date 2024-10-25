@@ -8,6 +8,8 @@
 
 #include "core.h"
 
+#define SPINOR_OP_GBULK	0x98	/* Global Block Unlock */
+
 static int
 mx25l25635_post_bfpt_fixups(struct spi_nor *nor,
 			    const struct sfdp_parameter_header *bfpt_header,
@@ -30,6 +32,52 @@ mx25l25635_post_bfpt_fixups(struct spi_nor *nor,
 
 static struct spi_nor_fixups mx25l25635_fixups = {
 	.post_bfpt = mx25l25635_post_bfpt_fixups,
+};
+
+static int mx25u51279g_clear_write_protection(struct spi_nor *nor)
+{
+	struct spi_mem_op op = SPI_MEM_OP(
+		SPI_MEM_OP_CMD(SPINOR_OP_GBULK, 1),
+		SPI_MEM_OP_NO_ADDR,
+		SPI_MEM_OP_NO_DUMMY,
+		SPI_MEM_OP_NO_DATA
+	);
+	int ret;
+
+	ret = spi_mem_exec_op(nor->spimem, &op);
+	if (ret) {
+		dev_err(nor->dev, "Failed to send GBULK command\n");
+		return ret;
+	}
+
+	ret = spi_nor_wait_till_ready(nor);
+	if (ret) {
+		dev_err(nor->dev, "Timeout waiting for GBULK to complete\n");
+		return ret;
+	}
+
+	dev_dbg(nor->dev, "Write protection cleared for mx25u51279g using GBULK command\n");
+	return 0;
+}
+
+static void mx25u51279g_fixup(struct spi_nor *nor)
+{
+	int ret;
+
+	if (!nor) {
+		dev_err(nor->dev, "error nor null val\n");
+		return;
+	}
+
+	ret = mx25u51279g_clear_write_protection(nor);
+	if (ret) {
+		dev_warn(nor->dev, "Failed to clear write protection for mx25u51279g\n");
+	}
+
+}
+
+static const struct spi_nor_fixups mx25u51279g_fixups = {
+	.default_init = mx25u51279g_fixup,
 };
 
 static const struct flash_info macronix_parts[] = {
@@ -72,7 +120,8 @@ static const struct flash_info macronix_parts[] = {
 	{ "mx25u51279g", INFO(0xc2953a, 0, 64 * 1024, 1024,
 			      SECT_4K | SPI_NOR_DUAL_READ |
 			      SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE |
-			      SPI_NOR_QUAD_READ | SPI_NOR_4B_OPCODES) },
+			      SPI_NOR_QUAD_READ | SPI_NOR_4B_OPCODES)
+		.fixups = &mx25u51279g_fixups },
 	{ "mx25v8035f",  INFO(0xc22314, 0, 64 * 1024,  16,
 			      SECT_4K | SPI_NOR_DUAL_READ |
 			      SPI_NOR_QUAD_READ) },
