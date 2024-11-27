@@ -100,26 +100,24 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			    int duty_ns, int period_ns)
 {
 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
-	unsigned long long c = duty_ns;
 	unsigned long rate, required_clk_rate;
-	u32 val = 0;
+	u32 pwm_f, val;
 	int err;
-
-	/*
-	 * Convert from duty_ns / period_ns to a fixed number of duty ticks
-	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
-	 * nearest integer during division.
-	 */
-	c *= (1 << PWM_DUTY_WIDTH);
-	c = DIV_ROUND_CLOSEST_ULL(c, period_ns);
-
-	val = (u32)c << PWM_DUTY_SHIFT;
 
 	/*
 	 *  min period = max clock limit >> PWM_DUTY_WIDTH
 	 */
 	if (period_ns < pc->min_period_ns)
 		return -EINVAL;
+
+	/*
+	 * Convert from duty_ns / period_ns to a fixed number of duty ticks
+	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
+	 * nearest integer during division.
+	 */
+	pwm_f = (u32)DIV_ROUND_CLOSEST_ULL(duty_ns << PWM_DUTY_WIDTH,
+					   period_ns);
+	val = (u32)pwm_f << PWM_DUTY_SHIFT;
 
 	/*
 	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
