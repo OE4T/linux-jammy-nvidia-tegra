@@ -100,8 +100,8 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			    int duty_ns, int period_ns)
 {
 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
-	unsigned long rate, required_clk_rate;
-	u32 pwm_f, val;
+	unsigned long required_clk_rate;
+	u32 pwm_f, pfm_f, val;
 	int err;
 
 	/*
@@ -120,74 +120,32 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	val = (u32)pwm_f << PWM_DUTY_SHIFT;
 
 	/*
-	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
-	 * cycles at the PWM clock rate will take period_ns nanoseconds.
+	 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
+	 * with the maximum possible rate that the controller can
+	 * provide. Any further lower value can be derived by setting
+	 * PFM bits[0:12].
 	 *
-	 * num_channels: If single instance of PWM controller has multiple
-	 * channels (e.g. Tegra210 or older) then it is not possible to
-	 * configure separate clock rates to each of the channels, in such
-	 * case the value stored during probe will be referred.
-	 *
-	 * If every PWM controller instance has one channel respectively, i.e.
-	 * nums_channels == 1 then only the clock rate can be modified
-	 * dynamically (e.g. Tegra186 or Tegra194).
+	 * required_clk_rate is a reference rate for source clock and
+	 * it is derived based on user requested period.
 	 */
-	if (pc->soc->num_channels == 1) {
-		/*
-		 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
-		 * with the maximum possible rate that the controller can
-		 * provide. Any further lower value can be derived by setting
-		 * PFM bits[0:12].
-		 *
-		 * required_clk_rate is a reference rate for source clock and
-		 * it is derived based on user requested period. By setting the
-		 * source clock rate as required_clk_rate, PWM controller will
-		 * be able to configure the requested period.
-		 */
-		required_clk_rate = DIV_ROUND_UP_ULL((u64)NSEC_PER_SEC << PWM_DUTY_WIDTH,
-						     period_ns);
-
-		if (required_clk_rate > clk_round_rate(pc->clk, required_clk_rate))
-			/*
-			 * required_clk_rate is a lower bound for the input
-			 * rate; for lower rates there is no value for PWM_SCALE
-			 * that yields a period less than or equal to the
-			 * requested period. Hence, for lower rates, double the
-			 * required_clk_rate to get a clock rate that can meet
-			 * the requested period.
-			 */
-			required_clk_rate *= 2;
-
-		err = dev_pm_opp_set_rate(pc->dev, required_clk_rate);
-		if (err < 0)
-			return -EINVAL;
-
-		/* Store the new rate for further references */
-		pc->clk_rate = clk_get_rate(pc->clk);
-	}
-
-	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
-	rate = mul_u64_u64_div_u64(pc->clk_rate, period_ns,
-				   (u64)NSEC_PER_SEC << PWM_DUTY_WIDTH);
+	required_clk_rate = DIV_ROUND_UP_ULL(
+		(u64)NSEC_PER_SEC << PWM_DUTY_WIDTH, period_ns);
 
 	/*
 	 * Since the actual PWM divider is the register's frequency divider
 	 * field plus 1, we need to decrement to get the correct value to
 	 * write to the register.
 	 */
-	if (rate > 0)
-		rate--;
-	else
-		return -EINVAL;
+	pfm_f = DIV_ROUND_CLOSEST_ULL(pc->clk_rate, required_clk_rate) - 1;
 
 	/*
-	 * Make sure that the rate will fit in the register's frequency
+	 * Make sure that the pfm_f will fit in the register's frequency
 	 * divider field.
 	 */
-	if (rate >> PWM_SCALE_WIDTH)
+	if (pfm_f >> PWM_SCALE_WIDTH)
 		return -EINVAL;
 
-	val |= rate << PWM_SCALE_SHIFT;
+	val |= pfm_f << PWM_SCALE_SHIFT;
 
 	/*
 	 * If the PWM channel is disabled, make sure to turn on the clock
