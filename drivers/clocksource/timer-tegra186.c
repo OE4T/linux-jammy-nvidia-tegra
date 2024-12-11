@@ -57,6 +57,8 @@
 #define WDTUR 0x00c
 #define  WDTUR_UNLOCK_PATTERN 0x0000c45a
 
+#define WDT_DEFAULT_TIMEOUT 120
+
 struct tegra186_timer_soc {
 	unsigned int num_timers;
 	unsigned int num_wdts;
@@ -75,6 +77,7 @@ struct tegra186_wdt {
 	void __iomem *regs;
 	unsigned int index;
 	bool locked;
+	bool irq_enabled;
 
 	struct tegra186_tmr *tmr;
 };
@@ -175,7 +178,8 @@ static void tegra186_wdt_enable(struct tegra186_wdt *wdt)
 		value |= WDTCR_PERIOD(1);
 
 		/* enable local interrupt for WDT petting */
-		value |= WDTCR_LOCAL_INT_ENABLE;
+		if (wdt->irq_enabled)
+			value |= WDTCR_LOCAL_INT_ENABLE;
 
 		/* enable local FIQ and remote interrupt for debug dump */
 		if (0)
@@ -216,8 +220,17 @@ static int tegra186_wdt_stop(struct watchdog_device *wdd)
 static int tegra186_wdt_ping(struct watchdog_device *wdd)
 {
 	struct tegra186_wdt *wdt = to_tegra186_wdt(wdd);
+	unsigned int value;
 
 	tegra186_wdt_disable(wdt);
+
+	/* Disable WDT interrupt once userspace takes over. */
+	if (wdt->irq_enabled) {
+		value &= ~WDTCR_LOCAL_INT_ENABLE;
+		wdt_writel(wdt, value, WDTCR);
+		wdt->irq_enabled = false;
+	}
+
 	tegra186_wdt_enable(wdt);
 
 	return 0;
@@ -307,6 +320,8 @@ static struct tegra186_wdt *tegra186_wdt_create(struct tegra186_timer *tegra,
 	if (value & WDTCR_LOCAL_INT_ENABLE)
 		wdt->locked = true;
 
+	wdt->irq_enabled = true;
+
 	source = value & WDTCR_TIMER_SOURCE_MASK;
 
 	wdt->tmr = tegra186_tmr_create(tegra, source);
@@ -330,6 +345,13 @@ static struct tegra186_wdt *tegra186_wdt_create(struct tegra186_timer *tegra,
 		dev_err(tegra->dev, "failed to register WDT: %d\n", err);
 		return ERR_PTR(err);
 	}
+
+	/*
+	 * Start the watchdog to recover the system if it crashes before
+	 * userspace initialize the WDT.
+	 */
+	tegra186_wdt_set_timeout(&wdt->base, WDT_DEFAULT_TIMEOUT);
+	tegra186_wdt_start(&wdt->base);
 
 	return wdt;
 }
@@ -411,7 +433,7 @@ static irqreturn_t tegra186_timer_irq(int irq, void *data)
 {
 	struct tegra186_timer *tegra = data;
 
-	if (watchdog_active(&tegra->wdt->base)) {
+	if (tegra->wdt->irq_enabled) {
 		tegra186_wdt_disable(tegra->wdt);
 		tegra186_wdt_enable(tegra->wdt);
 	}
