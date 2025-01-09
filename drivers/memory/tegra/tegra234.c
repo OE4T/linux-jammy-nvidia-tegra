@@ -948,7 +948,7 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
 		},
 	}, {
 		.id = TEGRA234_MEMORY_CLIENT_DLA1RDA1,
-		.name = "dla0rda1",
+		.name = "dla1rda1",
 		.sid = TEGRA234_SID_NVDLA1,
 		.regs = {
 			.sid = {
@@ -1040,7 +1040,6 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	struct mrq_bwmgr_int_response bwmgr_resp = { 0 };
 	const struct tegra_mc_client *pclient = src->data;
 	struct tegra_bpmp_message msg;
-	struct tegra_bpmp *bpmp;
 	int ret;
 
 	/*
@@ -1055,10 +1054,9 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	if (!mc->bwmgr_mrq_supported)
 		return 0;
 
-	bpmp = of_tegra_bpmp_get();
-	if (IS_ERR(bpmp)) {
-		ret = PTR_ERR(bpmp);
-		return ret;
+	if (!mc->bpmp) {
+		dev_err(mc->dev, "BPMP reference NULL\n");
+		return -ENOENT;
 	}
 
 	if (pclient->type == TEGRA_ICC_NISO)
@@ -1079,7 +1077,7 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	msg.rx.data = &bwmgr_resp;
 	msg.rx.size = sizeof(bwmgr_resp);
 
-	ret = tegra_bpmp_transfer(bpmp, &msg);
+	ret = tegra_bpmp_transfer(mc->bpmp, &msg);
 	if (ret < 0) {
 		dev_err(mc->dev, "BPMP transfer failed: %d\n", ret);
 		goto error;
@@ -1091,7 +1089,6 @@ static int tegra234_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 	}
 
 error:
-	tegra_bpmp_put(bpmp);
 	return ret;
 }
 
