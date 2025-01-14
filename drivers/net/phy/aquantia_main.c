@@ -428,34 +428,133 @@ static int aqr_config_intr(struct phy_device *phydev)
 	return 0;
 }
 
-static irqreturn_t aqr_handle_interrupt(struct phy_device *phydev)
+static int aqr_wol_settings(struct phy_device *phydev, bool enable)
 {
-	int reg, val, ret;
-	int irq_status;
-
+	u16 val;
+	int ret = 0;
 	struct aqr107_priv *priv = phydev->priv;
-	reg = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_SGMII_TX_ALARM1);
-	if ((reg & MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK) ==
-	    MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK) {
+
+	if (enable) {
+		/* Disables all advertised speeds except for the WoL
+		 * speed (100BASE-TX FD or 1000BASE-T)
+		 * This is set as per the APP note from Marvel
+		 */
+		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL);
+		val |= MDIO_AN_LD_LOOP_TIMING_ABILITY;
+		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL, val);
+		if (ret < 0)
+			return ret;
+		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV);
+		val = (val & MDIO_AN_VEND_MASK) |
+		      (MDIO_AN_VEND_PROV_AQRATE_DWN_SHFT_CAP | MDIO_AN_VEND_PROV_1000BASET_FULL);
+		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV, val);
+		if (ret < 0)
+			return ret;
+
+		/* Enable the magic frame and wake up frame detection for the PHY */
+		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL6);
+		val |= MDIO_C22EXT_RSI_WAKE_UP_FRAME_DETECTION;
+		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL6, val);
+		if (ret < 0)
+			return ret;
+		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL7);
+		val |= MDIO_C22EXT_RSI_MAGIC_PKT_FRAME_DETECTION;
+		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL7, val);
+		if (ret < 0)
+			return ret;
+
+		/* Set the WoL enable bit */
+		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1);
+		val |= MDIO_MMD_AN_WOL_ENABLE;
+		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1, val);
+		if (ret < 0)
+			return ret;
+
+		/* Set the WoL INT_N trigger bit */
+		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL8);
+		val |= MDIO_C22EXT_RSI_WOL_FCS_MONITOR_MODE;
+		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL8, val);
+		if (ret < 0)
+			return ret;
+
+		/* Enable Interrupt INT_N Generation at pin level */
+		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_SGMII_TX_INT_MASK1);
+		val |= MDIO_C22EXT_SGMII0_WAKE_UP_FRAME_MASK |
+		       MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK;
+		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT,
+				    MDIO_C22EXT_GBE_PHY_SGMII_TX_INT_MASK1, val);
+		if (ret < 0)
+			return ret;
+		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_STD_MASK);
+		val |= VEND1_GLOBAL_INT_STD_MASK_ALL;
+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_STD_MASK, val);
+		if (ret < 0)
+			return ret;
+		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK);
+		val |= VEND1_GLOBAL_INT_VEND_MASK_GBE;
+		/* Disable aneg intr. */
+		val &= ~VEND1_GLOBAL_INT_VEND_MASK_AN;
+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK, val);
+		if (ret < 0)
+			return ret;
+
+		/* Set the system interface to SGMII */
+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
+				    VEND1_GLOBAL_SYS_CONFIG_100M, VEND1_GLOBAL_SYS_CONFIG_SGMII);
+		if (ret < 0)
+			return ret;
+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
+				    VEND1_GLOBAL_SYS_CONFIG_1G, VEND1_GLOBAL_SYS_CONFIG_SGMII);
+		if (ret < 0)
+			return ret;
+
+		/* restart auto-negotiation */
+		genphy_c45_restart_aneg(phydev);
+		priv->wol_status = WAKE_MAGIC;
+	} else {
 		/* Disable the WoL enable bit */
 		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1);
 		val &= ~MDIO_MMD_AN_WOL_ENABLE;
 		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1, val);
 		if (ret < 0)
-			return IRQ_NONE;
+			return ret;
+
+		/* Enable aneg intr. */
+		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK);
+		val |= VEND1_GLOBAL_INT_VEND_MASK_AN;
+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK, val);
+		if (ret < 0)
+			return ret;
 
 		/* Restore the SERDES/System Interface back to the XFI mode */
 		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
 				    VEND1_GLOBAL_SYS_CONFIG_100M, VEND1_GLOBAL_SYS_CONFIG_XFI);
 		if (ret < 0)
-			return IRQ_NONE;
+			return ret;
 		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
 				    VEND1_GLOBAL_SYS_CONFIG_1G, VEND1_GLOBAL_SYS_CONFIG_XFI);
 		if (ret < 0)
-			return IRQ_NONE;
+			return ret;
+
 		/* restart auto-negotiation */
+		genphy_c45_restart_aneg(phydev);
 		priv->wol_status = 0;
-		return genphy_c45_restart_aneg(phydev);
+	}
+	return ret;
+}
+
+static irqreturn_t aqr_handle_interrupt(struct phy_device *phydev)
+{
+	int reg, ret;
+	int irq_status;
+
+	reg = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_SGMII_TX_ALARM1);
+	if ((reg & MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK) ==
+	    MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK) {
+		ret = aqr_wol_settings(phydev, false);
+		if (ret < 0)
+			return IRQ_NONE;
+		return IRQ_HANDLED;
 	}
 
 	irq_status = phy_read_mmd(phydev, MDIO_MMD_AN,
@@ -967,112 +1066,6 @@ static int aqr107_probe(struct phy_device *phydev)
 	return aqr_hwmon_probe(phydev);
 }
 
-static int aqr113c_wol_settings(struct phy_device *phydev, bool enable)
-{
-	u16 val;
-	int ret = 0;
-	struct aqr107_priv *priv = phydev->priv;
-
-	if (enable) {
-		/* Disables all advertised speeds except for the WoL
-		 * speed (100BASE-TX FD or 1000BASE-T)
-		 * This is set as per the APP note from Marvel
-		 */
-		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL);
-		val |= MDIO_AN_LD_LOOP_TIMING_ABILITY;
-		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL, val);
-		if (ret < 0)
-			return ret;
-		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV);
-		val = (val & MDIO_AN_VEND_MASK) |
-		      (MDIO_AN_VEND_PROV_AQRATE_DWN_SHFT_CAP | MDIO_AN_VEND_PROV_1000BASET_FULL);
-		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_VEND_PROV, val);
-		if (ret < 0)
-			return ret;
-
-		/* Enable the magic frame and wake up frame detection for the PHY */
-		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL6);
-		val |= MDIO_C22EXT_RSI_WAKE_UP_FRAME_DETECTION;
-		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL6, val);
-		if (ret < 0)
-			return ret;
-		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL7);
-		val |= MDIO_C22EXT_RSI_MAGIC_PKT_FRAME_DETECTION;
-		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL7, val);
-		if (ret < 0)
-			return ret;
-
-		/* Set the WoL enable bit */
-		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1);
-		val |= MDIO_MMD_AN_WOL_ENABLE;
-		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1, val);
-		if (ret < 0)
-			return ret;
-
-		/* Set the WoL INT_N trigger bit */
-		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL8);
-		val |= MDIO_C22EXT_RSI_WOL_FCS_MONITOR_MODE;
-		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_RSI1_CTRL8, val);
-		if (ret < 0)
-			return ret;
-
-		/* Enable Interrupt INT_N Generation at pin level */
-		val = phy_read_mmd(phydev, MDIO_MMD_C22EXT, MDIO_C22EXT_GBE_PHY_SGMII_TX_INT_MASK1);
-		val |= MDIO_C22EXT_SGMII0_WAKE_UP_FRAME_MASK |
-		       MDIO_C22EXT_SGMII0_MAGIC_PKT_FRAME_MASK;
-		ret = phy_write_mmd(phydev, MDIO_MMD_C22EXT,
-				    MDIO_C22EXT_GBE_PHY_SGMII_TX_INT_MASK1, val);
-		if (ret < 0)
-			return ret;
-		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_STD_MASK);
-		val |= VEND1_GLOBAL_INT_STD_MASK_ALL;
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_STD_MASK, val);
-		if (ret < 0)
-			return ret;
-		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK);
-		val |= VEND1_GLOBAL_INT_VEND_MASK_GBE;
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_INT_VEND_MASK, val);
-		if (ret < 0)
-			return ret;
-
-		/* Set the system interface to SGMII */
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-				    VEND1_GLOBAL_SYS_CONFIG_100M, VEND1_GLOBAL_SYS_CONFIG_SGMII);
-		if (ret < 0)
-			return ret;
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-				    VEND1_GLOBAL_SYS_CONFIG_1G, VEND1_GLOBAL_SYS_CONFIG_SGMII);
-		if (ret < 0)
-			return ret;
-
-		/* restart auto-negotiation */
-		genphy_c45_restart_aneg(phydev);
-		priv->wol_status = WAKE_MAGIC;
-	} else {
-		/* Disable the WoL enable bit */
-		val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1);
-		val &= ~MDIO_MMD_AN_WOL_ENABLE;
-		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_RSVD_VEND_PROV1, val);
-		if (ret < 0)
-			return ret;
-
-		/* Restore the SERDES/System Interface back to the XFI mode */
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-				    VEND1_GLOBAL_SYS_CONFIG_100M, VEND1_GLOBAL_SYS_CONFIG_XFI);
-		if (ret < 0)
-			return ret;
-		ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-				    VEND1_GLOBAL_SYS_CONFIG_1G, VEND1_GLOBAL_SYS_CONFIG_XFI);
-		if (ret < 0)
-			return ret;
-
-		/* restart auto-negotiation */
-		genphy_c45_restart_aneg(phydev);
-		priv->wol_status = 0;
-	}
-	return ret;
-}
-
 static void aqr113c_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
 {
 	u16 val;
@@ -1096,9 +1089,9 @@ static int aqr113c_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wo
 		return 0;
 
 	if (wol->wolopts & WAKE_MAGIC)
-		return aqr113c_wol_settings(phydev, true);
+		return aqr_wol_settings(phydev, true);
 	else
-		return aqr113c_wol_settings(phydev, false);
+		return aqr_wol_settings(phydev, false);
 	return 0;
 }
 
