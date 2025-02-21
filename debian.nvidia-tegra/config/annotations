@@ -9,6 +9,9 @@ include "../../debian.realtime/config/annotations"
 CONFIG_ACCESSIBILITY                            policy<{'arm64': 'n'}>
 CONFIG_ACCESSIBILITY                            note<'LP: #1967702'>
 
+CONFIG_BCACHE                                   policy<{'arm64': 'y'}>
+CONFIG_BCACHE                                   note<'LP: #2099280'>
+
 CONFIG_BMG160                                   policy<{'arm64': 'm'}>
 CONFIG_BMG160                                   note<'LP: #2067781'>
 
@@ -102,6 +105,7 @@ CONFIG_BINFMT_MISC                              policy<{'arm64': 'y'}>
 CONFIG_BMI088_ACCEL_I2C                         policy<{'arm64': 'm'}>
 CONFIG_CC_HAS_UBSAN_BOUNDS                      policy<{'arm64': '-'}>
 CONFIG_CEC_GPIO                                 policy<{'arm64': 'n', 'arm64-nvidia-tegra': '-', 'arm64-nvidia-tegra-rt': 'm'}>
+CONFIG_CRC64                                    policy<{'arm64': 'y'}>
 CONFIG_CRYPTO_CMAC                              policy<{'arm64': 'y'}>
 CONFIG_CRYPTO_DEV_TEGRA                         policy<{'arm64': 'm'}>
 CONFIG_CRYPTO_ECC                               policy<{'arm64': 'y'}>
