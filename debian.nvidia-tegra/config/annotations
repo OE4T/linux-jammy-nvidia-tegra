@@ -27,6 +27,9 @@ CONFIG_DEBUG_PREEMPT                            note<'LP: #2071853'>
 CONFIG_DMATEST                                  policy<{'arm64': 'm'}>
 CONFIG_DMATEST                                  note<'LP: #2060337'>
 
+CONFIG_EXFAT_FS                                 policy<{'arm64': 'y'}>
+CONFIG_EXFAT_FS                                 note<'LP: #2099280'>
+
 CONFIG_KVM                                      policy<{'arm64': 'y'}>
 CONFIG_KVM                                      note<'LP: #2074228'>
 
