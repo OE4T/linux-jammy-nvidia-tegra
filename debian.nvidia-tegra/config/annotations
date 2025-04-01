@@ -33,11 +33,20 @@ CONFIG_DMATEST                                  note<'LP: #2060337'>
 CONFIG_EXFAT_FS                                 policy<{'arm64': 'y'}>
 CONFIG_EXFAT_FS                                 note<'LP: #2099280'>
 
+CONFIG_IP_SET                                   policy<{'arm64': 'm'}>
+CONFIG_IP_SET                                   note<'LP: #2105645'>
+
+CONFIG_IP_SET_HASH_NET                          policy<{'arm64': 'm'}>
+CONFIG_IP_SET_HASH_NET                          note<'LP: #2105645'>
+
 CONFIG_KVM                                      policy<{'arm64': 'y'}>
 CONFIG_KVM                                      note<'LP: #2074228'>
 
 CONFIG_LATENCYTOP                               policy<{'arm64': 'y'}>
 CONFIG_LATENCYTOP                               note<'https://lists.ubuntu.com/archives/kernel-team/2014-July/045006.html, LP#1655986'>
+
+CONFIG_NETFILTER_XT_SET                         policy<{'arm64': 'm'}>
+CONFIG_NETFILTER_XT_SET                         note<'LP: #2105645'>
 
 CONFIG_PCIE_EDR                                 policy<{'arm64': 'n'}>
 CONFIG_PCIE_EDR                                 note<'LP: #1965241'>
