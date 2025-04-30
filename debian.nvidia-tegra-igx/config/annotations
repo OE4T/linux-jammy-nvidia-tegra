@@ -6,6 +6,9 @@
 
 include "../../debian.nvidia-tegra/config/annotations"
 
+CONFIG_VIDEO_IMX274                             policy<{'arm64': 'n'}>
+CONFIG_VIDEO_IMX274                             note<'LP: #2109653'>
+
 
 # ---- Annotations without notes ----
 
