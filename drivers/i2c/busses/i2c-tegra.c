@@ -1936,9 +1936,9 @@ static int tegra_i2c_probe(struct platform_device *pdev)
 	 * domain.
 	 *
 	 * VI I2C device shouldn't be marked as IRQ-safe because VI I2C won't
-	 * be used for atomic transfers.
+	 * be used for atomic transfers. ACPI device and RT PM case are not IRQ safe also.
 	 */
-	if (!i2c_dev->is_vi)
+	if (!i2c_dev->is_vi && !has_acpi_companion(i2c_dev->dev) && !IS_ENABLED(CONFIG_PREEMPT_RT))
 		pm_runtime_irq_safe(i2c_dev->dev);
 
 	pm_runtime_enable(i2c_dev->dev);
