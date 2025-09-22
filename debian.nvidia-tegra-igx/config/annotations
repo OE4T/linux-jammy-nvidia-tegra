@@ -12,7 +12,6 @@ CONFIG_VIDEO_IMX274                             note<'LP: #2109653'>
 
 # ---- Annotations without notes ----
 
-CONFIG_AQUANTIA_PHY                             policy<{'arm64': 'n'}>
 CONFIG_DRM_SIMPLEDRM                            policy<{'arm64': 'n'}>
 CONFIG_FB_SIMPLE                                policy<{'arm64': 'y'}>
 CONFIG_ISO9660_FS                               policy<{'arm64': 'y'}>
