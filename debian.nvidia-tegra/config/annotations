@@ -9,6 +9,9 @@ include "../../debian.realtime/config/annotations"
 CONFIG_ACCESSIBILITY                            policy<{'arm64': 'n'}>
 CONFIG_ACCESSIBILITY                            note<'LP: #1967702'>
 
+CONFIG_AQUANTIA_PHY                             policy<{'arm64': 'y'}>
+CONFIG_AQUANTIA_PHY                             note<'LP: #2125414'>
+
 CONFIG_BCACHE                                   policy<{'arm64': 'y'}>
 CONFIG_BCACHE                                   note<'LP: #2099280'>
 
