@@ -36,6 +36,15 @@ CONFIG_DMATEST                                  note<'LP: #2060337'>
 CONFIG_EXFAT_FS                                 policy<{'arm64': 'y'}>
 CONFIG_EXFAT_FS                                 note<'LP: #2099280'>
 
+CONFIG_HTE                                      policy<{'arm64': 'y'}>
+CONFIG_HTE                                      note<'LP: #2125414'>
+
+CONFIG_HTE_TEGRA194                             policy<{'arm64': 'y'}>
+CONFIG_HTE_TEGRA194                             note<'LP: #2125414'>
+
+CONFIG_HTE_TEGRA194_TEST                        policy<{'arm64': 'm'}>
+CONFIG_HTE_TEGRA194_TEST                        note<'LP: #2125414'>
+
 CONFIG_IP_ADVANCED_ROUTER                       policy<{'arm64': 'y'}>
 CONFIG_IP_ADVANCED_ROUTER                       note<'LP: #2110073'>
 
@@ -146,7 +155,6 @@ CONFIG_HAVE_KVM_IRQ_BYPASS                      policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_IRQ_ROUTING                     policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_MSI                             policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_VCPU_RUN_PID_CHANGE             policy<{'arm64': 'y'}>
-CONFIG_HTE                                      policy<{'arm64': 'n'}>
 CONFIG_HZ                                       policy<{'arm64': '1000'}>
 CONFIG_HZ_1000                                  policy<{'arm64': 'y'}>
 CONFIG_HZ_250                                   policy<{'arm64': 'n'}>
