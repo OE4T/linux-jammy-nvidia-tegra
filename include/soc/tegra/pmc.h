@@ -11,6 +11,10 @@
 #define __SOC_TEGRA_PMC_H__
 
 #include <linux/reboot.h>
+#include <linux/irqdomain.h>
+#include <linux/irq.h>
+#include <linux/irq_work.h>
+#include <linux/syscore_ops.h>
 
 #include <soc/tegra/pm.h>
 
@@ -148,6 +152,14 @@ enum tegra_io_pad {
 	TEGRA_IO_PAD_AO_HV,
 };
 
+/* Forward declarations */
+struct tegra_io_pad_soc;
+struct tegra_pmc_regs;
+struct tegra_wake_event;
+struct tegra_pmc_soc;
+struct tegra_pmc;
+
+#define TEGRA_PMC_MAX_WAKE_VECTORS	4
 /* deprecated, use TEGRA_IO_PAD_{HDMI,LVDS} instead */
 #define TEGRA_IO_RAIL_HDMI	TEGRA_IO_PAD_HDMI
 #define TEGRA_IO_RAIL_LVDS	TEGRA_IO_PAD_LVDS
