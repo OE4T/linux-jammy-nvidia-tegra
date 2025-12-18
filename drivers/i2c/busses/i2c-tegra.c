@@ -1310,7 +1310,11 @@ static int tegra_i2c_error_recover(struct tegra_i2c_dev *i2c_dev,
 	if (i2c_dev->msg_err == I2C_ERR_NONE)
 		return 0;
 
-	tegra_i2c_init(i2c_dev);
+	/* Do not reset the controller if multimaster mode is enabled.
+	 * Abrupt reset may disturb the other masters on the bus.
+	 */
+	if (!i2c_dev->multimaster_mode)
+		tegra_i2c_init(i2c_dev);
 
 	/* start recovery upon arbitration loss in single master mode.
 	 * Return the appropriate error otherwise
