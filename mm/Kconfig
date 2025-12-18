@@ -901,6 +901,22 @@ config IO_MAPPING
 config SECRETMEM
 	def_bool ARCH_HAS_SET_DIRECT_MAP && !EMBEDDED
 
+config MAX_RECLAIM_RETRIES
+	int "Maximum number of reclaim retries before OOM killer"
+	default 16
+	help
+	  This option sets the maximum number of reclaim retries without
+	  progress before the OOM (Out Of Memory) killer is considered
+	  the only way forward.
+
+	  The default value of 16 is appropriate for most systems. Higher
+	  values will cause the system to try harder to reclaim memory
+	  before invoking the OOM killer, which may increase latency during
+	  memory pressure situations. Lower values will invoke the OOM killer
+	  more quickly but may not exhaust all reclaim opportunities.
+
+	  If unsure, leave the default value of 16.
+
 source "mm/damon/Kconfig"
 
 endmenu
