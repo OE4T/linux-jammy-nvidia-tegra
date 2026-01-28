@@ -69,6 +69,9 @@ CONFIG_KVM                                      note<'LP: #2074228'>
 CONFIG_LATENCYTOP                               policy<{'arm64': 'y'}>
 CONFIG_LATENCYTOP                               note<'https://lists.ubuntu.com/archives/kernel-team/2014-July/045006.html, LP#1655986'>
 
+CONFIG_MAX_RECLAIM_RETRIES                      policy<{'arm64': '1'}>
+CONFIG_MAX_RECLAIM_RETRIES                      note<'LP: #2137496'>
+
 CONFIG_NETFILTER_XT_SET                         policy<{'arm64': 'm'}>
 CONFIG_NETFILTER_XT_SET                         note<'LP: #2105645'>
 
