@@ -855,16 +855,34 @@ static u32 tegra_spi_setup_transfer_one(struct spi_device *spi,
 		if (spi->cs_gpiod)
 			gpiod_set_value(spi->cs_gpiod, 1);
 
-		if (is_single_xfer && !(t->cs_change)) {
-			tspi->use_hw_based_cs = true;
-			command1 &= ~(SPI_CS_SW_HW | SPI_CS_SW_VAL);
+		/*
+		 * CS mode selection:
+		 * - Single transfer: use transfer's cs_change flag.
+		 * - Multi-transfer: use pre-determined mode from
+		 *   pre-scan in tegra_spi_transfer_one_message().
+		 */
+		if (is_single_xfer) {
+			if (!t->cs_change) {
+				tspi->use_hw_based_cs = true;
+				command1 &= ~(SPI_CS_SW_HW | SPI_CS_SW_VAL);
+			} else {
+				tspi->use_hw_based_cs = false;
+				command1 |= SPI_CS_SW_HW;
+				if (spi->mode & SPI_CS_HIGH)
+					command1 |= SPI_CS_SW_VAL;
+				else
+					command1 &= ~SPI_CS_SW_VAL;
+			}
 		} else {
-			tspi->use_hw_based_cs = false;
-			command1 |= SPI_CS_SW_HW;
-			if (spi->mode & SPI_CS_HIGH)
-				command1 |= SPI_CS_SW_VAL;
-			else
-				command1 &= ~SPI_CS_SW_VAL;
+			if (tspi->use_hw_based_cs) {
+				command1 &= ~(SPI_CS_SW_HW | SPI_CS_SW_VAL);
+			} else {
+				command1 |= SPI_CS_SW_HW;
+				if (spi->mode & SPI_CS_HIGH)
+					command1 |= SPI_CS_SW_VAL;
+				else
+					command1 &= ~SPI_CS_SW_VAL;
+			}
 		}
 
 		if (!tspi->prod_list) {
@@ -1073,6 +1091,27 @@ static int tegra_spi_transfer_one_message(struct spi_master *master,
 	msg->actual_length = 0;
 
 	single_xfer = list_is_singular(&msg->transfers);
+
+	/*
+	 * For multi-transfer messages, pre-scan to determine CS mode.
+	 * Per SPI framework, cs_change=0 (default) on intermediate transfers
+	 * means keep CS asserted. Use hardware CS for this, as it maintains
+	 * CS automatically between transfers. Only use software CS when all
+	 * transfers have cs_change=1, explicitly requesting CS toggling.
+	 */
+	if (!single_xfer) {
+		struct spi_transfer *tmp;
+		bool need_cs_hold = false;
+
+		list_for_each_entry(tmp, &msg->transfers, transfer_list) {
+			if (!tmp->cs_change) {
+				need_cs_hold = true;
+				break;
+			}
+		}
+		tspi->use_hw_based_cs = need_cs_hold;
+	}
+
 	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
 		u32 cmd1;
 
@@ -1138,6 +1177,8 @@ complete_xfer:
 			}
 		} else if (xfer->cs_change) {
 			tegra_spi_transfer_end(spi);
+			spi_transfer_delay_exec(xfer);
+		} else {
 			spi_transfer_delay_exec(xfer);
 		}
 
